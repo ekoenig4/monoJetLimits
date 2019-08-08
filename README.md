@@ -10,12 +10,14 @@ export SCRAM_ARCH=slc7_amd64_gcc700
 cmsrel CMSSW_10_2_13
 cd CMSSW_10_2_13/src
 cmsenv
-git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 cd HiggsAnalysis/CombinedLimit
 git fetch origin
 git checkout v8.0.1
-scramv1 b clean; scramv1 b -j 24# always make a clean build
+scramv1 b clean; scramv1 b # always make a clean build
+cd $CMSSW_BASE/src
+git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+scram b -j
 ```
 Mono-Z'-CombinedLimit
 =====================
