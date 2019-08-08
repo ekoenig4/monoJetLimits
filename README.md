@@ -1,6 +1,6 @@
 Follow below instructions to get HiggsCombine
 
-<a href="http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/">Official Documentation for HiggsCombined<\a>
+[Official Documentation for HiggsCombined](http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/)
 =================================================================================================================
 
 CC7 release CMSSW_10_2_X HiggsCombined
@@ -17,7 +17,6 @@ git fetch origin
 git checkout v8.0.1
 scramv1 b clean; scramv1 b -j 24# always make a clean build
 ```
-Instructions for getting Mono-Z' Combine Code
 Mono-Z'-CombinedLimit
 =====================
 ```
