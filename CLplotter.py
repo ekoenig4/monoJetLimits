@@ -5,18 +5,6 @@ import json
 from array import array
 
 gROOT.SetBatch(1)
-
-parser = OptionParser()
-parser.add_option("-d","--dir",help='Specify the directory to read limits from',action='store',type='str',default=None)
-parser.add_option("-v","--version",help='Specify the version of plot (1D or 2D)',action='store',type='str',default='2D')
-options,args = parser.parse_args()
-if options.dir == None:
-    print "Please specify a director to run limits in."
-    exit()
-if options.version != '1D' and options.version != '2D':
-    print 'Unkown plot version,',options.version+'.'
-    print 'Plotting Default 2D Plot.'
-    options.version = '2D'
 ##########
 home = os.getcwd()
 def GetData(dir):
@@ -25,8 +13,9 @@ def GetData(dir):
     cwd = os.getcwd()
     systematics = next( f for f in os.listdir('.') if 'Systematics' in f and '.root' in f)
     sysFile = TFile.Open(systematics)
-    lumi = sysFile.Get('sr/lumi').GetBinContent(1)
-    data['lumi'] = lumi
+    data['lumi'] = sysFile.Get('lumi').GetBinContent(1)
+    data['year'] = str(int(sysFile.Get('year').GetBinContent(1)))
+    data['variable'] = sysFile.Get('variable').GetTitle()
     mxdir = [ d for d in os.listdir('.') if os.path.isdir(d) ]
     mxinfo = {}
     for d in mxdir:
@@ -51,10 +40,7 @@ def exclude(data):
         for _,mvlist in data.items():
             if mv in mvlist: mvlist.pop(mv) 
 #####################################################################
-def Plot2D(data):
-    print 'Plotting 2D'
-    lumi = data['lumi']
-    data = data['limit']
+def Plot2D(data,exclude=exclude):
     exclude(data)
     mxlist = sorted(data.keys(),key=int)
     mxbins = { mx:i+1 for i,mx in enumerate(mxlist) }
@@ -63,6 +49,18 @@ def Plot2D(data):
         for mv in sorted(data[mx],key=float):
             if mv not in mvlist: mvlist.append(mv); mvlist.sort(key=float)
     mvbins = { mv:i+1 for i,mv in enumerate(mvlist) }
+    xbins = len(mvlist); ybins = len(mxlist)
+    limit = TH2D("Expected Limits","",xbins,0,xbins,ybins,0,ybins)
+    for mx in mxlist:
+        for mv in data[mx]:
+            limit.SetBinContent(mvbins[mv],mxbins[mx],data[mx][mv]['exp0'])
+    return limit,mxlist,mvlist
+#######################################################################
+def drawPlot2D(data):
+    print 'Plotting 2D'
+    lumi = data['lumi']
+    data = data['limit']
+    limit,mxlist,mvlist = Plot2D(data)
     ######################################################################
     c = TCanvas("c","c",800,800)
     c.SetMargin(0.15,0.15,0.15,0.08)
@@ -70,11 +68,6 @@ def Plot2D(data):
     gStyle.SetLegendBorderSize(0);
     gStyle.SetPaintTextFormat("4.3f")
 
-    xbins = len(mvlist); ybins = len(mxlist)
-    limit = TH2D("Expected Limits","",xbins,0,xbins,ybins,0,ybins)
-    for mx in mxlist:
-        for mv in data[mx]:
-            limit.SetBinContent(mvbins[mv],mxbins[mx],data[mx][mv]['exp0'])
     limit.Draw('COLZ TEXT89')
     limit.SetStats(0)
     
@@ -137,12 +130,24 @@ def Plot2D(data):
     c.SaveAs("expectedevents2D.png")
     # c.SaveAs("expectedevents2D.pdf")
 #####################################################################
-def Plot1D(data):
+def Plot1D(data,exclude=exclude):
+    exclude(data)
+    mxlist = sorted(data.keys(),key=int)
+    limits = {}
+    for mx in mxlist:
+        xlist = []; ylist = []
+        for i,mv in enumerate( sorted(data[mx],key=float) ):
+            x = float(mv); y = data[mx][mv]['exp0']
+            xlist.append(x); ylist.append(y)
+        xlist = array('d',xlist); ylist = array('d',ylist);
+        limits[mx] = TGraph(len(xlist),xlist,ylist)
+    return limits,mxlist
+#####################################################################
+def drawPlot1D(data):
     print 'Plotting 1D'
     lumi = data['lumi']
     data = data['limit']
-    exclude(data)
-    mxlist = sorted(data.keys(),key=int)
+    plots,mxlist = Plot1D(data)
 
     maxX = max( max( float(mv) for mv in mvlist ) for mx,mvlist in data.items() )
     minX = min( min( float(mv) for mv in mvlist ) for mx,mvlist in data.items() )
@@ -150,6 +155,7 @@ def Plot1D(data):
     minY = min( min( lim['exp0'] for mv,lim in mvlist.items() ) for mx,mvlist in data.items() )
     ######################################################################
     c = TCanvas("c","c",800,800)
+    c.SetLogy()
     # c.SetMargin(0.15,0.15,0.15,0.08)
     gStyle.SetOptStat(0);
     gStyle.SetLegendBorderSize(0);
@@ -160,14 +166,9 @@ def Plot1D(data):
     legend.SetTextSize(0.02)
     legend.SetFillColor(0)
     for mx in mxlist:
-        xlist = []; ylist = []
-        for i,mv in enumerate( sorted(data[mx],key=float) ):
-            x = float(mv); y = data[mx][mv]['exp0']
-            xlist.append(x); ylist.append(y)
-        xlist = array('d',xlist); ylist = array('d',ylist);
-        limit = TGraph(len(xlist),xlist,ylist)
+        limit = plots[mx]
         legend.AddEntry(limit,'m_{#chi} = '+mx+' GeV','l')
-        limit.SetLineWidth(2)
+        limit.SetLineWidth(3)
         limits.Add(limit)
     limits.Draw('a l plc')
     limits.GetXaxis().SetRangeUser(minX,maxX)
@@ -181,7 +182,6 @@ def Plot1D(data):
     limits.GetXaxis().SetLabelSize(0.03)
     limits.GetYaxis().SetLabelSize(0.03)
     ################################################################
-    c.SetLogy()
 
     lumi_label = '%s' % float('%.3g' % (lumi/1000.)) + " fb^{-1}"
     texS = TLatex(0.20,0.837173,("#sqrt{s} = 13 TeV, "+lumi_label));
@@ -207,7 +207,18 @@ def Plot1D(data):
 #####################################################################
 
 if __name__ == "__main__":
+    parser = OptionParser()
+    parser.add_option("-d","--dir",help='Specify the directory to read limits from',action='store',type='str',default=None)
+    parser.add_option("-v","--version",help='Specify the version of plot (1D or 2D)',action='store',type='str',default='2D')
+    options,args = parser.parse_args()
+    if options.dir == None:
+        print "Please specify a director to run limits in."
+        exit()
+    if options.version != '1D' and options.version != '2D':
+        print 'Unkown plot version,',options.version+'.'
+        print 'Plotting Default 2D Plot.'
+        options.version = '2D'
     data = GetData(options.dir)
-    if   options.version == '1D': Plot1D(data)
-    elif options.version == '2D': Plot2D(data)
+    if   options.version == '1D': drawPlot1D(data)
+    elif options.version == '2D': drawPlot2D(data)
 

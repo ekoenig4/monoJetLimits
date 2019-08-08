@@ -1,4 +1,5 @@
 #!/bin/sh
+if [ ! -d Systematics ]; then mkdir Systematics; fi
 _2016=/nfs_scratch/ekoenig4/MonoZprimeJet/ZprimeTools2016/CMSSW_10_2_10/src/ZprimeTools2016
 _2017=/nfs_scratch/ekoenig4/MonoZprimeJet/ZprimeTools2017/CMSSW_10_2_10/src/ZprimeTools2017
 _2018=/nfs_scratch/ekoenig4/MonoZprimeJet/ZprimeTools2018/CMSSW_10_2_10/src/ZprimeTools2018

@@ -5,8 +5,11 @@ from optparse import OptionParser
 from array import array
 from makeShapeCards import MakeShapeCard
 
+if not os.path.isdir("Limits/"): os.mkdir("Limits/")
+
 parser = OptionParser()
 parser.add_option("-i","--input",help="Specify input systematics file to generate limits from",action="store",type="str",default=None)
+parser.add_option("--cr",help="Include CR in cards",action="store_true",default=False)
 
 options,args = parser.parse_args()
 
@@ -28,12 +31,21 @@ for i,signal in enumerate(signals):
     signalList[mx].append(mv)
     signalList[mx].sort(key=int)
 ##########################################################
-dir = 'Limits/'+fname.replace('.root','')
+dir = 'Limits/'+fname.replace('.root', '_wCR' if options.cr else '')
 if not os.path.isdir(dir): os.mkdir(dir)
 copy(options.input,dir+'/'+fname)
-for mx in sorted(signalList.keys()):
+if options.cr:
+    rfile = TFile(dir+'/'+fname,"update")
+    variable = rfile.Get("variable"); variable.SetDirectory(0)
+    gDirectory.Delete("variable;1")
+    variable.SetTitle( variable.GetTitle()+'-wCR' )
+    variable.Write("variable")
+    rfile.Close()
+##################################################
+for mx in sorted(signalList.keys(),key=int):
     print 'Mx: '+mx
-    for mv in signalList[mx]:
-        print '\tMv: '+mv
-        MakeShapeCard(mx,mv,fname,dir)
-
+    for i,mv in enumerate(signalList[mx]):
+        if i == 0: print '\tMv: '+mv,
+        else: print '|',mv,
+        MakeShapeCard(mx,mv,fname,dir,docat= 'cr' if options.cr else 'sr')
+    print 
