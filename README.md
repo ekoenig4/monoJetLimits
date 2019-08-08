@@ -1,19 +1,26 @@
 Follow below instructions to get HiggsCombine
 
-HiggsAnalysis-CombinedLimit
+<a href="http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/">Official Documentation for HiggsCombined<\a>
+=================================================================================================================
+
+CC7 release CMSSW_10_2_X HiggsCombined
 ===========================
-
-### Official documentation
-
-[Manual to run combine](http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/)
-
-### Standalone compilation in `lxplus`
 ```
+export SCRAM_ARCH=slc7_amd64_gcc700
+cmsrel CMSSW_10_2_13
+cd CMSSW_10_2_13/src
+cmsenv
+git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 cd HiggsAnalysis/CombinedLimit
-source env_standalone.sh 
-make -j 8; make # second make fixes compilation error of first
+git fetch origin
+git checkout v8.0.1
+scramv1 b clean; scramv1 b -j 24# always make a clean build
 ```
+Instructions for getting Mono-Z' Combine Code
 Mono-Z'-CombinedLimit
 =====================
-
+```
+cd $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/
+git clone https://github.com/ekoenig4/ZprimeLimits.git
+```
