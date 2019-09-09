@@ -1,0 +1,85 @@
+imax  1 number of channels
+jmax  * number of backgrounds
+kmax  * number of nuisance parameters
+
+
+shapes data_obs  monomonomu workspace.root w:data_obs_WM
+shapes WG        monomonomu workspace.root w:WG_above0p5_WM
+shapes QCD       monomonomu workspace.root w:QCD_WM       w:QCD_WM_$SYSTEMATIC
+shapes ZllG_MC   monomonomu workspace.root w:ZllG_WM      w:ZllG_WM_$SYSTEMATIC
+shapes TTG       monomonomu workspace.root w:TTG_WM       w:TTG_WM_$SYSTEMATIC
+shapes TG        monomonomu workspace.root w:TG_WM        w:TG_WM_$SYSTEMATIC
+shapes Diphoton  monomonomu workspace.root w:Diphoton_WM  w:Diphoton_WM_$SYSTEMATIC
+shapes WZ        monomonomu workspace.root w:WZ_WM        w:WZ_WM_$SYSTEMATIC
+shapes WW        monomonomu workspace.root w:WW_WM        w:WW_WM_$SYSTEMATIC
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+bin             monomonomu
+observation     -1
+----------------------------------------------------------------------------------------------------------------------------------------------------
+bin                           monomonomu monomonomu monomonomu monomonomu monomonomu monomonomu monomonomu monomonomu 
+process                       WG         QCD        ZllG_MC    TTG        TG         Diphoton   WZ         WW         
+process                       1          2          3          4          5          6          7          8          
+rate                          1         -1         -1         -1         -1         -1         -1         -1          
+----------------------------------------------------------------------------------------------------------------------------------------------------
+lumi                   lnN    -          -          1.025      1.025      1.025      1.025      1.025      1.025      
+pix                    lnN    -          -          1.009      1.009      1.009      1.009      1.009      1.009      
+lepveto                lnN    -          -          1.02       1.02       1.02       1.02       1.02       1.02       
+mcscale                lnN    -          -          1.04       1.04       1.04       1.04       1.04       1.04       
+mcpdf                  lnN    -          -          1.04       1.04       1.04       1.04       1.04       1.04       
+muonSF                 lnN    1.01       -          1.01       1.01       1.01       1.01       1.01       1.01       
+phoSF                  lnN    -          -          1.007      1.007      1.007      1.007      1.007      1.007      
+JES                  shape    -          -          1          1          1          1          1          1          
+PES                  shape    -          -          1          1          1          1          1          1          
+QCDr                 shape    -          1          -          -          -          -          -          -          
+WZMonomuSBin1        shape    -          -          -          -          -          -          1          -          
+WZMonomuSBin2        shape    -          -          -          -          -          -          1          -          
+WZMonomuSBin3        shape    -          -          -          -          -          -          1          -          
+WZMonomuSBin4        shape    -          -          -          -          -          -          1          -          
+WZMonomuSBin5        shape    -          -          -          -          -          -          1          -          
+WZMonomuSBin6        shape    -          -          -          -          -          -          1          -          
+WWMonomuSBin1        shape    -          -          -          -          -          -          -          1          
+WWMonomuSBin2        shape    -          -          -          -          -          -          -          1          
+WWMonomuSBin3        shape    -          -          -          -          -          -          -          1          
+WWMonomuSBin4        shape    -          -          -          -          -          -          -          1          
+WWMonomuSBin5        shape    -          -          -          -          -          -          -          1          
+WWMonomuSBin6        shape    -          -          -          -          -          -          -          1          
+QCDMonomuSBin1       shape    -          1          -          -          -          -          -          -          
+QCDMonomuSBin2       shape    -          1          -          -          -          -          -          -          
+QCDMonomuSBin3       shape    -          1          -          -          -          -          -          -          
+QCDMonomuSBin4       shape    -          1          -          -          -          -          -          -          
+QCDMonomuSBin5       shape    -          1          -          -          -          -          -          -          
+QCDMonomuSBin6       shape    -          1          -          -          -          -          -          -          
+# ZllGMonomuSBin1      shape    -          -          1          -          -          -          -          -          -          -          -          -          
+# ZllGMonomuSBin2      shape    -          -          1          -          -          -          -          -          -          -          -          -          
+# ZllGMonomuSBin3      shape    -          -          1          -          -          -          -          -          -          -          -          -          
+# ZllGMonomuSBin4      shape    -          -          1          -          -          -          -          -          -          -          -          -          
+# ZllGMonomuSBin5      shape    -          -          1          -          -          -          -          -          -          -          -          -          
+# ZllGMonomuSBin6      shape    -          -          1          -          -          -          -          -          -          -          -          -          
+# TTGMonomuSBin1       shape    -          -          -          1          -          -          -          -          -          -          -          -          
+# TTGMonomuSBin2       shape    -          -          -          1          -          -          -          -          -          -          -          -          
+# TTGMonomuSBin3       shape    -          -          -          1          -          -          -          -          -          -          -          -          
+# TTGMonomuSBin4       shape    -          -          -          1          -          -          -          -          -          -          -          -          
+# TTGMonomuSBin5       shape    -          -          -          1          -          -          -          -          -          -          -          -          
+# TTGMonomuSBin6       shape    -          -          -          1          -          -          -          -          -          -          -          -          
+# TGMonomuSBin1        shape    -          -          -          -          1          -          -          -          -          -          -          -          
+# TGMonomuSBin2        shape    -          -          -          -          1          -          -          -          -          -          -          -          
+# TGMonomuSBin3        shape    -          -          -          -          1          -          -          -          -          -          -          -          
+# TGMonomuSBin4        shape    -          -          -          -          1          -          -          -          -          -          -          -          
+# TGMonomuSBin5        shape    -          -          -          -          1          -          -          -          -          -          -          -          
+# TGMonomuSBin6        shape    -          -          -          -          1          -          -          -          -          -          -          -          
+# DiphotonMonomuSBin1  shape    -          -          -          -          -          -          1          -          -          -          -          -          
+# DiphotonMonomuSBin2  shape    -          -          -          -          -          -          1          -          -          -          -          -          
+# DiphotonMonomuSBin3  shape    -          -          -          -          -          -          1          -          -          -          -          -          
+# DiphotonMonomuSBin4  shape    -          -          -          -          -          -          1          -          -          -          -          -          
+# DiphotonMonomuSBin5  shape    -          -          -          -          -          -          1          -          -          -          -          -          
+# DiphotonMonomuSBin6  shape    -          -          -          -          -          -          1          -          -          -          -          -          
+
+WG_above0p5_WM_bin1_Runc param 0 1
+WG_above0p5_WM_bin2_Runc param 0 1
+WG_above0p5_WM_bin3_Runc param 0 1
+WG_above0p5_WM_bin4_Runc param 0 1
+WG_above0p5_WM_bin5_Runc param 0 1
+WG_above0p5_WM_bin6_Runc param 0 1

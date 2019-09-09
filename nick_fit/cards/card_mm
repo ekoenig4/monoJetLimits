@@ -1,0 +1,22 @@
+# Card for channel mm
+imax 1 # process in this card
+jmax 6 # process in this card - 1
+kmax 7 # nuisances in this card
+------------------------------
+shape * * ../ChNemPtFrac_2016.sys.root $CHANNEL/$PROCESS $CHANNEL/$PROCESS_$SYSTEMATIC
+------------------------------
+bin          mm
+observation  16686.804
+------------------------------
+bin                 mm                  mm                  mm                  mm                  mm                  mm                  mm                  
+process             ZJets               WJets               DiBoson             TTJets              DYJets              GJets               QCD                 
+process             1                   2                   3                   4                   5                   6                   7                   
+rate                -1.000              -1.000              -1.000              -1.000              -1.000              -1.000              -1.000              
+------------------------------
+EWK_WJets lnN       -                   1.150               -                   -                   -                   -                   -                   
+EWK_ZJets lnN       1.100               -                   -                   -                   -                   -                   -                   
+bjet_veto lnN       1.020               1.020               1.020               1.020               1.020               1.020               1.020               
+ecal shape          -                   1.000               1.000               1.000               1.000               -                   -                   
+et_trigg lnN        1.010               1.010               1.010               1.010               1.010               1.010               1.010               
+jes shape           -                   1.000               1.000               1.000               1.000               -                   -                   
+lumi lnN            1.026               1.026               1.026               1.026               1.026               1.026               1.026               

@@ -1,0 +1,93 @@
+imax  1 number of channels
+jmax  * number of backgrounds
+kmax  * number of nuisance parameters
+
+
+shapes data_obs  monomonoele workspace.root w:data_obs_WE
+shapes WG        monomonoele workspace.root w:WG_above0p5_WE
+shapes QCD       monomonoele workspace.root w:QCD_WE       w:QCD_WE_$SYSTEMATIC
+shapes Elefake   monomonoele workspace.root w:Elefake_WE
+shapes ZllG_MC   monomonoele workspace.root w:ZllG_WE      w:ZllG_WE_$SYSTEMATIC
+shapes TTG       monomonoele workspace.root w:TTG_WE       w:TTG_WE_$SYSTEMATIC
+shapes TG        monomonoele workspace.root w:TG_WE        w:TG_WE_$SYSTEMATIC
+shapes Diphoton  monomonoele workspace.root w:Diphoton_WE  w:Diphoton_WE_$SYSTEMATIC
+shapes WZ        monomonoele workspace.root w:WZ_WE        w:WZ_WE_$SYSTEMATIC
+shapes WW        monomonoele workspace.root w:WW_WE        w:WW_WE_$SYSTEMATIC
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+bin             monomonoele
+observation     -1
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+bin                            monomonoele monomonoele monomonoele monomonoele monomonoele monomonoele monomonoele monomonoele monomonoele 
+process                        WG          QCD         Elefake     ZllG_MC     TTG         TG          Diphoton    WZ          WW          
+process                        1           2           3           4           5           6           7           8           9           
+rate                           1          -1          -1          -1          -1          -1          -1          -1          -1           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+lumi                    lnN    -           -           -           1.025       1.025       1.025       1.025       1.025       1.025       
+pix                     lnN    -           -           -           1.009       1.009       1.009       1.009       1.009       1.009       
+lepveto                 lnN    -           -           -           1.02        1.02        1.02        1.02        1.02        1.02        
+mcscale                 lnN    -           -           -           1.04        1.04        1.04        1.04        1.04        1.04        
+mcpdf                   lnN    -           -           -           1.04        1.04        1.04        1.04        1.04        1.04        
+eleSF                   lnN    1.02        -           -           1.02        1.02        1.02        1.02        1.02        1.02        
+phoSF                   lnN    -           -           -           1.007       1.007       1.007       1.007       1.007       1.007       
+JES                   shape    -           -           -           1           1           1           1           1           1           
+PES                   shape    -           -           -           1           1           1           1           1           -           
+QCDr                  shape    -           1           -           -           -           -           -           -           -           
+Eler                    lnN    -           -           1.073       -           -           -           -           -           -           
+WZMonoeleSBin1        shape    -           -           -           -           -           -           -           1           -           
+WZMonoeleSBin2        shape    -           -           -           -           -           -           -           1           -           
+WZMonoeleSBin3        shape    -           -           -           -           -           -           -           1           -           
+WZMonoeleSBin4        shape    -           -           -           -           -           -           -           1           -           
+WZMonoeleSBin5        shape    -           -           -           -           -           -           -           1           -           
+WZMonoeleSBin6        shape    -           -           -           -           -           -           -           1           -           
+WWMonoeleSBin1        shape    -           -           -           -           -           -           -           -           1           
+WWMonoeleSBin2        shape    -           -           -           -           -           -           -           -           1           
+WWMonoeleSBin3        shape    -           -           -           -           -           -           -           -           1           
+WWMonoeleSBin4        shape    -           -           -           -           -           -           -           -           1           
+WWMonoeleSBin5        shape    -           -           -           -           -           -           -           -           1           
+WWMonoeleSBin6        shape    -           -           -           -           -           -           -           -           1           
+QCDMonoeleSBin1       shape    -           1           -           -           -           -           -           -           -           
+QCDMonoeleSBin2       shape    -           1           -           -           -           -           -           -           -           
+QCDMonoeleSBin3       shape    -           1           -           -           -           -           -           -           -           
+QCDMonoeleSBin4       shape    -           1           -           -           -           -           -           -           -           
+QCDMonoeleSBin5       shape    -           1           -           -           -           -           -           -           -           
+QCDMonoeleSBin6       shape    -           1           -           -           -           -           -           -           -           
+# EleMonoeleSBin1       shape    -           -           1           -           -           -           -           -           -           -           -           -           -           
+# EleMonoeleSBin2       shape    -           -           1           -           -           -           -           -           -           -           -           -           -           
+# EleMonoeleSBin3       shape    -           -           1           -           -           -           -           -           -           -           -           -           -           
+# EleMonoeleSBin4       shape    -           -           1           -           -           -           -           -           -           -           -           -           -           
+# EleMonoeleSBin5       shape    -           -           1           -           -           -           -           -           -           -           -           -           -           
+# EleMonoeleSBin6       shape    -           -           1           -           -           -           -           -           -           -           -           -           -           
+# ZllGMonoeleSBin1      shape    -           -           -           1           -           -           -           -           -           -           -           -           -           
+# ZllGMonoeleSBin2      shape    -           -           -           1           -           -           -           -           -           -           -           -           -           
+# ZllGMonoeleSBin3      shape    -           -           -           1           -           -           -           -           -           -           -           -           -           
+# ZllGMonoeleSBin4      shape    -           -           -           1           -           -           -           -           -           -           -           -           -           
+# ZllGMonoeleSBin5      shape    -           -           -           1           -           -           -           -           -           -           -           -           -           
+# ZllGMonoeleSBin6      shape    -           -           -           1           -           -           -           -           -           -           -           -           -           
+# TTGMonoeleSBin1       shape    -           -           -           -           1           -           -           -           -           -           -           -           -           
+# TTGMonoeleSBin2       shape    -           -           -           -           1           -           -           -           -           -           -           -           -           
+# TTGMonoeleSBin3       shape    -           -           -           -           1           -           -           -           -           -           -           -           -           
+# TTGMonoeleSBin4       shape    -           -           -           -           1           -           -           -           -           -           -           -           -           
+# TTGMonoeleSBin5       shape    -           -           -           -           1           -           -           -           -           -           -           -           -           
+# TTGMonoeleSBin6       shape    -           -           -           -           1           -           -           -           -           -           -           -           -           
+# TGMonoeleSBin1        shape    -           -           -           -           -           1           -           -           -           -           -           -           -           
+# TGMonoeleSBin2        shape    -           -           -           -           -           1           -           -           -           -           -           -           -           
+# TGMonoeleSBin3        shape    -           -           -           -           -           1           -           -           -           -           -           -           -           
+# TGMonoeleSBin4        shape    -           -           -           -           -           1           -           -           -           -           -           -           -           
+# TGMonoeleSBin5        shape    -           -           -           -           -           1           -           -           -           -           -           -           -           
+# TGMonoeleSBin6        shape    -           -           -           -           -           1           -           -           -           -           -           -           -           
+# DiphotonMonoeleSBin1  shape    -           -           -           -           -           -           -           1           -           -           -           -           -           
+# DiphotonMonoeleSBin2  shape    -           -           -           -           -           -           -           1           -           -           -           -           -           
+# DiphotonMonoeleSBin3  shape    -           -           -           -           -           -           -           1           -           -           -           -           -           
+# DiphotonMonoeleSBin4  shape    -           -           -           -           -           -           -           1           -           -           -           -           -           
+# DiphotonMonoeleSBin5  shape    -           -           -           -           -           -           -           1           -           -           -           -           -           
+# DiphotonMonoeleSBin6  shape    -           -           -           -           -           -           -           1           -           -           -           -           -           
+
+WG_above0p5_WE_bin1_Runc param 0 1
+WG_above0p5_WE_bin2_Runc param 0 1
+WG_above0p5_WE_bin3_Runc param 0 1
+WG_above0p5_WE_bin4_Runc param 0 1
+WG_above0p5_WE_bin5_Runc param 0 1
+WG_above0p5_WE_bin6_Runc param 0 1

@@ -1,0 +1,57 @@
+imax  1 number of channels
+jmax  * number of backgrounds
+kmax  * number of nuisance parameters
+
+
+shapes data_obs  ZE workspace.root w:data_obs_ZE
+shapes ZllG      ZE workspace.root w:ZllG_ZE
+shapes QCD       ZE workspace.root w:QCD_ZE       w:QCD_ZE_$SYSTEMATIC
+shapes TTG       ZE workspace.root w:TTG_ZE       w:TTG_ZE_$SYSTEMATIC
+shapes WZ        ZE workspace.root w:WZ_ZE        w:WZ_ZE_$SYSTEMATIC
+
+
+
+-----------------------------------------------------------------------------------------------------
+bin             ZE
+observation     -1
+-----------------------------------------------------------------------------------------------------
+bin                          ZE        ZE        ZE        ZE        
+process                      ZllG      QCD       TTG       WZ        
+process                      1         2         3         4         
+rate                         1        -1        -1        -1         
+-----------------------------------------------------------------------------------------------------
+lumi                  lnN    -         -         1.025     1.025     
+pix                   lnN    -         -         1.009     1.009     
+lepveto               lnN    -         -         1.02      1.02      
+mcscale               lnN    -         -         1.04      1.04      
+mcpdf                 lnN    -         -         1.04      1.04      
+eleSF                 lnN    1.04      -         1.04      1.04      
+phoSF                 lnN    -         -         1.007     1.007     
+JES                 shape    -         -         1         1         
+PES                 shape    -         -         1         1         
+QCDr                shape    -         1         -         -         
+QCDDieleSBin1       shape    -         1         -         -         
+QCDDieleSBin2       shape    -         1         -         -         
+QCDDieleSBin3       shape    -         1         -         -         
+QCDDieleSBin4       shape    -         1         -         -         
+QCDDieleSBin5       shape    -         1         -         -         
+QCDDieleSBin6       shape    -         1         -         -         
+# TTGDieleSBin1       shape    -         -         1         -         -         
+# TTGDieleSBin2       shape    -         -         1         -         -         
+# TTGDieleSBin3       shape    -         -         1         -         -         
+# TTGDieleSBin4       shape    -         -         1         -         -         
+# TTGDieleSBin5       shape    -         -         1         -         -         
+# TTGDieleSBin6       shape    -         -         1         -         -         
+# WZDieleSBin1        shape    -         -         -         1         -         
+# WZDieleSBin2        shape    -         -         -         1         -         
+# WZDieleSBin3        shape    -         -         -         1         -         
+# WZDieleSBin4        shape    -         -         -         1         -         
+# WZDieleSBin5        shape    -         -         -         1         -         
+# WZDieleSBin6        shape    -         -         -         1         -         
+
+ZllG_ZE_bin1_Runc                 param 0 1
+ZllG_ZE_bin2_Runc                 param 0 1
+ZllG_ZE_bin3_Runc                 param 0 1
+ZllG_ZE_bin4_Runc                 param 0 1
+ZllG_ZE_bin5_Runc                 param 0 1
+ZllG_ZE_bin6_Runc                 param 0 1

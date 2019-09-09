@@ -1,0 +1,6 @@
+*~
+test
+Systematics/*
+Limits/*
+*.pyc
+*.root

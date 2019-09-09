@@ -1,0 +1,57 @@
+imax  1 number of channels
+jmax  * number of backgrounds
+kmax  * number of nuisance parameters
+
+
+shapes data_obs  ZM workspace.root w:data_obs_ZM
+shapes ZllG      ZM workspace.root w:ZllG_ZM
+shapes QCD       ZM workspace.root w:QCD_ZM       w:QCD_ZM_$SYSTEMATIC
+shapes TTG       ZM workspace.root w:TTG_ZM       w:TTG_ZM_$SYSTEMATIC
+shapes WZ        ZM workspace.root w:WZ_ZM        w:WZ_ZM_$SYSTEMATIC
+
+
+
+-----------------------------------------------------------------------------------------------------
+bin             ZM
+observation     -1
+-----------------------------------------------------------------------------------------------------
+bin                         ZM       ZM       ZM       ZM       
+process                     ZllG     QCD      TTG      WZ       
+process                     1        2        3        4        
+rate                        1       -1       -1       -1        
+-----------------------------------------------------------------------------------------------------
+lumi                 lnN    -        -        1.025    1.025    
+pix                  lnN    -        -        1.009    1.009    
+lepveto              lnN    -        -        1.02     1.02     
+mcscale              lnN    -        -        1.04     1.04     
+mcpdf                lnN    -        -        1.04     1.04     
+muonSF               lnN    1.02     -        1.02     1.02     
+phoSF                lnN    -        -        1.007    1.007    
+JES                shape    -        -        1        1        
+PES                shape    -        -        1        1        
+QCDr               shape    -        1        -        -        
+QCDDimuSBin1       shape    -        1        -        -        
+QCDDimuSBin2       shape    -        1        -        -        
+QCDDimuSBin3       shape    -        1        -        -        
+QCDDimuSBin4       shape    -        1        -        -        
+QCDDimuSBin5       shape    -        1        -        -        
+QCDDimuSBin6       shape    -        1        -        -        
+# TTGDimuSBin1       shape    -        -        1        -        -        
+# TTGDimuSBin2       shape    -        -        1        -        -        
+# TTGDimuSBin3       shape    -        -        1        -        -        
+# TTGDimuSBin4       shape    -        -        1        -        -        
+# TTGDimuSBin5       shape    -        -        1        -        -        
+# TTGDimuSBin6       shape    -        -        1        -        -        
+# WZDimuSBin1        shape    -        -        -        1        -        
+# WZDimuSBin2        shape    -        -        -        1        -        
+# WZDimuSBin3        shape    -        -        -        1        -        
+# WZDimuSBin4        shape    -        -        -        1        -        
+# WZDimuSBin5        shape    -        -        -        1        -        
+# WZDimuSBin6        shape    -        -        -        1        -        
+
+ZllG_ZM_bin1_Runc                param 0 1
+ZllG_ZM_bin2_Runc                param 0 1
+ZllG_ZM_bin3_Runc                param 0 1
+ZllG_ZM_bin4_Runc                param 0 1
+ZllG_ZM_bin5_Runc                param 0 1
+ZllG_ZM_bin6_Runc                param 0 1

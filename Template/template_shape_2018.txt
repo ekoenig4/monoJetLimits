@@ -1,0 +1,27 @@
+# Dark Matter search with light Z' radiated (FSR) from one of the pair produced dark matter particles
+# with one signal and a few background processes
+imax * number of channels
+jmax * number of backgrounds
+kmax * number of nuisance parameters (sources of systematical uncertainties)
+
+shapes * * file $CHANNEL/$PROCESS $CHANNEL/$PROCESS_$SYSTEMATIC
+-----
+bin bin1
+observation -1
+bin                  bin1	bin1	      bin1         bin1         bin1         bin1         bin1         bin1
+process		     DM	 	ZJets	      WJets	   DiBoson	GJets	     TTJets	  DYJets       QCD
+process		     0		 1	      2		   3		4	     5		  6	       7	
+rate		     -1		 -1	      -1	   -1		-1	     -1		  -1	       -1
+-----
+lumi	     lnN     1.026	 1.026        1.026	   1.026	1.026	     1.026	  1.026	       1.026
+et_trigg     lnN     1.01	 1.01	      1.01	   1.01		1.01	     1.01	  1.01	       1.01
+bjet_veto    lnN     1.02   	 1.02	      1.02	   1.02	  	1.02	     1.02	  1.02	       1.02
+EWK_ZJets    lnN     -	  	 1.10	      -	  	   -	  	-	     -	  	  -	       -
+EWK_WJets    lnN     -	  	 -	      1.15	   -	  	-	     -	  	  -	       -
+tracker	     shape   1		 1	      1		   1		1	     1		  1	       1
+ecal	     shape   1		 1	      1		   1		1	     1		  1	       1
+hcal	     shape   1		 1	      1		   1		1	     1		  1	       1
+jes	     shape   1		 1	      1		   1		1	     1		  1	       1
+ewk          shape   1		 1	      1		   1		1	     1		  1	       1
+isrCon	     shape   -		 1	      1		   1		1	     1		  1	       1
+fsrCon	     shape   -		 1	      1		   1		1	     1		  1	       1
