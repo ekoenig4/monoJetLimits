@@ -3,49 +3,58 @@ import sys
 from optparse import OptionParser
 import threading
 from combineDir import combine,combineTool
-    
+from makeCards import GetMasses
+
+def combineCard(regions):
+    arg = 'combineCards.py '
+    for region in regions: arg += '%s=cards/%s.txt ' % (region,region)
+    arg += ' > cards/zprime_card.txt'
+    os.system(arg)
+##############################################################################
 parser = OptionParser()
 parser.add_option("-d","--dir",help='Specify the directory to run limits in',action='store',type='str',default=None)
+parser.add_option("--cr",help='Uses CR in fit',action='store_true',default=False)
 options,args = parser.parse_args()
 if options.dir == None:
     print "Please specify a director to run limits in."
     exit()
 ##########
 os.chdir(options.dir)
-mxdir = [ dir for dir in os.listdir('.') if os.path.isdir(dir) ]
-mxdir.sort( key=lambda d:int(d.split('_')[-1]) )
+masses = GetMasses('output.root')
+if not options.cr: regions = ('sr',)
+else:              regions = ('sr','e','ee','m','mm')
+print 'Generating Cards...'
+combineCard(regions)
+print 'Done'
 cwd = os.getcwd()
-
 class thread (threading.Thread):
-    def __init__(self,dir):
+    def __init__(self,signals):
         threading.Thread.__init__(self)
-        self.dir = dir
+        self.signals = signals
         self.nfile = 0
-    def run(self): self.runlimit(dir)
-    def runlimit(self,dir):
-        mvfiles = [ dir+'/'+file for file in os.listdir(dir) if 'zprimeMx' in file and '_shape.txt' in file ]
-        mvfiles.sort( key=lambda f: int( f.split('_')[2].replace('Mv','') ) )
-        self.nfile = len(mvfiles)
-        for mvfile in mvfiles: combine(dir,mvfile); self.nfile -= 1
-        combineTool(dir,dir+'/limits_shape_'+dir+'.json')
+    def run(self): self.runlimit(self.signals)
+    def runlimit(self,signals):
+        for signal in signals: combine(signal)
 #############################################################################
 
 threads = {}
-for dir in mxdir:
-    threads[dir] = thread(dir)
-    threads[dir].start()
-
-last = ""
+n = 3 # number of signal per thread
+signal_split = [masses[i * n:(i + 1) * n] for i in range((len(masses) + n - 1) // n )]
+for signals in signal_split:
+    threads[str(signals)] = thread(signals)
+    threads[str(signals)].start()
+print '%i Threads Started' % len(threads)
 while any(threads):
-    out = "\r"+str(len(threads))+" Thread(s) Remaining"
-    mxdir = sorted( threads.keys(),key=lambda d: int( d.split('_')[1] ) )
-    for dir in mxdir:
-        if not threads[dir].isAlive(): threads.pop(dir)
-        else:
-            out += "\n\r"+dir+":"+str(threads[dir].nfile)
-    if out != last:
-        last = out
+    change = False
+    idlist = threads.keys()
+    for id in idlist:
+        if not threads[id].isAlive():
+            threads.pop(id)
+            change = True
+    if change:
+        out = '\r%i Threads Remaining' % len(threads)
         sys.stdout.write(out)
         sys.stdout.flush()
 print
+print 'Combined Finished.'
 #################################################################################################

@@ -7,7 +7,17 @@ from array import array
 gROOT.SetBatch(1)
 ##########
 home = os.getcwd()
-def GetData(dir):
+def exclude(data):
+    exclude_mx = ['1','150','500','1000']
+    exclude_mv = ['15.0','10000.0']
+
+    for mx in exclude_mx:
+        if mx in data: data.pop(mx)
+    for mv in exclude_mv:
+        for _,mvlist in data.items():
+            if mv in mvlist: mvlist.pop(mv) 
+#####################################################################
+def GetData(dir,exclude=exclude):
     data = {}
     os.chdir(dir)
     cwd = os.getcwd()
@@ -26,22 +36,12 @@ def GetData(dir):
         with open(mvfile) as json_file: mvjson = json.load(json_file)
         mxinfo[mx] = mvjson
         os.chdir(cwd)
+    exclude(mxinfo)
     data['limit'] = mxinfo
     os.chdir(home)
     return data
 #####################################################################
-def exclude(data):
-    exclude_mx = ['1','150','500','1000']
-    exclude_mv = ['15.0','10000.0']
-
-    for mx in exclude_mx:
-        if mx in data: data.pop(mx)
-    for mv in exclude_mv:
-        for _,mvlist in data.items():
-            if mv in mvlist: mvlist.pop(mv) 
-#####################################################################
-def Plot2D(data,exclude=exclude):
-    exclude(data)
+def Plot2D(data):
     mxlist = sorted(data.keys(),key=int)
     mxbins = { mx:i+1 for i,mx in enumerate(mxlist) }
     mvlist = []
@@ -130,8 +130,7 @@ def drawPlot2D(data):
     c.SaveAs("expectedevents2D.png")
     # c.SaveAs("expectedevents2D.pdf")
 #####################################################################
-def Plot1D(data,exclude=exclude):
-    exclude(data)
+def Plot1D(data):
     mxlist = sorted(data.keys(),key=int)
     limits = {}
     for mx in mxlist:
