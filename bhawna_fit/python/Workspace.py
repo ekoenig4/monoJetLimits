@@ -7,7 +7,6 @@ class Workspace:
         self.ws = RooWorkspace(name,title)
         self.var = None
         self.varlist = RooArgList()
-        self.binlist = RooArgList()
         self.store = []
         
     def setVar(self,var):
@@ -19,7 +18,7 @@ class Workspace:
         getattr(self.ws,'import')(rhist)
         
     def makeBinList(self,procname,hist,setConst=False):
-        self.binlist = RooArgList()
+        binlist = RooArgList()
         store = []
         for i in range(1,hist.GetNbinsX() + 1):
             binv = hist[i]
@@ -35,9 +34,10 @@ class Workspace:
 
         getattr(self.ws,'import')(phist)
         getattr(self.ws,'import')(norm,RooFit.RecycleConflictNodes())
+        return binlist
     def makeConnectedBinList(procname,rhist,syst,srbinlist,crbinlist=None):
         if crbinlist == None: crbinlist = RooArgList()
-
+        store = []
         for i in range(1,rhist.GetNbinsX() + 1):
             rbinv = rhist[i]
             rerrbinv = rhist.GetBinError(i)
@@ -52,18 +52,21 @@ class Workspace:
             fobinlist.add(srbinlist[i-1])
             fobinlist.add(rbinvar)
             fobinlist.add(rerrbinvar)
+            store.append( (rbinvar,rerrbinvar) )
 
             formss = '@0/(@1*TMath::Power(1+%f,@2)' % rerrbinv/rbinv
             for j,sys in enumerate(syst):
                 if sys['var'] == None:
                     systbinss = '%s_%s_bin%i' % (procname,sys['histo'].GetName(),i)
                     systbinvar = RooRealVar(systbinss,'',0,-5.,5.)
-                    fobinlist.add(systbinvar)
-                else: fobinlist.add(sys['var'])
+                    sys['var'] = systbinvar
+                fobinlist.add(sys['var'])
+                store.add(sys['var'])
                 forms += '*(TMath::Power(1+%f,@%i))' % (sys['histo'][i],j+3)
             forms += ')'
             binvar = RooFormulaVar(binss,'',formss,RooArgList(fobinlist))
             crbinlist.add(binvar)
+            store.add(binvar)
         normss = '%s_norm' % procname
         phist = RooParametricHist(procname,'',self.var,crbinlist,rhist)
         norm = RooAddition(normss,'',crbinlist)

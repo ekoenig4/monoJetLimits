@@ -11,7 +11,6 @@ def getRegion(dir,rfile,ws):
     data_obs = dir.Get('data_obs'); data_obs.SetDirectory(0)
     ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
     
-    ws.makeBinList('data_obs_SR',data_obs)
 
 def createWorkspace():
     ws = Workspace('w','w')
