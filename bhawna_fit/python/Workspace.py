@@ -8,7 +8,7 @@ class Workspace:
         self.var = None
         self.varlist = RooArgList()
         self.binlist = RooArgList()
-        
+        self.store = []
         
     def setVar(self,var):
         self.var = var
@@ -19,12 +19,14 @@ class Workspace:
         getattr(self.ws,'import')(rhist)
         
     def makeBinList(self,procname,hist,setConst=False):
-        self.binlist.removeAll()
+        self.binlist = RooArgList()
+        store = []
         for i in range(1,hist.GetNbinsX() + 1):
             binv = hist[i]
             binss = '%s_bin%i' % (procname,i)
             if not setConst: binvar = RooRealVar(binss,'',binv,0.,1.1)
             else:            binvar = RooRealVar(binss,'',binv)
+            store.append(binvar)
             self.binlist.add(binvar)
         #####
         normss = '%s_norm' % procname
@@ -67,6 +69,9 @@ class Workspace:
         norm = RooAddition(normss,'',crbinlist)
         getattr(self.ws,'import')(phist,RooFit.RecycleConflictNodes())
         getattr(self.ws,'import')(norm,RooFit.RecycleConflictNodes())
+        
+    def Write(self): self.ws.Write()
+        
 #####
 if __name__ == "__main__":
     ws = Workspace('w','w')
@@ -80,3 +85,6 @@ if __name__ == "__main__":
     ws.addTemplate('data_obs_SR',data_obs)
 
     ws.makeBinList('data_obs_SR',data_obs)
+
+    output = TFile("workspace.root","recreate")
+    ws.Write()
