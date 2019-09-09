@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
 from ROOT import *
+from os import getenv
 from Workspace import Workspace
 
 processes = ['Mx10_Mv1000','ZJets','WJets','DiBoson','TTJets','DYJets','GJets','QCD']
 
 def main():
-    fname = "ChNemPtFrac_2016.sys.root"
+    fbase = "ChNemPtFrac_2016.sys.root"
+    cmssw_base = getenv("CMSSW_BASE")
+    fname = "%s/src/HiggsAnalysis/CombinedLimit/ZprimeLimits/Systematics/2016/%s" % (cmssw_base,fbase)
     sysfile = TFile.Open(fname)
     ws = Workspace(sysfile)
     syslist = {

@@ -1,6 +1,7 @@
 *~
 test
-Systematics/*
 Limits/*
+*/cards/
 *.pyc
 *.root
+!Systematics/*/*.root

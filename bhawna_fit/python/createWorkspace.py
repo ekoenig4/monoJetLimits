@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 from ROOT import *
+from os import getenv
 from Workspace import Workspace
 
 gSystem.Load("libHiggsAnalysisCombinedLimit.so")
@@ -18,7 +20,11 @@ def createWorkspace():
     var = RooRealVar('chnemptfrac','Ch + Nem P^{123}_{T} Fraction',0,1.1)
     ws.setVar(var)
 
-    sysfile = TFile('ChNemPtFrac_2016.sys.root')
+    
+    fbase = "ChNemPtFrac_2016.sys.root"
+    cmssw_base = getenv("CMSSW_BASE")
+    fname = "%s/src/HiggsAnalysis/CombinedLimit/ZprimeLimits/Systematics/2016/%s" % (cmssw_base,fbase)
+    sysfile = TFile(fname)
 
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')
