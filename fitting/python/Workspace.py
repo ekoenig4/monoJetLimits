@@ -17,27 +17,23 @@ class Workspace:
         rhist = RooDataHist(procname,'',self.varlist,hist)
         getattr(self.ws,'import')(rhist)
         
-    def makeBinList(self,procname,hist,setConst=False):
-        binlist = RooArgList()
-        store = []
+    def makeBinList(self,procname,hist,binlist,setConst=False):
         for i in range(1,hist.GetNbinsX() + 1):
             binv = hist[i]
             binss = '%s_bin%i' % (procname,i)
             if not setConst: binvar = RooRealVar(binss,'',binv,0.,1.1)
             else:            binvar = RooRealVar(binss,'',binv)
-            store.append(binvar)
-            self.binlist.add(binvar)
+            self.store.append(binvar)
+            binlist.add(binvar)
         #####
         normss = '%s_norm' % procname
-        phist = RooParametricHist(procname,'',self.var,self.binlist,hist)
-        norm = RooAddition(normss,'',self.binlist)
+        phist = RooParametricHist(procname,'',self.var,binlist,hist)
+        norm = RooAddition(normss,'',binlist)
 
         getattr(self.ws,'import')(phist)
         getattr(self.ws,'import')(norm,RooFit.RecycleConflictNodes())
-        return binlist
-    def makeConnectedBinList(procname,rhist,syst,srbinlist,crbinlist=None):
+    def makeConnectedBinList(self,procname,rhist,syst,srbinlist,crbinlist=None):
         if crbinlist == None: crbinlist = RooArgList()
-        store = []
         for i in range(1,rhist.GetNbinsX() + 1):
             rbinv = rhist[i]
             rerrbinv = rhist.GetBinError(i)
@@ -52,21 +48,23 @@ class Workspace:
             fobinlist.add(srbinlist[i-1])
             fobinlist.add(rbinvar)
             fobinlist.add(rerrbinvar)
-            store.append( (rbinvar,rerrbinvar) )
+            self.store.append( (rbinvar,rerrbinvar) )
 
-            formss = '@0/(@1*TMath::Power(1+%f,@2)' % rerrbinv/rbinv
+            if rbinv != 0: value = rerrbinv/rbinv
+            else:          value = 0
+            formss = '@0/(@1*TMath::Power(1+%f,@2)' % value
             for j,sys in enumerate(syst):
                 if sys['var'] == None:
                     systbinss = '%s_%s_bin%i' % (procname,sys['histo'].GetName(),i)
                     systbinvar = RooRealVar(systbinss,'',0,-5.,5.)
                     sys['var'] = systbinvar
                 fobinlist.add(sys['var'])
-                store.add(sys['var'])
-                forms += '*(TMath::Power(1+%f,@%i))' % (sys['histo'][i],j+3)
-            forms += ')'
+                self.store.append(sys['var'])
+                formss += '*(TMath::Power(1+%f,@%i))' % (sys['histo'][i],j+3)
+            formss += ')'
             binvar = RooFormulaVar(binss,'',formss,RooArgList(fobinlist))
             crbinlist.add(binvar)
-            store.add(binvar)
+            self.store.append(binvar)
         normss = '%s_norm' % procname
         phist = RooParametricHist(procname,'',self.var,crbinlist,rhist)
         norm = RooAddition(normss,'',crbinlist)
