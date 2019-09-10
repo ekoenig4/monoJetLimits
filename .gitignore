@@ -4,4 +4,3 @@ Limits/*
 cards
 *.pyc
 *.root
-!Systematics/*/*.root
