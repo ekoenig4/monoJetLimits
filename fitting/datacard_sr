@@ -128,3 +128,6 @@ woverz_sr_bin47_Runc param 0 1
 woverz_sr_bin48_Runc param 0 1
 woverz_sr_bin49_Runc param 0 1
 woverz_sr_bin50_Runc param 0 1
+woverz_sr_ecal       param 0 1
+woverz_sr_ewk        param 0 1
+woverz_sr_jes        param 0 1

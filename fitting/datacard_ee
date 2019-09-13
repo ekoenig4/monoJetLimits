@@ -1,0 +1,130 @@
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------
+shapes data_obs       ee   workspace.root w:data_obs_ee  w:data_obs_ee_$SYSTEMATIC
+shapes WJets          ee   workspace.root w:WJets_ee     w:WJets_ee_$SYSTEMATIC
+shapes DiBoson        ee   workspace.root w:DiBoson_ee   w:DiBoson_ee_$SYSTEMATIC
+shapes GJets          ee   workspace.root w:GJets_ee     w:GJets_ee_$SYSTEMATIC
+shapes TTJets         ee   workspace.root w:TTJets_ee    w:TTJets_ee_$SYSTEMATIC
+shapes DYJets         ee   workspace.root w:DYJets_ee    w:DYJets_ee_$SYSTEMATIC
+shapes QCD            ee   workspace.root w:QCD_ee       w:QCD_ee_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------
+bin             ee
+observation     -1
+----------------------------------------------------------------------------------------------------
+bin                           ee                  ee                  ee                  ee                  ee                  ee                  
+process                       WJets               DiBoson             GJets               TTJets              DYJets              QCD                 
+process                       1                   2                   3                   4                   5                   6                   
+rate                          -1                  -1                  -1                  -1                  -1                  -1                  
+----------------------------------------------------------------------------------------------------
+EWK                 lnN       1.15                -                   -                   -                   -                   -                   
+bjet_veto           lnN       1.02                1.02                1.02                1.02                1.02                1.02                
+ecal                shape     1                   1                   1                   1                   1                   -                   
+eeBin1              shape     1                   1                   1                   1                   1                   1                   
+eeBin2              shape     1                   1                   1                   1                   1                   1                   
+eeBin3              shape     1                   1                   1                   1                   1                   1                   
+eeBin4              shape     1                   1                   1                   1                   1                   1                   
+eeBin5              shape     1                   1                   1                   1                   1                   1                   
+eeBin6              shape     1                   1                   1                   1                   1                   1                   
+eeBin7              shape     1                   1                   1                   1                   1                   1                   
+eeBin8              shape     1                   1                   1                   1                   1                   1                   
+eeBin9              shape     1                   1                   1                   1                   1                   1                   
+eeBin10             shape     1                   1                   1                   1                   1                   1                   
+eeBin11             shape     1                   1                   1                   1                   1                   1                   
+eeBin12             shape     1                   1                   1                   1                   1                   1                   
+eeBin13             shape     1                   1                   1                   1                   1                   1                   
+eeBin14             shape     1                   1                   1                   1                   1                   1                   
+eeBin15             shape     1                   1                   1                   1                   1                   1                   
+eeBin16             shape     1                   1                   1                   1                   1                   1                   
+eeBin17             shape     1                   1                   1                   1                   1                   1                   
+eeBin18             shape     1                   1                   1                   1                   1                   1                   
+eeBin19             shape     1                   1                   1                   1                   1                   1                   
+eeBin20             shape     1                   1                   1                   1                   1                   1                   
+eeBin21             shape     1                   1                   1                   1                   1                   1                   
+eeBin22             shape     1                   1                   1                   1                   1                   1                   
+eeBin23             shape     1                   1                   1                   1                   1                   1                   
+eeBin24             shape     1                   1                   1                   1                   1                   1                   
+eeBin25             shape     1                   1                   1                   1                   1                   1                   
+eeBin26             shape     1                   1                   1                   1                   1                   1                   
+eeBin27             shape     1                   1                   1                   1                   1                   1                   
+eeBin28             shape     1                   1                   1                   1                   1                   1                   
+eeBin29             shape     1                   1                   1                   1                   1                   1                   
+eeBin30             shape     1                   1                   1                   1                   1                   1                   
+eeBin31             shape     1                   1                   1                   1                   1                   1                   
+eeBin32             shape     1                   1                   1                   1                   1                   1                   
+eeBin33             shape     1                   1                   1                   1                   1                   1                   
+eeBin34             shape     1                   1                   1                   1                   1                   1                   
+eeBin35             shape     1                   1                   1                   1                   1                   1                   
+eeBin36             shape     1                   1                   1                   1                   1                   1                   
+eeBin37             shape     1                   1                   1                   1                   1                   1                   
+eeBin38             shape     1                   1                   1                   1                   1                   1                   
+eeBin39             shape     1                   1                   1                   1                   1                   1                   
+eeBin40             shape     1                   1                   1                   1                   1                   1                   
+eeBin41             shape     1                   1                   1                   1                   1                   1                   
+eeBin42             shape     1                   1                   1                   1                   1                   1                   
+eeBin43             shape     1                   1                   1                   1                   1                   1                   
+eeBin44             shape     1                   1                   1                   1                   1                   1                   
+eeBin45             shape     1                   1                   1                   1                   1                   1                   
+eeBin46             shape     1                   1                   1                   1                   1                   1                   
+eeBin47             shape     1                   1                   1                   1                   1                   1                   
+eeBin48             shape     1                   1                   1                   1                   1                   1                   
+eeBin49             shape     1                   1                   1                   1                   1                   1                   
+eeBin50             shape     1                   1                   1                   1                   1                   1                   
+et_trigg            lnN       1.01                1.01                1.01                1.01                1.01                1.01                
+jes                 shape     1                   1                   1                   1                   1                   -                   
+lumi                lnN       1.026               1.026               1.026               1.026               1.026               1.026               
+----------------------------------------------------------------------------------------------------
+ZeetoZnn_bin1_Runc   param 0 1
+ZeetoZnn_bin2_Runc   param 0 1
+ZeetoZnn_bin3_Runc   param 0 1
+ZeetoZnn_bin4_Runc   param 0 1
+ZeetoZnn_bin5_Runc   param 0 1
+ZeetoZnn_bin6_Runc   param 0 1
+ZeetoZnn_bin7_Runc   param 0 1
+ZeetoZnn_bin8_Runc   param 0 1
+ZeetoZnn_bin9_Runc   param 0 1
+ZeetoZnn_bin10_Runc  param 0 1
+ZeetoZnn_bin11_Runc  param 0 1
+ZeetoZnn_bin12_Runc  param 0 1
+ZeetoZnn_bin13_Runc  param 0 1
+ZeetoZnn_bin14_Runc  param 0 1
+ZeetoZnn_bin15_Runc  param 0 1
+ZeetoZnn_bin16_Runc  param 0 1
+ZeetoZnn_bin17_Runc  param 0 1
+ZeetoZnn_bin18_Runc  param 0 1
+ZeetoZnn_bin19_Runc  param 0 1
+ZeetoZnn_bin20_Runc  param 0 1
+ZeetoZnn_bin21_Runc  param 0 1
+ZeetoZnn_bin22_Runc  param 0 1
+ZeetoZnn_bin23_Runc  param 0 1
+ZeetoZnn_bin24_Runc  param 0 1
+ZeetoZnn_bin25_Runc  param 0 1
+ZeetoZnn_bin26_Runc  param 0 1
+ZeetoZnn_bin27_Runc  param 0 1
+ZeetoZnn_bin28_Runc  param 0 1
+ZeetoZnn_bin29_Runc  param 0 1
+ZeetoZnn_bin30_Runc  param 0 1
+ZeetoZnn_bin31_Runc  param 0 1
+ZeetoZnn_bin32_Runc  param 0 1
+ZeetoZnn_bin33_Runc  param 0 1
+ZeetoZnn_bin34_Runc  param 0 1
+ZeetoZnn_bin35_Runc  param 0 1
+ZeetoZnn_bin36_Runc  param 0 1
+ZeetoZnn_bin37_Runc  param 0 1
+ZeetoZnn_bin38_Runc  param 0 1
+ZeetoZnn_bin39_Runc  param 0 1
+ZeetoZnn_bin40_Runc  param 0 1
+ZeetoZnn_bin41_Runc  param 0 1
+ZeetoZnn_bin42_Runc  param 0 1
+ZeetoZnn_bin43_Runc  param 0 1
+ZeetoZnn_bin44_Runc  param 0 1
+ZeetoZnn_bin45_Runc  param 0 1
+ZeetoZnn_bin46_Runc  param 0 1
+ZeetoZnn_bin47_Runc  param 0 1
+ZeetoZnn_bin48_Runc  param 0 1
+ZeetoZnn_bin49_Runc  param 0 1
+ZeetoZnn_bin50_Runc  param 0 1
+ZeetoZnn_ecal        param 0 1
+ZeetoZnn_ewk         param 0 1
+ZeetoZnn_jes         param 0 1
