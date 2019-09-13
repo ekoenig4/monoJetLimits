@@ -20,8 +20,8 @@ def addStat(dir,ws,hs):
         up[ibin] = up[ibin] + up.GetBinError(ibin)
         dn[ibin] = max( 0.01*dn[ibin],dn[ibin] - dn.GetBinError(ibin))
 
-        ws.addTemplate("%s_%s_%s%sBin%iUp" % (hs.GetName(),dir.GetName(),hs.GetName(),dir.GetName(),ibin),up)
-        ws.addTemplate("%s_%s_%s%sBin%iDown" % (hs.GetName(),dir.GetName(),hs.GetName(),dir.GetName(),ibin),dn)
+        ws.addTemplate("%s_%s_%sBin%iUp" % (hs.GetName(),dir.GetName(),dir.GetName(),ibin),up)
+        ws.addTemplate("%s_%s_%sBin%iDown" % (hs.GetName(),dir.GetName(),dir.GetName(),ibin),dn)
 
 def addMC(dir,ws,variations):
     for mc in mclist:
@@ -63,8 +63,8 @@ def WZLink(dir,ws,variations,connect):
         var = RooRealVar("woverz_%s_%s" % (dir.GetName(),variation),"",0.,-5.,-5.)
         syslist.append( {'var':var,'histo':woverz_sh} )
     wbinlist = RooArgList()
-    if connect: ws.makeConnectedBinList("WJets_%s" % dir.GetName(),wjet,syslist,zbinlist,wbinlist)
-    else:       ws.makeBinList("WJets_%s" % dir.GetName(),wjet,wbinlist)
+    if connect: ws.makeConnectedBinList("woverz_%s" % dir.GetName(),wjet,syslist,zbinlist,wbinlist)
+    else:       ws.makeBinList("woverz_%s" % dir.GetName(),wjet,wbinlist)
     return zbinlist,wbinlist
 
 def getSignalRegion(dir,rfile,ws,signal=None):
