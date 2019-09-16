@@ -5,9 +5,11 @@ class Process:
         self.ID = ID
         self.rate = -1
         self.shape = shape
-        self.nuisance = {}
-    def addNuisance(self,name,rate): self.nuisance[name] = rate
+        self.nuisances = {}
+    def addNuisance(self,name,rate): self.nuisances[name] = rate
     def hasShape(self): return self.shape != (None,None)
+    def removeNuisance(self,name):
+        if name in self.nuisances: self.nuisances.pop(name)
 
 import re
 def sort_nicely( l ):
@@ -41,10 +43,19 @@ class Datacard:
         self.bkgs.append(proc)
         self.processes[proc] = bkg
     def addNuisance(self,proc,nuis,ntype,rate):
+        if proc not in self.processes: return
         if nuis not in self.nuisances: self.nuisances[nuis] = ntype
         self.processes[proc].addNuisance(nuis,rate)
     def addTransfer(self,transfer):
         self.transfers.append(transfer)
+
+    def removeNuisance(self,proc,nuis):
+        if proc not in self.processes: return
+        if nuis not in self.nuisances: return
+        self.processes[proc].removeNuisance(nuis)
+        for name,process in self.processes.iteritems():
+            if nuis in process.nuisances: return
+        self.nuisances.pop(nuis)
 
     def write(self,fname=None):
         if fname == None: fname = 'datacard_%s' % self.channel
@@ -56,16 +67,16 @@ class Datacard:
             card.write('-'*self.ndash+'\n')
 
             #----Shape----#
-            def writeShape(process):
+            def writeShape(process,sys=True):
                 line = 'shapes '
-                line += "{0:<15}".format(process.name)
+                line += "{0:<20}".format(process.name)
                 line += "{0:<5}" .format(self.channel)
-                line += "{0:<15}".format(process.shape[0])
-                line += "{0:<15}".format(process.shape[1])
-                line += process.shape[1]+'_$SYSTEMATIC'
+                line += "{0:<20}".format(process.shape[0])
+                line += "{0:<20}".format(process.shape[1])
+                if sys: line += process.shape[1]+'_$SYSTEMATIC'
                 return line + '\n'
             if self.data_obs.hasShape():
-                card.write( writeShape(self.data_obs) )
+                card.write( writeShape(self.data_obs,sys=False) )
             for proc in self.signals + self.bkgs:
                 process = self.processes[proc]
                 if process.hasShape():
@@ -99,8 +110,8 @@ class Datacard:
                 line += "{0:<10}".format(self.nuisances[nuis])
                 for proc in proclist:
                     process = self.processes[proc]
-                    if nuis in process.nuisance:line += "{0:<20}".format(process.nuisance[nuis])
-                    else:                       line += "{0:<20}".format('-')
+                    if nuis in process.nuisances:line += "{0:<20}".format(process.nuisances[nuis])
+                    else:                        line += "{0:<20}".format('-')
                 card.write(line+'\n')
             card.write('-'*self.ndash+'\n')
 

@@ -2,6 +2,7 @@
 from ROOT import *
 from os import getenv
 from Workspace import Workspace
+import re
 
 gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
@@ -10,21 +11,25 @@ mclist = ['ZJets','WJets','DYJets','TTJets','DiBoson','GJets','QCD']
 def validShape(up,dn):
     return any( up[ibin] != dn[ibin] for ibin in range(1,up.GetNbinsX()+1) )
 
-def validHisto(hs):
-    return hs.Integral() > 0
+def validHisto(hs,total=0,threshold=0.2):
+    return hs.Integral() > threshold*total
 
-def addStat(dir,ws,hs):
+def addStat(dir,ws,hs,name=None):
+    if name == None: name = hs.GetName()
     for ibin in range(1,hs.GetNbinsX()+1):
         up = hs.Clone("%s_%s_histBinUp" % (hs.GetName(),dir.GetName()))
         dn = hs.Clone("%s_%s_histBinDown" % (hs.GetName(),dir.GetName()))
         up[ibin] = up[ibin] + up.GetBinError(ibin)
         dn[ibin] = max( 0.01*dn[ibin],dn[ibin] - dn.GetBinError(ibin))
 
-        ws.addTemplate("%s_%s_%sBin%iUp" % (hs.GetName(),dir.GetName(),dir.GetName(),ibin),up)
-        ws.addTemplate("%s_%s_%sBin%iDown" % (hs.GetName(),dir.GetName(),dir.GetName(),ibin),dn)
+        ws.addTemplate("%s_%s_%s%sBin%iUp" % (hs.GetName(),dir.GetName(),name,dir.GetName(),ibin),up)
+        ws.addTemplate("%s_%s_%s%sBin%iDown" % (hs.GetName(),dir.GetName(),name,dir.GetName(),ibin),dn)
 
 def addMC(dir,ws,variations):
+    print 'Processing %s MC' % dir.GetName()
+    total_bkg = dir.Get('sumOfBkg').Integral()
     for mc in mclist:
+        print 'Adding %s Process' % mc
         mc_hs = dir.Get(mc)
         if not validHisto(mc_hs): continue
         ws.addTemplate("%s_%s" % (mc,dir.GetName()),dir.Get(mc))
@@ -34,6 +39,7 @@ def addMC(dir,ws,variations):
             if not validShape(mc_up,mc_dn): continue
             ws.addTemplate("%s_%s_%sUp" % (mc,dir.GetName(),variation),mc_up)
             ws.addTemplate("%s_%s_%sDown" % (mc,dir.GetName(),variation),mc_dn)
+        if not validHisto(mc_hs,total=total_bkg): continue
         addStat(dir,ws,mc_hs)
 
 def getFractionalShift(norm,up,dn):
@@ -48,6 +54,7 @@ def getFractionalShift(norm,up,dn):
     return sh
 
 def WZLink(dir,ws,variations,connect):
+    print 'Processing %s Transfer Factors' % dir.GetName()
     zjet = dir.Get("ZJets")
     wjet = dir.Get("WJets")
     zbinlist = RooArgList()
@@ -56,18 +63,40 @@ def WZLink(dir,ws,variations,connect):
     woverz_hs = wzdir.Get("WZlink")
     syslist = []
     for variation in variations:
-        woverz_up = wzdir.Get("WZlink_%sUp" % variation)
-        woverz_dn = wzdir.Get("WZlink_%sDown" % variation)
-        if not validShape(woverz_up,woverz_dn): continue
-        woverz_sh = getFractionalShift(woverz_hs,woverz_up,woverz_dn)
-        var = RooRealVar("woverz_%s_%s" % (dir.GetName(),variation),"",0.,-5.,-5.)
-        syslist.append( {'var':var,'histo':woverz_sh} )
+        if variation == 'jes': continue
+        for process in ('WJets','ZJets'):
+            woverz_up = wzdir.Get("WZlink_%sUp_%s" % (variation,process))
+            woverz_dn = wzdir.Get("WZlink_%sDown_%s" % (variation,process))
+            if not validShape(woverz_up,woverz_dn): continue
+            woverz_sh = getFractionalShift(woverz_hs,woverz_up,woverz_dn)
+            var = RooRealVar("woverz_%s_%s_%s" % (dir.GetName(),process,variation),"",0.,-5.,-5.)
+            syslist.append( {'var':var,'histo':woverz_sh} )
     wbinlist = RooArgList()
-    if connect: ws.makeConnectedBinList("woverz_%s" % dir.GetName(),wjet,syslist,zbinlist,wbinlist)
-    else:       ws.makeBinList("woverz_%s" % dir.GetName(),wjet,wbinlist)
+    if connect: ws.makeConnectedBinList("WJets_%s" % dir.GetName(),wjet,syslist,zbinlist,wbinlist)
+    else:       ws.makeBinList("WJets_%s" % dir.GetName(),wjet,wbinlist)
     return zbinlist,wbinlist
 
+def addSignal(dir,ws,variations,signals,isScaled=False):
+    print 'Processing Signal'
+    if type(signals) != list: signals = [signals]
+    for signal in signals:
+        signal_hs = dir.Get(signal)
+        if isScaled:
+            signal_yield = signal_hs.Integral()
+            signal_multi = 80.0 / signal_yield # Normalize so that combine limits are close to 1
+            signal_hs.Scale(signal_multi)
+        ws.addTemplate('%s_%s' % (signal_hs.GetName(),dir.GetName()),signal_hs)
+        for variation in variations:
+            signal_up = dir.Get("%s_%sUp" % (signal,variation))
+            signal_dn = dir.Get("%s_%sDown" % (signal,variation))
+            if not validShape(signal_up,signal_dn): continue
+            ws.addTemplate("%s_%s_%sUp" % (signal_hs.GetName(),dir.GetName(),variation),signal_up)
+            ws.addTemplate("%s_%s_%sDown" % (signal_hs.GetName(),dir.GetName(),variation),signal_dn)
+        addStat(dir,ws,signal_hs,name='signal')
+            
+
 def getSignalRegion(dir,rfile,ws,signal=None):
+    print 'Processing sr'
     dir.cd()
 
     variations = [ key.GetName().replace('ZJets_','').replace('Up','')
@@ -80,11 +109,9 @@ def getSignalRegion(dir,rfile,ws,signal=None):
     nbins = data_obs.GetNbinsX()
 
     if signal != None:
-        signal_hs = dir.Get(signal)
-        signal_yield = signal_hs.Integral()
-        signal_multi = 80.0 / signal_yield # Normalize so that combine limits are close to 1
-        signal_hs.Scale(signal_multi)
-        ws.addTemplate('signal_%s' % dir.GetName(),signal_hs)
+        signals = [ key.GetName() for key in dir.GetListOfKeys() if re.search(signal,key.GetName()) ]
+        addSignal(dir,ws,variations,signals)
+        
 
     zbinlist,wbinlist = WZLink(dir,ws,variations,True)
 
@@ -93,6 +120,7 @@ def getSignalRegion(dir,rfile,ws,signal=None):
     return zbinlist,wbinlist
 
 def getLLTransfer(dir,ws,variations,zbinlist):
+    print 'Processing %s Transfer Factors' % dir.GetName()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
     covers_hs = tfdir.Get("ZJets")
     syslist = []
@@ -106,6 +134,7 @@ def getLLTransfer(dir,ws,variations,zbinlist):
     ws.makeConnectedBinList("Z%stoZnn" % dir.GetName(),covers_hs,syslist,zbinlist)
 
 def getLLCR(dir,rfile,ws,zbinlist):
+    print 'Processing %s' % dir.GetName()
     dir.cd()
 
     variations = [ key.GetName().replace('ZJets_','').replace('Up','')
@@ -120,6 +149,7 @@ def getLLCR(dir,rfile,ws,zbinlist):
     addMC(dir,ws,variations)
 
 def getLTransfer(dir,ws,variations,wbinlist):
+    print 'Processing %s Transfer Factors' % dir.GetName()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
     covers_hs = tfdir.Get("WJets")
     syslist = []
@@ -133,6 +163,7 @@ def getLTransfer(dir,ws,variations,wbinlist):
     ws.makeConnectedBinList("W%sntoW%sn" % (dir.GetName(),dir.GetName()),covers_hs,syslist,wbinlist)            
 
 def getLCR(dir,rfile,ws,wbinlist):
+    print 'Processing %s' % dir.GetName()
     dir.cd()
 
     variations = [ key.GetName().replace('ZJets_','').replace('Up','')
@@ -162,7 +193,7 @@ def createWorkspace():
 
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')
-    zbinlist,wbinlist = getSignalRegion(dir_sr,sysfile,ws,signal="Mx10_Mv1000")
+    zbinlist,wbinlist = getSignalRegion(dir_sr,sysfile,ws,signal=r"Mx\d*_Mv\d*$")
 
     #-----Double Muon-----#
     dir_mm = sysfile.GetDirectory('mm')
