@@ -37,23 +37,13 @@ et_trigg            lnN       1.01                1.01                1.01      
 jes                 shape     -                   -                   1                   1                   1                   1                   1                   
 lumi                lnN       1.026               1.026               1.026               1.026               1.026               1.026               1.026               
 ----------------------------------------------------------------------------------------------------
-WmntoWmn_bin1_Runc   param 0 1
-WmntoWmn_bin2_Runc   param 0 1
-WmntoWmn_bin3_Runc   param 0 1
-WmntoWmn_bin4_Runc   param 0 1
-WmntoWmn_bin5_Runc   param 0 1
-WmntoWmn_bin6_Runc   param 0 1
-WmntoWmn_bin7_Runc   param 0 1
-WmntoWmn_bin8_Runc   param 0 1
-WmntoWmn_bin9_Runc   param 0 1
-WmntoWmn_bin10_Runc  param 0 1
-r_WmntoWmn_bin1      param 0 1
-r_WmntoWmn_bin2      param 0 1
-r_WmntoWmn_bin3      param 0 1
-r_WmntoWmn_bin4      param 0 1
-r_WmntoWmn_bin5      param 0 1
-r_WmntoWmn_bin6      param 0 1
-r_WmntoWmn_bin7      param 0 1
-r_WmntoWmn_bin8      param 0 1
-r_WmntoWmn_bin9      param 0 1
-r_WmntoWmn_bin10     param 0 1
+WJets_m_bin1_Runc    param 0 1
+WJets_m_bin2_Runc    param 0 1
+WJets_m_bin3_Runc    param 0 1
+WJets_m_bin4_Runc    param 0 1
+WJets_m_bin5_Runc    param 0 1
+WJets_m_bin6_Runc    param 0 1
+WJets_m_bin7_Runc    param 0 1
+WJets_m_bin8_Runc    param 0 1
+WJets_m_bin9_Runc    param 0 1
+WJets_m_bin10_Runc   param 0 1

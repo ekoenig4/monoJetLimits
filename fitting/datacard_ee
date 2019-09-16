@@ -35,26 +35,13 @@ et_trigg            lnN       1.01                1.01                1.01      
 jes                 shape     -                   1                   1                   1                   1                   -                   
 lumi                lnN       1.026               1.026               1.026               1.026               1.026               1.026               
 ----------------------------------------------------------------------------------------------------
-ZeetoZnn_bin1_Runc   param 0 1
-ZeetoZnn_bin2_Runc   param 0 1
-ZeetoZnn_bin3_Runc   param 0 1
-ZeetoZnn_bin4_Runc   param 0 1
-ZeetoZnn_bin5_Runc   param 0 1
-ZeetoZnn_bin6_Runc   param 0 1
-ZeetoZnn_bin7_Runc   param 0 1
-ZeetoZnn_bin8_Runc   param 0 1
-ZeetoZnn_bin9_Runc   param 0 1
-ZeetoZnn_bin10_Runc  param 0 1
-ZeetoZnn_ecal        param 0 1
-ZeetoZnn_ewk         param 0 1
-ZeetoZnn_jes         param 0 1
-r_ZeetoZnn_bin1      param 0 1
-r_ZeetoZnn_bin2      param 0 1
-r_ZeetoZnn_bin3      param 0 1
-r_ZeetoZnn_bin4      param 0 1
-r_ZeetoZnn_bin5      param 0 1
-r_ZeetoZnn_bin6      param 0 1
-r_ZeetoZnn_bin7      param 0 1
-r_ZeetoZnn_bin8      param 0 1
-r_ZeetoZnn_bin9      param 0 1
-r_ZeetoZnn_bin10     param 0 1
+DYJets_ee_bin1_Runc  param 0 1
+DYJets_ee_bin2_Runc  param 0 1
+DYJets_ee_bin3_Runc  param 0 1
+DYJets_ee_bin4_Runc  param 0 1
+DYJets_ee_bin5_Runc  param 0 1
+DYJets_ee_bin6_Runc  param 0 1
+DYJets_ee_bin7_Runc  param 0 1
+DYJets_ee_bin8_Runc  param 0 1
+DYJets_ee_bin9_Runc  param 0 1
+DYJets_ee_bin10_Runc param 0 1

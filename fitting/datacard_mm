@@ -33,26 +33,13 @@ et_trigg            lnN       1.01                1.01                1.01      
 jes                 shape     -                   1                   1                   1                   
 lumi                lnN       1.026               1.026               1.026               1.026               
 ----------------------------------------------------------------------------------------------------
-ZmmtoZnn_bin1_Runc   param 0 1
-ZmmtoZnn_bin2_Runc   param 0 1
-ZmmtoZnn_bin3_Runc   param 0 1
-ZmmtoZnn_bin4_Runc   param 0 1
-ZmmtoZnn_bin5_Runc   param 0 1
-ZmmtoZnn_bin6_Runc   param 0 1
-ZmmtoZnn_bin7_Runc   param 0 1
-ZmmtoZnn_bin8_Runc   param 0 1
-ZmmtoZnn_bin9_Runc   param 0 1
-ZmmtoZnn_bin10_Runc  param 0 1
-ZmmtoZnn_ecal        param 0 1
-ZmmtoZnn_ewk         param 0 1
-ZmmtoZnn_jes         param 0 1
-r_ZmmtoZnn_bin1      param 0 1
-r_ZmmtoZnn_bin2      param 0 1
-r_ZmmtoZnn_bin3      param 0 1
-r_ZmmtoZnn_bin4      param 0 1
-r_ZmmtoZnn_bin5      param 0 1
-r_ZmmtoZnn_bin6      param 0 1
-r_ZmmtoZnn_bin7      param 0 1
-r_ZmmtoZnn_bin8      param 0 1
-r_ZmmtoZnn_bin9      param 0 1
-r_ZmmtoZnn_bin10     param 0 1
+DYJets_mm_bin1_Runc  param 0 1
+DYJets_mm_bin2_Runc  param 0 1
+DYJets_mm_bin3_Runc  param 0 1
+DYJets_mm_bin4_Runc  param 0 1
+DYJets_mm_bin5_Runc  param 0 1
+DYJets_mm_bin6_Runc  param 0 1
+DYJets_mm_bin7_Runc  param 0 1
+DYJets_mm_bin8_Runc  param 0 1
+DYJets_mm_bin9_Runc  param 0 1
+DYJets_mm_bin10_Runc param 0 1

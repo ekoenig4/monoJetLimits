@@ -37,23 +37,13 @@ et_trigg            lnN       1.01                1.01                1.01      
 jes                 shape     -                   -                   1                   1                   1                   1                   1                   
 lumi                lnN       1.026               1.026               1.026               1.026               1.026               1.026               1.026               
 ----------------------------------------------------------------------------------------------------
-WentoWen_bin1_Runc   param 0 1
-WentoWen_bin2_Runc   param 0 1
-WentoWen_bin3_Runc   param 0 1
-WentoWen_bin4_Runc   param 0 1
-WentoWen_bin5_Runc   param 0 1
-WentoWen_bin6_Runc   param 0 1
-WentoWen_bin7_Runc   param 0 1
-WentoWen_bin8_Runc   param 0 1
-WentoWen_bin9_Runc   param 0 1
-WentoWen_bin10_Runc  param 0 1
-r_WentoWen_bin1      param 0 1
-r_WentoWen_bin2      param 0 1
-r_WentoWen_bin3      param 0 1
-r_WentoWen_bin4      param 0 1
-r_WentoWen_bin5      param 0 1
-r_WentoWen_bin6      param 0 1
-r_WentoWen_bin7      param 0 1
-r_WentoWen_bin8      param 0 1
-r_WentoWen_bin9      param 0 1
-r_WentoWen_bin10     param 0 1
+WJets_e_bin1_Runc    param 0 1
+WJets_e_bin2_Runc    param 0 1
+WJets_e_bin3_Runc    param 0 1
+WJets_e_bin4_Runc    param 0 1
+WJets_e_bin5_Runc    param 0 1
+WJets_e_bin6_Runc    param 0 1
+WJets_e_bin7_Runc    param 0 1
+WJets_e_bin8_Runc    param 0 1
+WJets_e_bin9_Runc    param 0 1
+WJets_e_bin10_Runc   param 0 1
