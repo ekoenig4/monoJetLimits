@@ -2,11 +2,11 @@ imax * number of bins
 jmax * number of processes minus 1
 kmax * number of nuisance parameters
 ----------------------------------------------------------------------------------------------------
-shapes data_obs       mm   workspace.root w:data_obs_mm  w:data_obs_mm_$SYSTEMATIC
-shapes WJets          mm   workspace.root w:WJets_mm     w:WJets_mm_$SYSTEMATIC
-shapes DiBoson        mm   workspace.root w:DiBoson_mm   w:DiBoson_mm_$SYSTEMATIC
-shapes TTJets         mm   workspace.root w:TTJets_mm    w:TTJets_mm_$SYSTEMATIC
-shapes DYJets         mm   workspace.root w:DYJets_mm    w:DYJets_mm_$SYSTEMATIC
+shapes data_obs            mm   workspace.root      w:data_obs_mm       
+shapes WJets               mm   workspace.root      w:WJets_mm          w:WJets_mm_$SYSTEMATIC
+shapes DiBoson             mm   workspace.root      w:DiBoson_mm        w:DiBoson_mm_$SYSTEMATIC
+shapes TTJets              mm   workspace.root      w:TTJets_mm         w:TTJets_mm_$SYSTEMATIC
+shapes DYJets              mm   workspace.root      w:DYJets_mm         w:DYJets_mm_$SYSTEMATIC
 ----------------------------------------------------------------------------------------------------
 bin             mm
 observation     -1
@@ -16,62 +16,22 @@ process                       WJets               DiBoson             TTJets    
 process                       1                   2                   3                   4                   
 rate                          -1                  -1                  -1                  -1                  
 ----------------------------------------------------------------------------------------------------
-EWK                 lnN       1.15                -                   -                   -                   
+DYJetsmmBin1        shape     -                   -                   -                   1                   
+DYJetsmmBin2        shape     -                   -                   -                   1                   
+DYJetsmmBin3        shape     -                   -                   -                   1                   
+DYJetsmmBin4        shape     -                   -                   -                   1                   
+DYJetsmmBin5        shape     -                   -                   -                   1                   
+DYJetsmmBin6        shape     -                   -                   -                   1                   
+DYJetsmmBin7        shape     -                   -                   -                   1                   
+DYJetsmmBin8        shape     -                   -                   -                   1                   
+DYJetsmmBin9        shape     -                   -                   -                   1                   
+DYJetsmmBin10       shape     -                   -                   -                   1                   
+WJets_EWK           lnN       1.15                -                   -                   -                   
 bjet_veto           lnN       1.02                1.02                1.02                1.02                
 ecal                shape     1                   1                   1                   1                   
 et_trigg            lnN       1.01                1.01                1.01                1.01                
-jes                 shape     1                   1                   1                   1                   
+jes                 shape     -                   1                   1                   1                   
 lumi                lnN       1.026               1.026               1.026               1.026               
-mmBin1              shape     1                   1                   1                   1                   
-mmBin2              shape     1                   1                   1                   1                   
-mmBin3              shape     1                   1                   1                   1                   
-mmBin4              shape     1                   1                   1                   1                   
-mmBin5              shape     1                   1                   1                   1                   
-mmBin6              shape     1                   1                   1                   1                   
-mmBin7              shape     1                   1                   1                   1                   
-mmBin8              shape     1                   1                   1                   1                   
-mmBin9              shape     1                   1                   1                   1                   
-mmBin10             shape     1                   1                   1                   1                   
-mmBin11             shape     1                   1                   1                   1                   
-mmBin12             shape     1                   1                   1                   1                   
-mmBin13             shape     1                   1                   1                   1                   
-mmBin14             shape     1                   1                   1                   1                   
-mmBin15             shape     1                   1                   1                   1                   
-mmBin16             shape     1                   1                   1                   1                   
-mmBin17             shape     1                   1                   1                   1                   
-mmBin18             shape     1                   1                   1                   1                   
-mmBin19             shape     1                   1                   1                   1                   
-mmBin20             shape     1                   1                   1                   1                   
-mmBin21             shape     1                   1                   1                   1                   
-mmBin22             shape     1                   1                   1                   1                   
-mmBin23             shape     1                   1                   1                   1                   
-mmBin24             shape     1                   1                   1                   1                   
-mmBin25             shape     1                   1                   1                   1                   
-mmBin26             shape     1                   1                   1                   1                   
-mmBin27             shape     1                   1                   1                   1                   
-mmBin28             shape     1                   1                   1                   1                   
-mmBin29             shape     1                   1                   1                   1                   
-mmBin30             shape     1                   1                   1                   1                   
-mmBin31             shape     1                   1                   1                   1                   
-mmBin32             shape     1                   1                   1                   1                   
-mmBin33             shape     1                   1                   1                   1                   
-mmBin34             shape     1                   1                   1                   1                   
-mmBin35             shape     1                   1                   1                   1                   
-mmBin36             shape     1                   1                   1                   1                   
-mmBin37             shape     1                   1                   1                   1                   
-mmBin38             shape     1                   1                   1                   1                   
-mmBin39             shape     1                   1                   1                   1                   
-mmBin40             shape     1                   1                   1                   1                   
-mmBin41             shape     1                   1                   1                   1                   
-mmBin42             shape     1                   1                   1                   1                   
-mmBin43             shape     1                   1                   1                   1                   
-mmBin44             shape     1                   1                   1                   1                   
-mmBin45             shape     1                   1                   1                   1                   
-mmBin46             shape     1                   1                   1                   1                   
-mmBin47             shape     1                   1                   1                   1                   
-mmBin48             shape     1                   1                   1                   1                   
-mmBin49             shape     1                   1                   1                   1                   
-mmBin50             shape     1                   1                   1                   1                   
 ----------------------------------------------------------------------------------------------------
 ZmmtoZnn_bin1_Runc   param 0 1
 ZmmtoZnn_bin2_Runc   param 0 1
@@ -83,46 +43,16 @@ ZmmtoZnn_bin7_Runc   param 0 1
 ZmmtoZnn_bin8_Runc   param 0 1
 ZmmtoZnn_bin9_Runc   param 0 1
 ZmmtoZnn_bin10_Runc  param 0 1
-ZmmtoZnn_bin11_Runc  param 0 1
-ZmmtoZnn_bin12_Runc  param 0 1
-ZmmtoZnn_bin13_Runc  param 0 1
-ZmmtoZnn_bin14_Runc  param 0 1
-ZmmtoZnn_bin15_Runc  param 0 1
-ZmmtoZnn_bin16_Runc  param 0 1
-ZmmtoZnn_bin17_Runc  param 0 1
-ZmmtoZnn_bin18_Runc  param 0 1
-ZmmtoZnn_bin19_Runc  param 0 1
-ZmmtoZnn_bin20_Runc  param 0 1
-ZmmtoZnn_bin21_Runc  param 0 1
-ZmmtoZnn_bin22_Runc  param 0 1
-ZmmtoZnn_bin23_Runc  param 0 1
-ZmmtoZnn_bin24_Runc  param 0 1
-ZmmtoZnn_bin25_Runc  param 0 1
-ZmmtoZnn_bin26_Runc  param 0 1
-ZmmtoZnn_bin27_Runc  param 0 1
-ZmmtoZnn_bin28_Runc  param 0 1
-ZmmtoZnn_bin29_Runc  param 0 1
-ZmmtoZnn_bin30_Runc  param 0 1
-ZmmtoZnn_bin31_Runc  param 0 1
-ZmmtoZnn_bin32_Runc  param 0 1
-ZmmtoZnn_bin33_Runc  param 0 1
-ZmmtoZnn_bin34_Runc  param 0 1
-ZmmtoZnn_bin35_Runc  param 0 1
-ZmmtoZnn_bin36_Runc  param 0 1
-ZmmtoZnn_bin37_Runc  param 0 1
-ZmmtoZnn_bin38_Runc  param 0 1
-ZmmtoZnn_bin39_Runc  param 0 1
-ZmmtoZnn_bin40_Runc  param 0 1
-ZmmtoZnn_bin41_Runc  param 0 1
-ZmmtoZnn_bin42_Runc  param 0 1
-ZmmtoZnn_bin43_Runc  param 0 1
-ZmmtoZnn_bin44_Runc  param 0 1
-ZmmtoZnn_bin45_Runc  param 0 1
-ZmmtoZnn_bin46_Runc  param 0 1
-ZmmtoZnn_bin47_Runc  param 0 1
-ZmmtoZnn_bin48_Runc  param 0 1
-ZmmtoZnn_bin49_Runc  param 0 1
-ZmmtoZnn_bin50_Runc  param 0 1
 ZmmtoZnn_ecal        param 0 1
 ZmmtoZnn_ewk         param 0 1
 ZmmtoZnn_jes         param 0 1
+r_ZmmtoZnn_bin1      param 0 1
+r_ZmmtoZnn_bin2      param 0 1
+r_ZmmtoZnn_bin3      param 0 1
+r_ZmmtoZnn_bin4      param 0 1
+r_ZmmtoZnn_bin5      param 0 1
+r_ZmmtoZnn_bin6      param 0 1
+r_ZmmtoZnn_bin7      param 0 1
+r_ZmmtoZnn_bin8      param 0 1
+r_ZmmtoZnn_bin9      param 0 1
+r_ZmmtoZnn_bin10     param 0 1
