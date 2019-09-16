@@ -129,9 +129,9 @@ def getLLTransfer(dir,ws,variations,zbinlist):
         covers_dn = tfdir.Get("ZJets_%sDown" % variation)
         if not validShape(covers_up,covers_dn): continue
         covers_sh = getFractionalShift(covers_hs,covers_up,covers_dn)
-        var = RooRealVar("Z%stoZnn_%s" % (dir.GetName(),variation),"",0.,-5.,-5.)
+        var = RooRealVar("DYJets_%s_%s" % (dir.GetName(),variation),"",0.,-5.,-5.)
         syslist.append( {'var':var,'histo':covers_sh} )
-    ws.makeConnectedBinList("Z%stoZnn" % dir.GetName(),covers_hs,syslist,zbinlist)
+    ws.makeConnectedBinList("DYJets_%s" % dir.GetName(),covers_hs,syslist,zbinlist)
 
 def getLLCR(dir,rfile,ws,zbinlist):
     print 'Processing %s' % dir.GetName()
@@ -158,9 +158,9 @@ def getLTransfer(dir,ws,variations,wbinlist):
         covers_dn = tfdir.Get("WJets_%sDown" % variation)
         if not validShape(covers_up,covers_dn): continue
         covers_sh = getFractionalShift(covers_hs,covers_up,covers_dn)
-        var = RooRealVar("%sntoW%sn_%s" % (dir.GetName(),dir.GetName(),variation),"",0.,-5.,-5.)
+        var = RooRealVar("WJets_%s_%s" % (dir.GetName(),variation),"",0.,-5.,-5.)
         syslist.append( {'var':var,'histo':covers_sh} )
-    ws.makeConnectedBinList("W%sntoW%sn" % (dir.GetName(),dir.GetName()),covers_hs,syslist,wbinlist)            
+    ws.makeConnectedBinList("WJets_%s" % dir.GetName(),covers_hs,syslist,wbinlist)            
 
 def getLCR(dir,rfile,ws,wbinlist):
     print 'Processing %s' % dir.GetName()

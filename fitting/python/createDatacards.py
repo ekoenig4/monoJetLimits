@@ -22,27 +22,27 @@ channels = {
   'sr':
   {
     'mc':[signal] + mclist,
-    'transfer':[r'woverz_\S*$',r'WJets_sr_\S*_Runc']
+    'transfer':[r'^woverz_\S*$',r'^WJets_sr_\S*_Runc$']
   },
   'e':
   {
     'mc':mclist,
-    'transfer':[r'WentoWen_\S*$']
+    'transfer':[r'^WJets_e_\S*_Runc$']
   },
   'm':
   {
     'mc':mclist,
-    'transfer':[r'WmntoWmn_\S*$']
+    'transfer':[r'^WJets_m_\S*_Runc$']
   },
   'ee':
   {
     'mc':mclist,
-    'transfer':[r'ZeetoZnn_\S*$']
+    'transfer':[r'^DYJets_ee_\S*_Runc$']
   },
   'mm':
   {
     'mc':mclist,
-    'transfer':[r'ZmmtoZnn_\S*$']
+    'transfer':[r'^DYJets_mm_\S*_Runc$']
   }
 }
 
