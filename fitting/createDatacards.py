@@ -89,15 +89,19 @@ def makeCard(wsfname,ch,info,ws=None):
     
   for transfer in ch_vars: ch_card.addTransfer(transfer)
   ch_card.write()
-      
-def createDatacards():
-  wsfname = 'workspace.root'
-  rfile = TFile.Open(wsfname)
+
+def getWorkspace(fname):
+  rfile = TFile.Open(fname)
   ws = rfile.Get('w')
+  return ws
+      
+def createDatacards(input): 
+  ws = getWorkspace(input)
 
   for ch,info in channels.iteritems():
-    makeCard(wsfname,ch,info,ws=ws)
+    makeCard(input,ch,info,ws=ws)
         
 
 if __name__ == "__main__":
-  createDatacards()
+  wsfname = 'workspace.root'
+  createDatacards(wsfname)

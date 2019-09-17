@@ -177,7 +177,7 @@ def getLCR(dir,rfile,ws,wbinlist):
 
     addMC(dir,ws,variations)
 
-def createWorkspace():
+def createWorkspace(input):
     ws = Workspace('w','w')
 
     outfname = 'workspace.root'
@@ -185,11 +185,7 @@ def createWorkspace():
     var = RooRealVar('chnemptfrac','Ch + Nem P^{123}_{T} Fraction',0,1.1)
     ws.setVar(var)
 
-    
-    fbase = "ChNemPtFrac_2016.sys.root"
-    cmssw_base = getenv("CMSSW_BASE")
-    fname = "%s/src/HiggsAnalysis/CombinedLimit/ZprimeLimits/Systematics/2016/%s" % (cmssw_base,fbase)
-    sysfile = TFile(fname)
+    sysfile = TFile(input)
 
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')
@@ -215,4 +211,7 @@ def createWorkspace():
     ws.Write()
 
 if __name__ == "__main__":
-    createWorkspace()
+    fbase = "ChNemPtFrac_2016.sys.root"
+    cmssw_base = getenv("CMSSW_BASE")
+    fname = "%s/src/HiggsAnalysis/CombinedLimit/ZprimeLimits/Systematics/2016/%s" % (cmssw_base,fbase)
+    createWorkspace(fname)
