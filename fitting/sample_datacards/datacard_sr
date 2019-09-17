@@ -1,0 +1,75 @@
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------
+shapes data_obs            sr   workspace.root      w:data_obs_sr       
+shapes Mx10_Mv1000         sr   workspace.root      w:Mx10_Mv1000_sr    w:Mx10_Mv1000_sr_$SYSTEMATIC
+shapes ZJets               sr   workspace.root      w:ZJets_sr          w:ZJets_sr_$SYSTEMATIC
+shapes WJets               sr   workspace.root      w:WJets_sr          w:WJets_sr_$SYSTEMATIC
+shapes DiBoson             sr   workspace.root      w:DiBoson_sr        w:DiBoson_sr_$SYSTEMATIC
+shapes GJets               sr   workspace.root      w:GJets_sr          w:GJets_sr_$SYSTEMATIC
+shapes TTJets              sr   workspace.root      w:TTJets_sr         w:TTJets_sr_$SYSTEMATIC
+shapes DYJets              sr   workspace.root      w:DYJets_sr         w:DYJets_sr_$SYSTEMATIC
+shapes QCD                 sr   workspace.root      w:QCD_sr            w:QCD_sr_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------
+bin             sr
+observation     -1
+----------------------------------------------------------------------------------------------------
+bin                           sr                  sr                  sr                  sr                  sr                  sr                  sr                  sr                  
+process                       Mx10_Mv1000         ZJets               WJets               DiBoson             GJets               TTJets              DYJets              QCD                 
+process                       0                   1                   2                   3                   4                   5                   6                   7                   
+rate                          -1                  -1                  -1                  -1                  -1                  -1                  -1                  -1                  
+----------------------------------------------------------------------------------------------------
+WJets_EWK           lnN       -                   -                   1.15                -                   -                   -                   -                   -                   
+WJetssrBin1         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin2         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin3         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin4         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin5         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin6         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin7         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin8         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin9         shape     -                   -                   1                   -                   -                   -                   -                   -                   
+WJetssrBin10        shape     -                   -                   1                   -                   -                   -                   -                   -                   
+ZJets_EWK           lnN       -                   1.1                 -                   -                   -                   -                   -                   -                   
+ZJetssrBin1         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin2         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin3         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin4         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin5         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin6         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin7         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin8         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin9         shape     -                   1                   -                   -                   -                   -                   -                   -                   
+ZJetssrBin10        shape     -                   1                   -                   -                   -                   -                   -                   -                   
+bjet_veto           lnN       1.02                1.02                1.02                1.02                1.02                1.02                1.02                1.02                
+ecal                shape     1                   1                   1                   1                   1                   1                   1                   1                   
+et_trigg            lnN       1.01                1.01                1.01                1.01                1.01                1.01                1.01                1.01                
+ewk                 shape     -                   -                   1                   -                   -                   -                   -                   -                   
+jes                 shape     1                   -                   -                   1                   1                   1                   1                   1                   
+lumi                lnN       1.026               1.026               1.026               1.026               1.026               1.026               1.026               1.026               
+signalsrBin1        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin2        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin3        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin4        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin5        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin6        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin7        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin8        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin9        shape     1                   -                   -                   -                   -                   -                   -                   -                   
+signalsrBin10       shape     1                   -                   -                   -                   -                   -                   -                   -                   
+----------------------------------------------------------------------------------------------------
+WJets_sr_bin1_Runc   param 0 1
+WJets_sr_bin2_Runc   param 0 1
+WJets_sr_bin3_Runc   param 0 1
+WJets_sr_bin4_Runc   param 0 1
+WJets_sr_bin5_Runc   param 0 1
+WJets_sr_bin6_Runc   param 0 1
+WJets_sr_bin7_Runc   param 0 1
+WJets_sr_bin8_Runc   param 0 1
+WJets_sr_bin9_Runc   param 0 1
+WJets_sr_bin10_Runc  param 0 1
+woverz_sr_WJets_ecal param 0 1
+woverz_sr_WJets_ewk  param 0 1
+woverz_sr_ZJets_ecal param 0 1
+woverz_sr_ZJets_ewk  param 0 1

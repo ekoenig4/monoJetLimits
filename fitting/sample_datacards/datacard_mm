@@ -1,0 +1,45 @@
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------
+shapes data_obs            mm   workspace.root      w:data_obs_mm       
+shapes WJets               mm   workspace.root      w:WJets_mm          w:WJets_mm_$SYSTEMATIC
+shapes DiBoson             mm   workspace.root      w:DiBoson_mm        w:DiBoson_mm_$SYSTEMATIC
+shapes TTJets              mm   workspace.root      w:TTJets_mm         w:TTJets_mm_$SYSTEMATIC
+shapes DYJets              mm   workspace.root      w:DYJets_mm         w:DYJets_mm_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------
+bin             mm
+observation     -1
+----------------------------------------------------------------------------------------------------
+bin                           mm                  mm                  mm                  mm                  
+process                       WJets               DiBoson             TTJets              DYJets              
+process                       1                   2                   3                   4                   
+rate                          -1                  -1                  -1                  -1                  
+----------------------------------------------------------------------------------------------------
+DYJetsmmBin1        shape     -                   -                   -                   1                   
+DYJetsmmBin2        shape     -                   -                   -                   1                   
+DYJetsmmBin3        shape     -                   -                   -                   1                   
+DYJetsmmBin4        shape     -                   -                   -                   1                   
+DYJetsmmBin5        shape     -                   -                   -                   1                   
+DYJetsmmBin6        shape     -                   -                   -                   1                   
+DYJetsmmBin7        shape     -                   -                   -                   1                   
+DYJetsmmBin8        shape     -                   -                   -                   1                   
+DYJetsmmBin9        shape     -                   -                   -                   1                   
+DYJetsmmBin10       shape     -                   -                   -                   1                   
+WJets_EWK           lnN       1.15                -                   -                   -                   
+bjet_veto           lnN       1.02                1.02                1.02                1.02                
+ecal                shape     1                   1                   1                   1                   
+et_trigg            lnN       1.01                1.01                1.01                1.01                
+jes                 shape     -                   1                   1                   1                   
+lumi                lnN       1.026               1.026               1.026               1.026               
+----------------------------------------------------------------------------------------------------
+DYJets_mm_bin1_Runc  param 0 1
+DYJets_mm_bin2_Runc  param 0 1
+DYJets_mm_bin3_Runc  param 0 1
+DYJets_mm_bin4_Runc  param 0 1
+DYJets_mm_bin5_Runc  param 0 1
+DYJets_mm_bin6_Runc  param 0 1
+DYJets_mm_bin7_Runc  param 0 1
+DYJets_mm_bin8_Runc  param 0 1
+DYJets_mm_bin9_Runc  param 0 1
+DYJets_mm_bin10_Runc param 0 1
