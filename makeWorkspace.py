@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from ROOT import *
 import os
 from optparse import OptionParser
@@ -6,6 +7,8 @@ from fitting.createWorkspace import createWorkspace
 from fitting.createDatacards import createDatacards
 import re
 from subprocess import Popen,PIPE,STDOUT
+
+mv_exclude = ['10000']
 
 def GetMxlist(sysfile):
     rfile = TFile.Open(sysfile)
@@ -17,11 +20,13 @@ def GetMxlist(sysfile):
             mx = sample.GetName().split('_')[0].replace('Mx','')
             mv = sample.GetName().split('_')[1].replace('Mv','')
             if mx not in mxlist: mxlist[mx] = []
+            if mv in mv_exclude: continue
             mxlist[mx].append(mv)
     return mxlist
-def makeMxDir(mx,mvlist):
+def makeMxDir(mx,mvlist,cr=False):
     cwd = os.getcwd()
-    regions = ['sr','e','m','ee','mm']
+    if cr: regions = ('sr','e','m','ee','mm')
+    else:  regions = ('sr',)
     mxdir = 'Mx_%s' % mx
     print 'Creating %s Directory' % mxdir
     if not os.path.isdir(mxdir): os.mkdir(mxdir)
@@ -34,7 +39,7 @@ def makeMxDir(mx,mvlist):
     os.system( command )
 
     with open('datacard','r') as f: card = f.read()
-    card = card.replace('Mx10_Mv1000','Mx%s_$MASS' % mx)
+    card = card.replace('Mx10_Mv1000','Mx%s_Mv$MASS' % mx)
     with open('datacard','w') as f: f.write(card)
     with open('mvlist','w') as f:
         for mv in mvlist:
@@ -46,6 +51,7 @@ def makeWorkspace():
     
     parser = OptionParser()
     parser.add_option("-i","--input",help="Specify input systematics file to generate limits from",action="store",type="str",default=None)
+    parser.add_option('--cr',help="Include CR datacards in datacard",action='store_true',default=False)
     options,args = parser.parse_args()
 
     
@@ -62,7 +68,7 @@ def makeWorkspace():
     if not os.path.isfile(wsfname): createWorkspace(sysfile)
     createDatacards(wsfname)
     ########################################################
-    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist)
+    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,cr=options.cr)
 ######################################################################
 if __name__ == "__main__": makeWorkspace()
     
