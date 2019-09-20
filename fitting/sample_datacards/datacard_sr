@@ -20,6 +20,24 @@ process                       Mx10_Mv1000         ZJets               WJets     
 process                       0                   1                   2                   3                   4                   5                   6                   7                   
 rate                          -1                  -1                  -1                  -1                  -1                  -1                  -1                  -1                  
 ----------------------------------------------------------------------------------------------------
+JES                 shape     1                   -                   -                   1                   1                   1                   1                   1                   
+PFU_ecal            shape     1                   1                   1                   1                   1                   1                   1                   1                   
+QCD_K_LO            shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_K_NLO           shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_LO              shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_d1K_LO          shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_d1K_NLO         shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_d1kappa_EW      shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_d2K_LO          shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_d2K_NLO         shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_d2kappa_EW      shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_d3K_NLO         shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_d3kappa_EW      shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_dK_NLO_mix      shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_gammaind_LO     shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_kappa_EW        shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_kappa_NLO_EW    shape     -                   1                   1                   -                   -                   -                   -                   -                   
+QCD_kappa_NNLO_Sud  shape     -                   1                   1                   -                   -                   -                   -                   -                   
 WJets_EWK           lnN       -                   -                   1.15                -                   -                   -                   -                   -                   
 WJetssrBin1         shape     -                   -                   1                   -                   -                   -                   -                   -                   
 WJetssrBin2         shape     -                   -                   1                   -                   -                   -                   -                   -                   
@@ -43,10 +61,7 @@ ZJetssrBin8         shape     -                   1                   -         
 ZJetssrBin9         shape     -                   1                   -                   -                   -                   -                   -                   -                   
 ZJetssrBin10        shape     -                   1                   -                   -                   -                   -                   -                   -                   
 bjet_veto           lnN       1.02                1.02                1.02                1.02                1.02                1.02                1.02                1.02                
-ecal                shape     1                   1                   1                   1                   1                   1                   1                   1                   
 et_trigg            lnN       1.01                1.01                1.01                1.01                1.01                1.01                1.01                1.01                
-ewk                 shape     -                   -                   1                   -                   -                   -                   -                   -                   
-jes                 shape     1                   -                   -                   1                   1                   1                   1                   1                   
 lumi                lnN       1.026               1.026               1.026               1.026               1.026               1.026               1.026               1.026               
 signalsrBin1        shape     1                   -                   -                   -                   -                   -                   -                   -                   
 signalsrBin2        shape     1                   -                   -                   -                   -                   -                   -                   -                   
@@ -69,7 +84,37 @@ WJets_sr_bin7_Runc   param 0 1
 WJets_sr_bin8_Runc   param 0 1
 WJets_sr_bin9_Runc   param 0 1
 WJets_sr_bin10_Runc  param 0 1
-woverz_sr_WJets_ecal param 0 1
-woverz_sr_WJets_ewk  param 0 1
-woverz_sr_ZJets_ecal param 0 1
-woverz_sr_ZJets_ewk  param 0 1
+zoverw_sr_WJets_PFU_ecal param 0 1
+zoverw_sr_WJets_QCD_K_LO param 0 1
+zoverw_sr_WJets_QCD_K_NLO param 0 1
+zoverw_sr_WJets_QCD_LO param 0 1
+zoverw_sr_WJets_QCD_d1K_LO param 0 1
+zoverw_sr_WJets_QCD_d1K_NLO param 0 1
+zoverw_sr_WJets_QCD_d1kappa_EW param 0 1
+zoverw_sr_WJets_QCD_d2K_LO param 0 1
+zoverw_sr_WJets_QCD_d2K_NLO param 0 1
+zoverw_sr_WJets_QCD_d2kappa_EW param 0 1
+zoverw_sr_WJets_QCD_d3K_NLO param 0 1
+zoverw_sr_WJets_QCD_d3kappa_EW param 0 1
+zoverw_sr_WJets_QCD_dK_NLO_mix param 0 1
+zoverw_sr_WJets_QCD_gammaind_LO param 0 1
+zoverw_sr_WJets_QCD_kappa_EW param 0 1
+zoverw_sr_WJets_QCD_kappa_NLO_EW param 0 1
+zoverw_sr_WJets_QCD_kappa_NNLO_Sud param 0 1
+zoverw_sr_ZJets_PFU_ecal param 0 1
+zoverw_sr_ZJets_QCD_K_LO param 0 1
+zoverw_sr_ZJets_QCD_K_NLO param 0 1
+zoverw_sr_ZJets_QCD_LO param 0 1
+zoverw_sr_ZJets_QCD_d1K_LO param 0 1
+zoverw_sr_ZJets_QCD_d1K_NLO param 0 1
+zoverw_sr_ZJets_QCD_d1kappa_EW param 0 1
+zoverw_sr_ZJets_QCD_d2K_LO param 0 1
+zoverw_sr_ZJets_QCD_d2K_NLO param 0 1
+zoverw_sr_ZJets_QCD_d2kappa_EW param 0 1
+zoverw_sr_ZJets_QCD_d3K_NLO param 0 1
+zoverw_sr_ZJets_QCD_d3kappa_EW param 0 1
+zoverw_sr_ZJets_QCD_dK_NLO_mix param 0 1
+zoverw_sr_ZJets_QCD_gammaind_LO param 0 1
+zoverw_sr_ZJets_QCD_kappa_EW param 0 1
+zoverw_sr_ZJets_QCD_kappa_NLO_EW param 0 1
+zoverw_sr_ZJets_QCD_kappa_NNLO_Sud param 0 1

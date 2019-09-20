@@ -28,11 +28,27 @@ DYJetseeBin7        shape     -                   -                   -         
 DYJetseeBin8        shape     -                   -                   -                   -                   1                   -                   
 DYJetseeBin9        shape     -                   -                   -                   -                   1                   -                   
 DYJetseeBin10       shape     -                   -                   -                   -                   1                   -                   
+JES                 shape     -                   1                   1                   1                   1                   -                   
+PFU_ecal            shape     1                   1                   1                   1                   1                   1                   
+QCD_K_LO            shape     1                   -                   -                   -                   1                   -                   
+QCD_K_NLO           shape     1                   -                   -                   -                   1                   -                   
+QCD_LO              shape     1                   -                   -                   -                   1                   -                   
+QCD_d1K_LO          shape     1                   -                   -                   -                   1                   -                   
+QCD_d1K_NLO         shape     1                   -                   -                   -                   1                   -                   
+QCD_d1kappa_EW      shape     1                   -                   -                   -                   1                   -                   
+QCD_d2K_LO          shape     1                   -                   -                   -                   1                   -                   
+QCD_d2K_NLO         shape     1                   -                   -                   -                   1                   -                   
+QCD_d2kappa_EW      shape     1                   -                   -                   -                   1                   -                   
+QCD_d3K_NLO         shape     1                   -                   -                   -                   -                   -                   
+QCD_d3kappa_EW      shape     1                   -                   -                   -                   1                   -                   
+QCD_dK_NLO_mix      shape     1                   -                   -                   -                   1                   -                   
+QCD_gammaind_LO     shape     1                   -                   -                   -                   1                   -                   
+QCD_kappa_EW        shape     1                   -                   -                   -                   1                   -                   
+QCD_kappa_NLO_EW    shape     1                   -                   -                   -                   1                   -                   
+QCD_kappa_NNLO_Sud  shape     1                   -                   -                   -                   1                   -                   
 WJets_EWK           lnN       1.15                -                   -                   -                   -                   -                   
 bjet_veto           lnN       1.02                1.02                1.02                1.02                1.02                1.02                
-ecal                shape     1                   1                   1                   1                   1                   -                   
 et_trigg            lnN       1.01                1.01                1.01                1.01                1.01                1.01                
-jes                 shape     -                   1                   1                   1                   1                   -                   
 lumi                lnN       1.026               1.026               1.026               1.026               1.026               1.026               
 ----------------------------------------------------------------------------------------------------
 DYJets_ee_bin1_Runc  param 0 1
