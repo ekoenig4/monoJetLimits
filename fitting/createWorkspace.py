@@ -53,23 +53,23 @@ def getFractionalShift(norm,up,dn):
         sh[ibin] = shiftEnvelope
     return sh
 
-def WZLink(dir,ws,variations,connect):
+def ZWLink(dir,ws,variations,connect):
     print 'Processing %s Transfer Factors' % dir.GetName()
     zjet = dir.Get("ZJets")
     wjet = dir.Get("WJets")
     zbinlist = RooArgList()
     ws.makeBinList("ZJets_%s" % dir.GetName(),zjet,zbinlist)
-    wzdir = dir.GetDirectory("wzlink"); wzdir.cd()
-    woverz_hs = wzdir.Get("WZlink")
+    zwdir = dir.GetDirectory("zwlink"); zwdir.cd()
+    woverz_hs = zwdir.Get("ZWlink")
     syslist = []
     for variation in variations:
-        if variation == 'jes': continue
+        if variation == 'JES': continue
         for process in ('WJets','ZJets'):
-            woverz_up = wzdir.Get("WZlink_%sUp_%s" % (variation,process))
-            woverz_dn = wzdir.Get("WZlink_%sDown_%s" % (variation,process))
+            woverz_up = zwdir.Get("ZWlink_%sUp_%s" % (variation,process))
+            woverz_dn = zwdir.Get("ZWlink_%sDown_%s" % (variation,process))
             if not validShape(woverz_up,woverz_dn): continue
             woverz_sh = getFractionalShift(woverz_hs,woverz_up,woverz_dn)
-            var = RooRealVar("woverz_%s_%s_%s" % (dir.GetName(),process,variation),"",0.,-5.,-5.)
+            var = RooRealVar("zoverw_%s_%s_%s" % (dir.GetName(),process,variation),"",0.,-5.,-5.)
             syslist.append( {'var':var,'histo':woverz_sh} )
     wbinlist = RooArgList()
     if connect: ws.makeConnectedBinList("WJets_%s" % dir.GetName(),wjet,syslist,zbinlist,wbinlist)
@@ -113,7 +113,7 @@ def getSignalRegion(dir,rfile,ws,signal=None):
         addSignal(dir,ws,variations,signals)
         
 
-    zbinlist,wbinlist = WZLink(dir,ws,variations,True)
+    zbinlist,wbinlist = ZWLink(dir,ws,variations,True)
 
     addMC(dir,ws,variations)
 

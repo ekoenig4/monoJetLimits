@@ -22,7 +22,7 @@ channels = {
   'sr':
   {
     'mc':[signal] + mclist,
-    'transfer':[r'^woverz_\S*$',r'^WJets_sr_\S*_Runc$']
+    'transfer':[r'^zoverw_\S*$',r'^WJets_sr_\S*_Runc$']
   },
   'e':
   {
@@ -84,8 +84,7 @@ def makeCard(wsfname,ch,info,ws=None):
 
   # Remove possibly uneeded nuisance parameters from certain processes
   for process in ('WJets','ZJets'):
-    ch_card.removeNuisance(process,'jes')
-  ch_card.removeNuisance(process,'ewk')
+    ch_card.removeNuisance(process,'JES')
     
   for transfer in ch_vars: ch_card.addTransfer(transfer)
   ch_card.write()
