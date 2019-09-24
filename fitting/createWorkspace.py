@@ -3,16 +3,17 @@ from ROOT import *
 from os import getenv
 from Workspace import Workspace
 import re
+import json
 
 gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
 mclist = ['ZJets','WJets','DYJets','TTJets','DiBoson','GJets','QCD']
 
-def validShape(up,dn):
-    return any( up[ibin] != dn[ibin] for ibin in range(1,up.GetNbinsX()+1) )
-
 def validHisto(hs,total=0,threshold=0.2):
     return hs.Integral() > threshold*total
+
+def validShape(up,dn):
+    return any( up[ibin] != dn[ibin] for ibin in range(1,up.GetNbinsX()+1) ) and validHisto(up) and validHisto(dn)
 
 def addStat(dir,ws,hs,name=None):
     if name == None: name = hs.GetName()
@@ -76,15 +77,17 @@ def ZWLink(dir,ws,variations,connect):
     else:       ws.makeBinList("WJets_%s" % dir.GetName(),wjet,wbinlist)
     return zbinlist,wbinlist
 
-def addSignal(dir,ws,variations,signals,isScaled=False):
+def addSignal(dir,ws,variations,signals,isScaled=True):
     print 'Processing Signal'
     if type(signals) != list: signals = [signals]
+    signal_scale = {}
     for signal in signals:
         signal_hs = dir.Get(signal)
         if isScaled:
             signal_yield = signal_hs.Integral()
             signal_multi = 80.0 / signal_yield # Normalize so that combine limits are close to 1
             signal_hs.Scale(signal_multi)
+            signal_scale[signal] = signal_multi
         ws.addTemplate('%s_%s' % (signal_hs.GetName(),dir.GetName()),signal_hs)
         for variation in variations:
             signal_up = dir.Get("%s_%sUp" % (signal,variation))
@@ -93,7 +96,7 @@ def addSignal(dir,ws,variations,signals,isScaled=False):
             ws.addTemplate("%s_%s_%sUp" % (signal_hs.GetName(),dir.GetName(),variation),signal_up)
             ws.addTemplate("%s_%s_%sDown" % (signal_hs.GetName(),dir.GetName(),variation),signal_dn)
         addStat(dir,ws,signal_hs,name='signal')
-            
+    return signal_scale
 
 def getSignalRegion(dir,rfile,ws,signal=None):
     print 'Processing sr'
@@ -108,16 +111,17 @@ def getSignalRegion(dir,rfile,ws,signal=None):
 
     nbins = data_obs.GetNbinsX()
 
+    signal_scale = {}
     if signal != None:
         signals = [ key.GetName() for key in dir.GetListOfKeys() if re.search(signal,key.GetName()) ]
-        addSignal(dir,ws,variations,signals)
+        signal_scale = addSignal(dir,ws,variations,signals)
         
 
     zbinlist,wbinlist = ZWLink(dir,ws,variations,True)
 
     addMC(dir,ws,variations)
 
-    return zbinlist,wbinlist
+    return zbinlist,wbinlist,signal_scale
 
 def getLLTransfer(dir,ws,variations,zbinlist):
     print 'Processing %s Transfer Factors' % dir.GetName()
@@ -177,6 +181,10 @@ def getLCR(dir,rfile,ws,wbinlist):
 
     addMC(dir,ws,variations)
 
+def WriteScaling(signal_scale):
+    with open("signal_scaling.json","w") as f:
+        json.dump(signal_scale,f)
+
 def createWorkspace(input):
     ws = Workspace('w','w')
 
@@ -189,7 +197,7 @@ def createWorkspace(input):
 
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')
-    zbinlist,wbinlist = getSignalRegion(dir_sr,sysfile,ws,signal=r"Mx\d*_Mv\d*$")
+    zbinlist,wbinlist,signal_scale = getSignalRegion(dir_sr,sysfile,ws,signal=r"Mx\d*_Mv\d*$")
 
     #-----Double Muon-----#
     dir_mm = sysfile.GetDirectory('mm')
@@ -210,8 +218,11 @@ def createWorkspace(input):
     output.cd()
     ws.Write()
 
+    WriteScaling(signal_scale)
+
 if __name__ == "__main__":
     fbase = "ChNemPtFrac_2016.sys.root"
     cmssw_base = getenv("CMSSW_BASE")
     fname = "%s/src/HiggsAnalysis/CombinedLimit/ZprimeLimits/Systematics/2016/%s" % (cmssw_base,fbase)
     createWorkspace(fname)
+    
