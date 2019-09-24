@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from ROOT import *
 import os
 from optparse import OptionParser
@@ -9,7 +10,7 @@ gROOT.SetBatch(1)
 home = os.getcwd()
 def exclude(data):
     exclude_mx = ['1','150','500','1000']
-    exclude_mv = ['15.0','10000.0']
+    exclude_mv = ['15','10000']
 
     for mx in exclude_mx:
         if mx in data: data.pop(mx)
@@ -21,23 +22,19 @@ def GetData(dir,exclude=exclude):
     data = {}
     os.chdir(dir)
     cwd = os.getcwd()
-    systematics = next( f for f in os.listdir('.') if 'Systematics' in f and '.root' in f)
-    sysFile = TFile.Open(systematics)
-    data['lumi'] = sysFile.Get('lumi').GetBinContent(1)
-    data['year'] = str(int(sysFile.Get('year').GetBinContent(1)))
-    data['variable'] = sysFile.Get('variable').GetTitle()
-    mxdir = [ d for d in os.listdir('.') if os.path.isdir(d) ]
-    mxinfo = {}
-    for d in mxdir:
-        os.chdir(d)
-        mx = d.split('_')[-1]
-        for mvfile in os.listdir('.'):
-            if '.json' in mvfile: break
-        with open(mvfile) as json_file: mvjson = json.load(json_file)
-        mxinfo[mx] = mvjson
-        os.chdir(cwd)
-    exclude(mxinfo)
-    data['limit'] = mxinfo
+    data['lumi'] = 35900
+    data['year'] = '2016'
+    data['variable'] = 'ChNemPtFrac'
+    with open('limits.json') as f: d_json = json.load(f)
+    limits = {}
+    for mx,mxinfo in d_json.iteritems():
+        mxlim = {}
+        for mv,mvinfo in mxinfo.iteritems():
+            scale = d_json[mx][mv]['scale']
+            mxlim[mv] = { exp:scale*val for exp,val in mvinfo['limits'].iteritems() }
+        limits[mx] = mxlim
+    exclude(limits)
+    data['limit'] = limits
     os.chdir(home)
     return data
 #####################################################################
@@ -61,6 +58,8 @@ def drawPlot2D(data):
     lumi = data['lumi']
     data = data['limit']
     limit,mxlist,mvlist = Plot2D(data)
+    xbins = len(mvlist)
+    ybins = len(mxlist)
     ######################################################################
     c = TCanvas("c","c",800,800)
     c.SetMargin(0.15,0.15,0.15,0.08)
