@@ -9,6 +9,8 @@ import re
 from subprocess import Popen,PIPE,STDOUT
 
 mv_exclude = ['10000']
+mx_exclude = ['1']
+mx_include = ['10','50','100']
 
 def GetMxlist(sysfile):
     rfile = TFile.Open(sysfile)
@@ -18,6 +20,7 @@ def GetMxlist(sysfile):
     for sample in gDirectory.GetListOfKeys():
         if regexp.search(sample.GetName()):
             mx = sample.GetName().split('_')[0].replace('Mx','')
+            if mx not in mx_include: continue
             mv = sample.GetName().split('_')[1].replace('Mv','')
             if mx not in mxlist: mxlist[mx] = []
             if mv in mv_exclude: continue
@@ -60,6 +63,7 @@ def makeWorkspace():
     sysfile = os.path.abspath(options.input)
     ##########################################################
     dir = 'Limits/'+fname.replace('.root', '')
+    if options.cr: dir = dir.replace('.sys','wCR.sys')
     dir = os.path.abspath(dir)
     if not os.path.isdir(dir): os.mkdir(dir)
     ##################################################
