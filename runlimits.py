@@ -5,6 +5,7 @@ from optparse import OptionParser
 import re
 from subprocess import Popen,PIPE,STDOUT
 from time import time
+import json
 
 class cPopen(Popen):
     def __init__(self,*args,**kwargs):
@@ -12,24 +13,53 @@ class cPopen(Popen):
         super(cPopen,self).__init__(*args,**kwargs)
     def duration(self): return time() - self.start
 ##############################################################################
+def collectWorkspace(mxdirs,show=False):
+    print 'Collecting Workspace'
+    with open('signal_scaling.json') as f: scaling = json.load(f)
+    mxjsons = {}
+    cwd = os.getcwd()
+    for mxdir in mxdirs:
+        mx = mxdir.replace('Mx_','').replace('/','')
+        with open('Mx_%s/zprimeMx%s.json' % (mx,mx)) as f: mxjsons[mx] = json.load(f)
+    #####
+    ws = {}
+    for mx,mxjson in mxjsons.iteritems():
+        mx_ws = {}
+        for mv in mxjson:
+            mv_ws = {}
+            lim = mxjson[mv]
+            mv = str(int(float(mv)))
+            scale = scaling['Mx%s_Mv%s' % (mx,mv)]
+            mv_ws['scale'] = scale
+            mv_ws['limits'] = lim
+            mx_ws[mv] = mv_ws
+        ws[mx] = mx_ws
+    #####
+    with open('limits.json','w') as f: json.dump(ws,f,indent=4)
+##############################################################################
 def collectMxdir(mxdir,show=False):
     mx = mxdir.replace('Mx_','').replace('/','')
     cwd = os.getcwd()
     os.chdir(mxdir)
     with open('mvlist','r') as f: mvlist = f.readlines()
+    mxdict = {}
     mvprocs = []
-    args = ['combineTool.py','-M','CollectLimits']
-    for mv in mvlist:
-        mv = mv.replace('\n','')
-        args.append( 'higgsCombineMx%s_Mv%s.AsymptoticLimits.mH%s.root' % (mx,mv,mv) )
-    args += ['-o','zprimeMx%s_Mv%s.json']
-    if show:
-        mxproc = cPopen(args)
-        proc.wait()
-    else:
-        mxproc = cPopen(args,stdout=PIPE,stderr=STDOUT)
+    output = 'zprimeMx%s.json' % mx
+    if not os.path.isfile(output):
+        args = ['combineTool.py','-M','CollectLimits']
+        for mv in mvlist:
+            mv = mv.replace('\n','')
+            args.append( 'higgsCombineMx%s_Mv%s.AsymptoticLimits.mH%s.root' % (mx,mv,mv) )
+        args += ['-o',output]
+        if show:
+            mxproc = cPopen(args)
+            proc.wait()
+        else:
+            mxproc = cPopen(args,stdout=PIPE,stderr=STDOUT)
+        mxdict[mx] = mxproc
+    #####
     os.chdir(cwd)
-    return { mx:mxproc }
+    return mxdict
 ##############################################################################
 def runMxdir(mxdir,show=False):
     mx = mxdir.replace('Mx_','').replace('/','')
@@ -39,6 +69,8 @@ def runMxdir(mxdir,show=False):
     mvprocs = {}
     for mv in mvlist:
         mv = mv.replace('\n','')
+        output = 'higgsCombineMx%s_Mv%s.AsymptoticLimits.mH%s.root' % (mx,mv,mv)
+        if os.path.isfile(output): continue
         args =  [ 'combine','-M','AsymptoticLimits','-n','Mx%s_Mv%s' % (mx,mv),'-m',mv,'datacard' ]
         if show:
             print 'Mx %s Mv %s' % (mx,mv)
@@ -94,4 +126,5 @@ if __name__ == "__main__":
     print 'Collecting Limits'
     for mxdir in sorted(mxdirs): procs.update( collectMxdir(mxdir,show=options.verbose) )
     printProcs(procs,'Mx Output')
+    collectWorkspace(mxdirs,show=options.verbose)
 #################################################################################################
