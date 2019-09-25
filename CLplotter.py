@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from ROOT import *
 import os
-from optparse import OptionParser
+from argparse import ArgumentParser
 import json
 from array import array
 
@@ -204,20 +204,32 @@ def drawPlot1D(data):
     c.Update()
     c.SaveAs("expectedevents1D.png")
 #####################################################################
-
+def getargs():
+    def directory(arg):
+        if os.path.isdir(arg): return arg
+        else: raise ValueError('Directories only')
+    def version(arg):
+        if '1D' in arg or '2D' == arg:  return arg
+        else:  raise ValueError('Valid versions are: 1D and 2D')
+    parser = ArgumentParser(description="Plot limit information from specified directory")
+    parser.add_argument("-d","--dir",help='Specify the directory to read limits from',action='store',type=directory,default=None,required=True)
+    parser.add_argument("-v","--version",help='Specify the version of plot (1D or 2D)',action='store',type=version,default='2D')
+    try: arg = parser.parse_args()
+    except:
+        parser.print_help()
+        exit()
+    return parser.parse_args()
+#####################################################################
 if __name__ == "__main__":
-    parser = OptionParser()
-    parser.add_option("-d","--dir",help='Specify the directory to read limits from',action='store',type='str',default=None)
-    parser.add_option("-v","--version",help='Specify the version of plot (1D or 2D)',action='store',type='str',default='2D')
-    options,args = parser.parse_args()
-    if options.dir == None:
+    args = getargs()
+    if args.dir == None:
         print "Please specify a director to run limits in."
         exit()
-    if options.version != '1D' and options.version != '2D':
-        print 'Unkown plot version,',options.version+'.'
+    if args.version != '1D' and args.version != '2D':
+        print 'Unkown plot version,',args.version+'.'
         print 'Plotting Default 2D Plot.'
-        options.version = '2D'
-    data = GetData(options.dir)
-    if   options.version == '1D': drawPlot1D(data)
-    elif options.version == '2D': drawPlot2D(data)
+        args.version = '2D'
+    data = GetData(args.dir)
+    if   args.version == '1D': drawPlot1D(data)
+    elif args.version == '2D': drawPlot2D(data)
 

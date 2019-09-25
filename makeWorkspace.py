@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from ROOT import *
 import os
-from optparse import OptionParser
+from shutil import rmtree
+from argparse import ArgumentParser
 from array import array
 from fitting.createWorkspace import createWorkspace
 from fitting.createDatacards import createDatacards
@@ -49,30 +50,49 @@ def makeMxDir(mx,mvlist,cr=False):
             f.write(mv+'\n')
     os.chdir(cwd)
 #####
+def getargs():
+    def sysfile(arg):
+        tfile = TFile.Open(arg)
+        valid = True
+        if tfile.IsZombie(): raise ValueError()
+        validdir = ['sr','e','ee','m','mm']
+        for dir in validdir:
+            if tfile.GetDirectory(dir) != None: return arg
+        raise ValueError()
+    
+    parser = ArgumentParser(description='Make workspace for generating limits based on input systematics file')
+    parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",action="store",type=sysfile,default=None,required=True)
+    parser.add_argument('--cr',help="Include CR datacards in datacard",action='store_true',default=False)
+    parser.add_argument('--no-scale',help="Disable signal scaling",action='store_true',default=False)
+    parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
+    try: args = parser.parse_args()
+    except:
+        parser.print_help()
+        exit()
+    return args
+#####
 def makeWorkspace():
     if not os.path.isdir("Limits/"): os.mkdir("Limits/")
-    
-    parser = OptionParser()
-    parser.add_option("-i","--input",help="Specify input systematics file to generate limits from",action="store",type="str",default=None)
-    parser.add_option('--cr',help="Include CR datacards in datacard",action='store_true',default=False)
-    options,args = parser.parse_args()
 
-    
-    mxlist = GetMxlist(options.input)
-    fname = options.input.split('/')[-1]
-    sysfile = os.path.abspath(options.input)
+    args = getargs()
+    mxlist = GetMxlist(args.input)
+    fname = args.input.split('/')[-1]
+    sysfile = os.path.abspath(args.input)
     ##########################################################
     dir = 'Limits/'+fname.replace('.root', '')
-    if options.cr: dir = dir.replace('.sys','wCR.sys')
+    if args.cr: dir = dir.replace('.sys','wCR.sys')
+    if args.no_scale: dir = dir.replace('.sys','nSC.sys')
     dir = os.path.abspath(dir)
+    
+    if args.reset and os.path.isdir(dir): rmtree(dir)
     if not os.path.isdir(dir): os.mkdir(dir)
     ##################################################
     os.chdir(dir)
     wsfname = 'workspace.root'
-    if not os.path.isfile(wsfname): createWorkspace(sysfile)
+    if not os.path.isfile(wsfname): createWorkspace(sysfile,isScaled=not args.no_scale)
     createDatacards(wsfname)
     ########################################################
-    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,cr=options.cr)
+    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,cr=args.cr)
 ######################################################################
 if __name__ == "__main__": makeWorkspace()
     
