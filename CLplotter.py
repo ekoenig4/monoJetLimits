@@ -22,9 +22,10 @@ def GetData(dir,exclude=exclude):
     data = {}
     os.chdir(dir)
     cwd = os.getcwd()
-    data['lumi'] = 35900
-    data['year'] = '2016'
-    data['variable'] = 'ChNemPtFrac'
+    wsfile = TFile.Open('workspace.root')
+    data['lumi'] = wsfile.Get('lumi').Integral()
+    data['year'] = wsfile.Get('year').Integral()
+    data['variable'] = wsfile.Get('variable').GetTitle()
     with open('limits.json') as f: d_json = json.load(f)
     limits = {}
     for mx,mxinfo in d_json.iteritems():
