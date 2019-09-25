@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 import re
 from subprocess import Popen,PIPE,STDOUT
 from time import time
@@ -15,7 +15,9 @@ class cPopen(Popen):
 ##############################################################################
 def collectWorkspace(mxdirs,show=False):
     print 'Collecting Workspace'
-    with open('signal_scaling.json') as f: scaling = json.load(f)
+    with open('signal_scaling.json') as f:
+        if f.read() == '': scaling = False
+        else:              scaling = json.load(f)
     mxjsons = {}
     cwd = os.getcwd()
     for mxdir in mxdirs:
@@ -29,7 +31,8 @@ def collectWorkspace(mxdirs,show=False):
             mv_ws = {}
             lim = mxjson[mv]
             mv = str(int(float(mv)))
-            scale = scaling['Mx%s_Mv%s' % (mx,mv)]
+            if scaling == False: scale = 1
+            else:                scale = scaling['Mx%s_Mv%s' % (mx,mv)]
             mv_ws['scale'] = scale
             mv_ws['limits'] = lim
             mx_ws[mv] = mv_ws
@@ -109,22 +112,29 @@ def printProcs(procs,name):
     sys.stdout.write(out)
     sys.stdout.flush()
 ##############################################################################
-if __name__ == "__main__":
-    parser = OptionParser()
-    parser.add_option("-d","--dir",help='Specify the directory to run limits in',action='store',type='str',default=None)
+def getargs():
+    def directory(arg):
+        if os.path.isdir(arg): return arg
+        else: raise ValueError()
+    parser = ArgumentParser(description='Run all avaiable limits in specified directory')
+    parser.add_option("-d","--dir",help='Specify the directory to run limits in',action='store',type=directory,default=None,required=True)
     parser.add_option("-v","--verbose",help='Show output from combine',action='store_true',default=False)
-    options,args = parser.parse_args()
-    if options.dir == None:
-        print "Please specify a director to run limits in."
+    try: args = parser.parse_args()
+    except:
+        parser.print_help()
         exit()
-    os.chdir(options.dir)
+    return args
+##############################################################################
+if __name__ == "__main__":
+    args = getargs()
+    os.chdir(args.dir)
     mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
     procs = {}
     print 'Running Limits'
-    for mxdir in sorted(mxdirs): procs.update( runMxdir(mxdir,show=options.verbose) )
+    for mxdir in sorted(mxdirs): procs.update( runMxdir(mxdir,show=args.verbose) )
     printProcs(procs,'Mx Limits')
     print 'Collecting Limits'
-    for mxdir in sorted(mxdirs): procs.update( collectMxdir(mxdir,show=options.verbose) )
+    for mxdir in sorted(mxdirs): procs.update( collectMxdir(mxdir,show=args.verbose) )
     printProcs(procs,'Mx Output')
-    collectWorkspace(mxdirs,show=options.verbose)
+    collectWorkspace(mxdirs,show=args.verbose)
 #################################################################################################

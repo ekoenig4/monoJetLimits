@@ -77,7 +77,7 @@ def ZWLink(dir,ws,variations,connect):
     else:       ws.makeBinList("WJets_%s" % dir.GetName(),wjet,wbinlist)
     return zbinlist,wbinlist
 
-def addSignal(dir,ws,variations,signals,isScaled=True):
+def addSignal(dir,ws,variations,signals,isScaled):
     print 'Processing Signal'
     if type(signals) != list: signals = [signals]
     signal_scale = {}
@@ -98,7 +98,7 @@ def addSignal(dir,ws,variations,signals,isScaled=True):
         addStat(dir,ws,signal_hs,name='signal')
     return signal_scale
 
-def getSignalRegion(dir,rfile,ws,signal=None):
+def getSignalRegion(dir,rfile,ws,signal,isScaled):
     print 'Processing sr'
     dir.cd()
 
@@ -114,7 +114,7 @@ def getSignalRegion(dir,rfile,ws,signal=None):
     signal_scale = {}
     if signal != None:
         signals = [ key.GetName() for key in dir.GetListOfKeys() if re.search(signal,key.GetName()) ]
-        signal_scale = addSignal(dir,ws,variations,signals)
+        signal_scale = addSignal(dir,ws,variations,signals,isScaled)
         
 
     zbinlist,wbinlist = ZWLink(dir,ws,variations,True)
@@ -192,7 +192,7 @@ def getMetadata(sysfile,output):
         hs_meta = sysfile.Get(meta)
         hs_meta.Write()
         
-def createWorkspace(input):
+def createWorkspace(input,isScaled=True):
     ws = Workspace('w','w')
 
     outfname = 'workspace.root'
@@ -204,7 +204,7 @@ def createWorkspace(input):
 
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')
-    zbinlist,wbinlist,signal_scale = getSignalRegion(dir_sr,sysfile,ws,signal=r"Mx\d*_Mv\d*$")
+    zbinlist,wbinlist,signal_scale = getSignalRegion(dir_sr,sysfile,ws,r"Mx\d*_Mv\d*$",isScaled)
 
     #-----Double Muon-----#
     dir_mm = sysfile.GetDirectory('mm')
