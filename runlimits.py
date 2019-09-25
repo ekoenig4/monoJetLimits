@@ -15,9 +15,7 @@ class cPopen(Popen):
 ##############################################################################
 def collectWorkspace(mxdirs,show=False):
     print 'Collecting Workspace'
-    with open('signal_scaling.json') as f:
-        if f.read() == '': scaling = False
-        else:              scaling = json.load(f)
+    with open('signal_scaling.json') as f: scaling = json.load(f)
     mxjsons = {}
     cwd = os.getcwd()
     for mxdir in mxdirs:
@@ -31,8 +29,8 @@ def collectWorkspace(mxdirs,show=False):
             mv_ws = {}
             lim = mxjson[mv]
             mv = str(int(float(mv)))
-            if scaling == False: scale = 1
-            else:                scale = scaling['Mx%s_Mv%s' % (mx,mv)]
+            key = 'Mx%s_Mv%s' % (mx,mv)
+            scale = scaling[key] if key in scaling else 1
             mv_ws['scale'] = scale
             mv_ws['limits'] = lim
             mx_ws[mv] = mv_ws
@@ -64,7 +62,7 @@ def collectMxdir(mxdir,show=False):
     os.chdir(cwd)
     return mxdict
 ##############################################################################
-def runMxdir(mxdir,show=False):
+def runMxdir(mxdir,show=False,reset=False):
     mx = mxdir.replace('Mx_','').replace('/','')
     cwd = os.getcwd()
     os.chdir(mxdir)
@@ -73,7 +71,7 @@ def runMxdir(mxdir,show=False):
     for mv in mvlist:
         mv = mv.replace('\n','')
         output = 'higgsCombineMx%s_Mv%s.AsymptoticLimits.mH%s.root' % (mx,mv,mv)
-        if os.path.isfile(output): continue
+        if not reset and os.path.isfile(output): continue
         args =  [ 'combine','-M','AsymptoticLimits','-n','Mx%s_Mv%s' % (mx,mv),'-m',mv,'datacard' ]
         if show:
             print 'Mx %s Mv %s' % (mx,mv)
@@ -117,8 +115,9 @@ def getargs():
         if os.path.isdir(arg): return arg
         else: raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
-    parser.add_option("-d","--dir",help='Specify the directory to run limits in',action='store',type=directory,default=None,required=True)
-    parser.add_option("-v","--verbose",help='Show output from combine',action='store_true',default=False)
+    parser.add_argument("-d","--dir",help='Specify the directory to run limits in',action='store',type=directory,default=None,required=True)
+    parser.add_argument("-v","--verbose",help='Show output from combine',action='store_true',default=False)
+    parser.add_argument("-r","--reset",help='Run limits event if they have already been done',action='store_true',default=False)
     try: args = parser.parse_args()
     except:
         parser.print_help()
@@ -131,7 +130,7 @@ if __name__ == "__main__":
     mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
     procs = {}
     print 'Running Limits'
-    for mxdir in sorted(mxdirs): procs.update( runMxdir(mxdir,show=args.verbose) )
+    for mxdir in sorted(mxdirs): procs.update( runMxdir(mxdir,show=args.verbose,show=args.reset) )
     printProcs(procs,'Mx Limits')
     print 'Collecting Limits'
     for mxdir in sorted(mxdirs): procs.update( collectMxdir(mxdir,show=args.verbose) )
