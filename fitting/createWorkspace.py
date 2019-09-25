@@ -185,9 +185,9 @@ def WriteScaling(signal_scale):
     with open("signal_scaling.json","w") as f:
         json.dump(signal_scale,f)
 
-def getMetadata(sysfile):
+def getMetadata(sysfile,output):
     metadata = ['lumi','year','variable']
-    sysfile.cd()
+    output.cd()
     for meta in metadata:
         hs_meta = sysfile.Get(meta)
         hs_meta.Write()
@@ -223,7 +223,7 @@ def createWorkspace(input):
     getLCR(dir_e,sysfile,ws,wbinlist)
 
     #-----Meta Data-----#
-    getMetadata(sysfile)
+    getMetadata(sysfile,output)
 
     output.cd()
     ws.Write()
