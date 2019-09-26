@@ -83,6 +83,7 @@ def addSignal(dir,ws,variations,signals,isScaled):
     signal_scale = {}
     for signal in signals:
         signal_hs = dir.Get(signal)
+        signal_multi = 1
         if isScaled:
             signal_yield = signal_hs.Integral()
             signal_multi = 80.0 / signal_yield # Normalize so that combine limits are close to 1
@@ -90,10 +91,10 @@ def addSignal(dir,ws,variations,signals,isScaled):
             signal_scale[signal] = signal_multi
         ws.addTemplate('%s_%s' % (signal_hs.GetName(),dir.GetName()),signal_hs)
         for variation in variations:
-            signal_up = dir.Get("%s_%sUp" % (signal,variation))
-            signal_dn = dir.Get("%s_%sDown" % (signal,variation))
+            signal_up = dir.Get("%s_%sUp"   % (signal,variation)); signal_up.Scale(signal_multi)
+            signal_dn = dir.Get("%s_%sDown" % (signal,variation)); signal_dn.Scale(signal_multi)
             if not validShape(signal_up,signal_dn): continue
-            ws.addTemplate("%s_%s_%sUp" % (signal_hs.GetName(),dir.GetName(),variation),signal_up)
+            ws.addTemplate("%s_%s_%sUp"   % (signal_hs.GetName(),dir.GetName(),variation),signal_up)
             ws.addTemplate("%s_%s_%sDown" % (signal_hs.GetName(),dir.GetName(),variation),signal_dn)
         addStat(dir,ws,signal_hs,name='signal')
     return signal_scale
