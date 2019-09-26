@@ -1,12 +1,27 @@
 #!/usr/bin/env python
 import os
+from shutil import copyfile
 import sys
 from argparse import ArgumentParser
-import re
 from subprocess import Popen,PIPE,STDOUT
 from time import time
 import json
+import re
 
+outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
+def mvimpacts(sysdir):
+    first = sysdir.split('_')[0]
+    second = sysdir.split('_')[1]
+    variable = re.findall('^.*[\+-]',first)
+    if not any(variable): variable = first
+    else: variable = variable[0][:-1]
+    year = re.findall('\d\d\d\d',second)[0]
+    outdir = outdir_base % year
+    outname = 'impacts_%s.pdf' % sysdir.replace('.sys','')
+    output = '%s/%s/%s' % (outdir,variable,outname)
+    print 'Moving impacts/impacts.pdf to %s' % output
+    copyfile('impacts/impacts.pdf',output)
+##############################################################################
 def runImpacts(signal,mv,impactdir):
     os.chdir(impactdir)
     args = ['combineTool.py','-M','Impacts','-m',mv,'-d','%s.root' % signal]
@@ -52,6 +67,7 @@ if __name__ == "__main__":
     args = getargs()
     os.chdir(args.dir)
     cwd = os.getcwd()
+    sysdir = next( sub for sub in cwd.split('/') if '.sys' in sub )
     mx = args.signal.split('_')[0].replace('Mx','')
     mxdir = 'Mx_%s' % mx
     mv = args.signal.split('_')[1].replace('Mv','')
@@ -60,4 +76,6 @@ if __name__ == "__main__":
     impactdir = os.path.abspath(impactdir)
     getText2WS(mxdir,mv,args.signal)
     runImpacts(args.signal,mv,impactdir)
+    os.chdir(cwd)
+    mvimpacts(sysdir)
 #################################################################################################
