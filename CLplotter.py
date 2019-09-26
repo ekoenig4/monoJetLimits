@@ -6,8 +6,14 @@ import json
 from array import array
 
 gROOT.SetBatch(1)
-##########
+
+outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 home = os.getcwd()
+
+##########
+def checkdir(dir):
+    if not os.path.isdir(dir): os.mkdir(dir)
+#####################################################################
 def exclude(data):
     exclude_mx = ['1','150','500','1000']
     exclude_mv = ['15','10000']
@@ -24,7 +30,7 @@ def GetData(dir,exclude=exclude):
     cwd = os.getcwd()
     wsfile = TFile.Open('workspace.root')
     data['lumi'] = wsfile.Get('lumi').Integral()
-    data['year'] = wsfile.Get('year').Integral()
+    data['year'] = str(int(float(wsfile.Get('year').Integral())))
     data['variable'] = wsfile.Get('variable').GetTitle()
     with open('limits.json') as f: d_json = json.load(f)
     limits = {}
@@ -57,6 +63,8 @@ def Plot2D(data):
 def drawPlot2D(data):
     print 'Plotting 2D'
     lumi = data['lumi']
+    year = data['year']
+    variable = data['variable']
     data = data['limit']
     limit,mxlist,mvlist = Plot2D(data)
     xbins = len(mvlist)
@@ -119,7 +127,7 @@ def drawPlot2D(data):
     texS.SetTextFont(42);
     texS.SetTextSize(0.035);
     texS.Draw();
-    texS1 = TLatex(0.15,0.93,"#bf{CMS} : #it{Preliminary} (2016)");
+    texS1 = TLatex(0.15,0.93,"#bf{CMS} : #it{Preliminary} (%s)" % year);
     texS1.SetNDC();
     texS1.SetTextFont(42);
     texS1.SetTextSize(0.035);
@@ -127,8 +135,14 @@ def drawPlot2D(data):
     ################################################################
     c.Modified()
     c.Update()
-    c.SaveAs("expectedevents2D.png")
-    # c.SaveAs("expectedevents2D.pdf")
+
+    outdir = outdir_base % year
+    checkdir(outdir)
+    subdir = variable
+    outdir += '/%s' % subdir
+    checkdir(outdir)
+    fname = '%s2D.png' % variable
+    c.SaveAs( '%s/%s' % (outdir,fname) )
 #####################################################################
 def Plot1D(data):
     mxlist = sorted(data.keys(),key=int)
@@ -145,6 +159,8 @@ def Plot1D(data):
 def drawPlot1D(data):
     print 'Plotting 1D'
     lumi = data['lumi']
+    year = data['year']
+    variable = data['variable']
     data = data['limit']
     plots,mxlist = Plot1D(data)
 
@@ -188,7 +204,7 @@ def drawPlot1D(data):
     texS.SetTextFont(42);
     texS.SetTextSize(0.040);
     texS.Draw('same');
-    texS1 = TLatex(0.12092,0.907173,"#bf{CMS} : #it{Preliminary}");
+    texS1 = TLatex(0.12092,0.907173,"#bf{CMS} : #it{Preliminary} (%s)" % year);
     texS1.SetNDC();
     texS1.SetTextFont(42);
     texS1.SetTextSize(0.040);
@@ -202,7 +218,14 @@ def drawPlot1D(data):
     
     c.Modified()
     c.Update()
-    c.SaveAs("expectedevents1D.png")
+
+    outdir = outdir_base % year
+    checkdir(outdir)
+    subdir = variable
+    outdir += '/%s' % subdir
+    checkdir(outdir)
+    fname = '%s1D.png' % variable
+    c.SaveAs( '%s/%s' % (outdir,fname) )
 #####################################################################
 def getargs():
     def directory(arg):
