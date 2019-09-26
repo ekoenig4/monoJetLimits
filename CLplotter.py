@@ -4,6 +4,7 @@ import os
 from argparse import ArgumentParser
 import json
 from array import array
+import re
 
 gROOT.SetBatch(1)
 
@@ -28,10 +29,18 @@ def GetData(dir,exclude=exclude):
     data = {}
     os.chdir(dir)
     cwd = os.getcwd()
+    sysdir = next( sub for sub in dir.split('/') if '.sys' in sub )
     wsfile = TFile.Open('workspace.root')
     data['lumi'] = wsfile.Get('lumi').Integral()
-    data['year'] = str(int(float(wsfile.Get('year').Integral())))
-    data['variable'] = wsfile.Get('variable').GetTitle()
+    year = str(int(float(wsfile.Get('year').Integral())))
+    variable = wsfile.Get('variable').GetTitle()
+    info = sysdir.replace('.sys','').replace(variable,'').replace(year,"").split('_')
+    cut = info[0]
+    extra = re.findall('...',info[1])
+    data['year'] = year
+    data['variable'] = variable
+    data['cut'] = cut
+    data['extra'] = extra
     with open('limits.json') as f: d_json = json.load(f)
     limits = {}
     for mx,mxinfo in d_json.iteritems():
@@ -65,6 +74,8 @@ def drawPlot2D(data):
     lumi = data['lumi']
     year = data['year']
     variable = data['variable']
+    cut = data['cut']
+    extra = data['extra']
     data = data['limit']
     limit,mxlist,mvlist = Plot2D(data)
     xbins = len(mvlist)
@@ -141,7 +152,7 @@ def drawPlot2D(data):
     subdir = variable
     outdir += '/%s' % subdir
     checkdir(outdir)
-    fname = '%s2D.png' % variable
+    fname = '%s%s_%s2D.png' % (variable,cut,''.join(extra))
     c.SaveAs( '%s/%s' % (outdir,fname) )
 #####################################################################
 def Plot1D(data):
@@ -161,6 +172,8 @@ def drawPlot1D(data):
     lumi = data['lumi']
     year = data['year']
     variable = data['variable']
+    cut = data['cut']
+    extra = data['extra']
     data = data['limit']
     plots,mxlist = Plot1D(data)
 
@@ -224,7 +237,7 @@ def drawPlot1D(data):
     subdir = variable
     outdir += '/%s' % subdir
     checkdir(outdir)
-    fname = '%s1D.png' % variable
+    fname = '%s%s_%s1D.png' % (variable,cut,''.join(extra))
     c.SaveAs( '%s/%s' % (outdir,fname) )
 #####################################################################
 def getargs():
@@ -233,10 +246,10 @@ def getargs():
         else: raise ValueError('Directories only')
     def version(arg):
         if '1D' in arg or '2D' == arg:  return arg
-        else:  raise ValueError('Valid versions are: 1D and 2D')
+        else:  return None
     parser = ArgumentParser(description="Plot limit information from specified directory")
     parser.add_argument("-d","--dir",help='Specify the directory to read limits from',action='store',type=directory,default=None,required=True)
-    parser.add_argument("-v","--version",help='Specify the version of plot (1D or 2D)',action='store',type=version,default='2D')
+    parser.add_argument("-v","--version",help='Specify the version of plot (1D or 2D)',action='store',type=version,default=None)
     try: arg = parser.parse_args()
     except:
         parser.print_help()
@@ -248,11 +261,10 @@ if __name__ == "__main__":
     if args.dir == None:
         print "Please specify a director to run limits in."
         exit()
-    if args.version != '1D' and args.version != '2D':
-        print 'Unkown plot version,',args.version+'.'
-        print 'Plotting Default 2D Plot.'
-        args.version = '2D'
+    if args.version == None: version = ('1D','2D')
+    else:  version = (args.version,)
     data = GetData(args.dir)
-    if   args.version == '1D': drawPlot1D(data)
-    elif args.version == '2D': drawPlot2D(data)
+    for ver in version:
+        if   ver == '1D': drawPlot1D(data)
+        elif ver == '2D': drawPlot2D(data)
 
