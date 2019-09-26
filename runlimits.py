@@ -130,7 +130,7 @@ if __name__ == "__main__":
     mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
     procs = {}
     print 'Running Limits'
-    for mxdir in sorted(mxdirs): procs.update( runMxdir(mxdir,show=args.verbose,show=args.reset) )
+    for mxdir in sorted(mxdirs): procs.update( runMxdir(mxdir,show=args.verbose,reset=args.reset) )
     printProcs(procs,'Mx Limits')
     print 'Collecting Limits'
     for mxdir in sorted(mxdirs): procs.update( collectMxdir(mxdir,show=args.verbose) )
