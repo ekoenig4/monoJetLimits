@@ -15,6 +15,13 @@ def validHisto(hs,total=0,threshold=0.2):
 def validShape(up,dn):
     return any( up[ibin] != dn[ibin] for ibin in range(1,up.GetNbinsX()+1) ) and validHisto(up) and validHisto(dn)
 
+def getVariations(dir):
+    def extra(keyname): return not 'QCD' in keyname
+    variations = [ key.GetName().replace('ZJets_','').replace('Up','')
+                   for key in dir.GetListOfKeys()
+                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() and extra(key.GetName())]
+    return variations
+
 def addStat(dir,ws,hs,name=None):
     if name == None: name = hs.GetName()
     for ibin in range(1,hs.GetNbinsX()+1):
@@ -103,9 +110,7 @@ def getSignalRegion(dir,rfile,ws,signal,isScaled):
     print 'Processing sr'
     dir.cd()
 
-    variations = [ key.GetName().replace('ZJets_','').replace('Up','')
-                   for key in dir.GetListOfKeys()
-                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() ]
+    variations = getVariations(dir)
     
     data_obs = dir.Get('data_obs'); data_obs.SetDirectory(0)
     ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
@@ -142,9 +147,7 @@ def getLLCR(dir,rfile,ws,zbinlist):
     print 'Processing %s' % dir.GetName()
     dir.cd()
 
-    variations = [ key.GetName().replace('ZJets_','').replace('Up','')
-                   for key in dir.GetListOfKeys()
-                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() ]
+    variations = getVariations(dir)
     
     data_obs = dir.Get('data_obs'); data_obs.SetDirectory(0)
     ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
@@ -171,9 +174,7 @@ def getLCR(dir,rfile,ws,wbinlist):
     print 'Processing %s' % dir.GetName()
     dir.cd()
 
-    variations = [ key.GetName().replace('ZJets_','').replace('Up','')
-                   for key in dir.GetListOfKeys()
-                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() ]
+    variations = getVariations(dir)
     
     data_obs = dir.Get('data_obs'); data_obs.SetDirectory(0)
     ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
