@@ -2,12 +2,23 @@ from ROOT import *
 
 gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
+def DebugDraw(procname,hist,rhist,var):
+    frame = var.frame()
+    hs = rhist.createHistogram("t",var)
+    rhist.plotOn(frame)
+    frame.Draw()
+    hist.Draw('hist same')
+    hs.SetLineColor(kRed)
+    hs.Draw('hist same')
+    raw_input("Plotting %s" % procname)
+
 class Workspace:
-    def __init__(self,name,title):
+    def __init__(self,name,title,debug=False):
         self.ws = RooWorkspace(name,title)
         self.var = None
         self.varlist = RooArgList()
         self.store = []
+        self.debug = debug
         
     def setVar(self,var):
         self.var = var
@@ -15,6 +26,7 @@ class Workspace:
         
     def addTemplate(self,procname,hist):
         rhist = RooDataHist(procname,'',self.varlist,hist)
+        if self.debug: DebugDraw(procname,hist,rhist,self.var)
         getattr(self.ws,'import')(rhist)
         
     def makeBinList(self,procname,hist,binlist,setConst=False):
