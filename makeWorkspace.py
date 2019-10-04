@@ -63,10 +63,10 @@ def getargs():
     parser = ArgumentParser(description='Make workspace for generating limits based on input systematics file')
     parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",action="store",type=sysfile,default=None,required=True)
     parser.add_argument('--cr',help="Include CR datacards in datacard",action='store_true',default=False)
-    parser.add_argument('--no-scale',help="Disable signal scaling",action='store_true',default=False)
     parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
     try: args = parser.parse_args()
-    except:
+    except ValueError as err:
+        print err
         parser.print_help()
         exit()
     return args
@@ -80,8 +80,6 @@ def makeWorkspace():
     sysfile = os.path.abspath(args.input)
     ##########################################################
     dir = 'Limits/'+fname.replace('.root', '')
-    if args.cr: dir = dir.replace('.sys','wCR.sys')
-    if args.no_scale: dir = dir.replace('.sys','nSC.sys')
     dir = os.path.abspath(dir)
     
     if args.reset and os.path.isdir(dir): rmtree(dir)
@@ -89,7 +87,7 @@ def makeWorkspace():
     ##################################################
     os.chdir(dir)
     wsfname = 'workspace.root'
-    if not os.path.isfile(wsfname): createWorkspace(sysfile,isScaled=not args.no_scale)
+    if not os.path.isfile(wsfname): createWorkspace(sysfile)
     createDatacards(wsfname)
     ########################################################
     for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,cr=args.cr)

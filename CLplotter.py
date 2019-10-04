@@ -10,8 +10,6 @@ gROOT.SetBatch(1)
 
 outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 home = os.getcwd()
-
-##########
 def checkdir(dir):
     if not os.path.isdir(dir): os.mkdir(dir)
 #####################################################################

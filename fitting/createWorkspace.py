@@ -9,6 +9,11 @@ gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
 mclist = ['ZJets','WJets','DYJets','TTJets','DiBoson','GJets','QCD']
 
+options = {
+    'doStats':False,
+    'doTrans':False,
+}
+
 def validHisto(hs,total=0,threshold=0.2):
     return hs.Integral() > threshold*total
 
@@ -16,13 +21,13 @@ def validShape(up,dn):
     return any( up[ibin] != dn[ibin] for ibin in range(1,up.GetNbinsX()+1) ) and validHisto(up) and validHisto(dn)
 
 def getVariations(dir):
-    def extra(keyname): return not 'QCD' in keyname
     variations = [ key.GetName().replace('ZJets_','').replace('Up','')
                    for key in dir.GetListOfKeys()
-                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() and extra(key.GetName())]
+                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() ]
     return variations
 
 def addStat(dir,ws,hs,name=None):
+    if not options['doStats']: return
     if name == None: name = hs.GetName()
     for ibin in range(1,hs.GetNbinsX()+1):
         up = hs.Clone("%s_%s_histBinUp" % (hs.GetName(),dir.GetName()))
@@ -62,6 +67,7 @@ def getFractionalShift(norm,up,dn):
     return sh
 
 def ZWLink(dir,ws,variations,connect):
+    if not options['doTrans']: return [],[]
     print 'Processing %s Transfer Factors' % dir.GetName()
     zjet = dir.Get("ZJets")
     wjet = dir.Get("WJets")
@@ -130,6 +136,7 @@ def getSignalRegion(dir,rfile,ws,signal,isScaled):
     return zbinlist,wbinlist,signal_scale
 
 def getLLTransfer(dir,ws,variations,zbinlist):
+    if not options['doTrans']: return
     print 'Processing %s Transfer Factors' % dir.GetName()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
     covers_hs = tfdir.Get("ZJets")
@@ -157,6 +164,7 @@ def getLLCR(dir,rfile,ws,zbinlist):
     addMC(dir,ws,variations)
 
 def getLTransfer(dir,ws,variations,wbinlist):
+    if not options['doTrans']: return
     print 'Processing %s Transfer Factors' % dir.GetName()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
     covers_hs = tfdir.Get("WJets")
