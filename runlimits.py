@@ -38,7 +38,7 @@ def collectWorkspace(mxdirs,show=False):
     #####
     with open('limits.json','w') as f: json.dump(ws,f,indent=4)
 ##############################################################################
-def collectMxdir(mxdir,show=False):
+def collectMxdir(mxdir,show=False,reset=False):
     mx = mxdir.replace('Mx_','').replace('/','')
     cwd = os.getcwd()
     os.chdir(mxdir)
@@ -46,7 +46,7 @@ def collectMxdir(mxdir,show=False):
     mxdict = {}
     mvprocs = []
     output = 'zprimeMx%s.json' % mx
-    if not os.path.isfile(output):
+    if not os.path.isfile(output) or reset:
         args = ['combineTool.py','-M','CollectLimits']
         for mv in mvlist:
             mv = mv.replace('\n','')
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     for mxdir in sorted(mxdirs): procs.update( runMxdir(mxdir,show=args.verbose,reset=args.reset) )
     printProcs(procs,'Mx Limits')
     print 'Collecting Limits'
-    for mxdir in sorted(mxdirs): procs.update( collectMxdir(mxdir,show=args.verbose) )
+    for mxdir in sorted(mxdirs): procs.update( collectMxdir(mxdir,show=args.verbose,reset=args.reset) )
     printProcs(procs,'Mx Output')
     collectWorkspace(mxdirs,show=args.verbose)
 #################################################################################################
