@@ -202,7 +202,7 @@ def getMetadata(sysfile,output):
         hs_meta = sysfile.Get(meta)
         hs_meta.Write()
         
-def createWorkspace(input,isScaled=True):
+def createWorkspace(input,isScaled=True,doCR=True):
     ws = Workspace('w','w')
 
     outfname = 'workspace.root'
@@ -216,21 +216,22 @@ def createWorkspace(input,isScaled=True):
     dir_sr = sysfile.GetDirectory('sr')
     zbinlist,wbinlist,signal_scale = getSignalRegion(dir_sr,sysfile,ws,r"Mx\d*_Mv\d*$",isScaled)
 
-    #-----Double Muon-----#
-    dir_mm = sysfile.GetDirectory('mm')
-    getLLCR(dir_mm,sysfile,ws,zbinlist)
-    
-    #-----Double Electron-----#
-    dir_mm = sysfile.GetDirectory('ee')
-    getLLCR(dir_mm,sysfile,ws,zbinlist)
-
-    #-----Single Muon-----#
-    dir_m = sysfile.GetDirectory('m')
-    getLCR(dir_m,sysfile,ws,wbinlist)
-
-    #-----Single Electron-----#
-    dir_e = sysfile.GetDirectory('e')
-    getLCR(dir_e,sysfile,ws,wbinlist)
+    if doCR:
+        #-----Double Muon-----#
+        dir_mm = sysfile.GetDirectory('mm')
+        getLLCR(dir_mm,sysfile,ws,zbinlist)
+        
+        #-----Double Electron-----#
+        dir_mm = sysfile.GetDirectory('ee')
+        getLLCR(dir_mm,sysfile,ws,zbinlist)
+        
+        #-----Single Muon-----#
+        dir_m = sysfile.GetDirectory('m')
+        getLCR(dir_m,sysfile,ws,wbinlist)
+        
+        #-----Single Electron-----#
+        dir_e = sysfile.GetDirectory('e')
+        getLCR(dir_e,sysfile,ws,wbinlist)
 
     #-----Meta Data-----#
     getMetadata(sysfile,output)

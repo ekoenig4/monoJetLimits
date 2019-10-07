@@ -87,8 +87,8 @@ def makeWorkspace():
     ##################################################
     os.chdir(dir)
     wsfname = 'workspace.root'
-    if not os.path.isfile(wsfname): createWorkspace(sysfile)
-    createDatacards(wsfname)
+    if not os.path.isfile(wsfname): createWorkspace(sysfile,doCR=args.cr)
+    createDatacards(wsfname,doCR=args.cr)
     ########################################################
     for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,cr=args.cr)
 ######################################################################

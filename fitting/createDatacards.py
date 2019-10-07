@@ -22,27 +22,32 @@ channels = {
   'sr':
   {
     'mc':[signal] + mclist,
-    'transfer':[r'^zoverw_\S*$',r'^WJets_sr_\S*_Runc$']
+    'transfer':[r'^zoverw_\S*$',r'^WJets_sr_\S*_Runc$'],
+    'isCR':False
   },
   'e':
   {
     'mc':mclist,
-    'transfer':[r'^WJets_e_\S*_Runc$']
+    'transfer':[r'^WJets_e_\S*_Runc$'],
+    'isCR':True
   },
   'm':
   {
     'mc':mclist,
-    'transfer':[r'^WJets_m_\S*_Runc$']
+    'transfer':[r'^WJets_m_\S*_Runc$'],
+    'isCR':True
   },
   'ee':
   {
     'mc':mclist,
-    'transfer':[r'^DYJets_ee_\S*_Runc$']
+    'transfer':[r'^DYJets_ee_\S*_Runc$'],
+    'isCR':True
   },
   'mm':
   {
     'mc':mclist,
-    'transfer':[r'^DYJets_mm_\S*_Runc$']
+    'transfer':[r'^DYJets_mm_\S*_Runc$'],
+    'isCR':True
   }
 }
 
@@ -94,10 +99,11 @@ def getWorkspace(fname):
   ws = rfile.Get('w')
   return ws
       
-def createDatacards(input): 
+def createDatacards(input,doCR=True): 
   ws = getWorkspace(input)
 
   for ch,info in channels.iteritems():
+    if info['isCR'] and not doCR: continue
     makeCard(input,ch,info,ws=ws)
         
 
