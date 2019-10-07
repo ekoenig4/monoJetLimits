@@ -51,7 +51,7 @@ channels = {
   }
 }
 
-def makeCard(wsfname,ch,info,ws=None):
+def makeCard(wsfname,ch,info,ws=None,noSys=False):
   if ws == None:
     rfile = TFile.Open(wsfname)
     ws = rfile.Get('w')
@@ -77,15 +77,17 @@ def makeCard(wsfname,ch,info,ws=None):
     hist = ch_hist[proc]
     if mc == signal: ch_card.addSignal(mc,shape=(wsfname,'w:%s' % proc))
     else:              ch_card.addBkg(mc,shape=(wsfname,'w:%s' % proc))
-    
+
+    if noSys: continue
     ch_card.addNuisance(mc,'lumi','lnN',1.026)
     ch_card.addNuisance(mc,'et_trigg','lnN',1.01)
     ch_card.addNuisance(mc,'bjet_veto','lnN',1.02)
     variations = [ key.replace('%s_' % proc ,'').replace('Up','') for key in ch_hist if re.search(r'%s_%s_\S*Up$' % (mc,ch),key) ]
     for variation in variations: ch_card.addNuisance(mc,variation,'shape',1)
   #####
-  ch_card.addNuisance('ZJets','ZJets_EWK','lnN',1.10)
-  ch_card.addNuisance('WJets','WJets_EWK','lnN',1.15)
+  if not noSys:
+    ch_card.addNuisance('ZJets','ZJets_EWK','lnN',1.10)
+    ch_card.addNuisance('WJets','WJets_EWK','lnN',1.15)
 
   # Remove possibly uneeded nuisance parameters from certain processes
   for process in ('WJets','ZJets'):
@@ -99,12 +101,12 @@ def getWorkspace(fname):
   ws = rfile.Get('w')
   return ws
       
-def createDatacards(input,doCR=True): 
+def createDatacards(input,doCR=True,noSys=False): 
   ws = getWorkspace(input)
 
   for ch,info in channels.iteritems():
     if info['isCR'] and not doCR: continue
-    makeCard(input,ch,info,ws=ws)
+    makeCard(input,ch,info,ws=ws,noSys=noSys)
         
 
 if __name__ == "__main__":

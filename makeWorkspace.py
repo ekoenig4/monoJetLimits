@@ -64,6 +64,7 @@ def getargs():
     parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",action="store",type=sysfile,default=None,required=True)
     parser.add_argument('--cr',help="Include CR datacards in datacard",action='store_true',default=False)
     parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
+    parser.add_argument('--no-sys',help="Remove systematics from datacards",action='store_true',default=False)
     try: args = parser.parse_args()
     except ValueError as err:
         print err
@@ -88,7 +89,7 @@ def makeWorkspace():
     os.chdir(dir)
     wsfname = 'workspace.root'
     if not os.path.isfile(wsfname): createWorkspace(sysfile,doCR=args.cr)
-    createDatacards(wsfname,doCR=args.cr)
+    createDatacards(wsfname,doCR=args.cr,noSys=args.no_sys)
     ########################################################
     for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,cr=args.cr)
 ######################################################################
