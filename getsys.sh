@@ -3,9 +3,9 @@ if [ ! -d Systematics ]; then mkdir Systematics; fi
 if [ ! -d Systematics/2016 ]; then mkdir Systematics/2016/; fi
 if [ ! -d Systematics/2017 ]; then mkdir Systematics/2017/; fi
 if [ ! -d Systematics/2018 ]; then mkdir Systematics/2018/; fi
-_2016=/nfs_scratch/ekoenig4/MonoZprimeJet/ZprimeTools2016/CMSSW_10_2_10/src/ZprimeTools2016
-_2017=/nfs_scratch/ekoenig4/MonoZprimeJet/ZprimeTools2017/CMSSW_10_2_10/src/ZprimeTools2017
-_2018=/nfs_scratch/ekoenig4/MonoZprimeJet/ZprimeTools2018/CMSSW_10_2_10/src/ZprimeTools2018
+_2016=/nfs_scratch/ekoenig4/MonoZprimeJet/CMSSW_10_2_10/src/ZprimeTools2016
+_2017=/nfs_scratch/ekoenig4/MonoZprimeJet/CMSSW_10_2_10/src/ZprimeTools2017
+_2018=/nfs_scratch/ekoenig4/MonoZprimeJet/CMSSW_10_2_10/src/ZprimeTools2018
 
 echo $_2016
 cp $_2016/Systematics/* Systematics/2016/
