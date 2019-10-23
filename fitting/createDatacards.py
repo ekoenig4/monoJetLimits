@@ -16,7 +16,7 @@ def iter_collection(rooAbsCollection):
 
 mclist = ['ZJets','WJets','DiBoson','GJets','TTJets','DYJets','QCD']
 
-signal = 'Mx10_Mv1000'
+signal = 'Mx1_Mv1000'
 
 channels = {
   'sr':
@@ -83,11 +83,13 @@ def makeCard(wsfname,ch,info,ws=None,noSys=False):
     ch_card.addNuisance(mc,'et_trigg','lnN',1.01)
     ch_card.addNuisance(mc,'bjet_veto','lnN',1.02)
     variations = [ key.replace('%s_' % proc ,'').replace('Up','') for key in ch_hist if re.search(r'%s_%s_\S*Up$' % (mc,ch),key) ]
-    for variation in variations: ch_card.addNuisance(mc,variation,'shape',1)
+    for variation in variations:
+      if 'PFU' in variation: continue
+      ch_card.addNuisance(mc,variation,'shape',1)
   #####
-  if not noSys:
-    ch_card.addNuisance('ZJets','ZJets_EWK','lnN',1.10)
-    ch_card.addNuisance('WJets','WJets_EWK','lnN',1.15)
+  # if not noSys:
+  #   ch_card.addNuisance('ZJets','ZJets_EWK','lnN',1.10)
+  #   ch_card.addNuisance('WJets','WJets_EWK','lnN',1.15)
 
   # Remove possibly uneeded nuisance parameters from certain processes
   for process in ('WJets','ZJets'):

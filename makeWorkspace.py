@@ -5,7 +5,7 @@ from shutil import rmtree
 from argparse import ArgumentParser
 from array import array
 from fitting.createWorkspace import createWorkspace
-from fitting.createDatacards import createDatacards
+from fitting.createDatacards import createDatacards,signal
 import re
 from subprocess import Popen,PIPE,STDOUT
 
@@ -21,10 +21,10 @@ def GetMxlist(sysfile):
     for sample in gDirectory.GetListOfKeys():
         if regexp.search(sample.GetName()):
             mx = sample.GetName().split('_')[0].replace('Mx','')
-            if mx not in mx_include: continue
+            # if mx not in mx_include: continue
             mv = sample.GetName().split('_')[1].replace('Mv','')
             if mx not in mxlist: mxlist[mx] = []
-            if mv in mv_exclude: continue
+            # if mv in mv_exclude: continue
             mxlist[mx].append(mv)
     return mxlist
 def makeMxDir(mx,mvlist,cr=False):
@@ -43,7 +43,7 @@ def makeMxDir(mx,mvlist,cr=False):
     os.system( command )
 
     with open('datacard','r') as f: card = f.read()
-    card = card.replace('Mx10_Mv1000','Mx%s_Mv$MASS' % mx)
+    card = card.replace(signal,'Mx%s_Mv$MASS' % mx)
     with open('datacard','w') as f: f.write(card)
     with open('mvlist','w') as f:
         for mv in mvlist:

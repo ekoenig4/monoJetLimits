@@ -15,6 +15,7 @@ def checkdir(dir):
 #####################################################################
 def exclude(data):
     exclude_mx = ['1','150','500','1000']
+    exclude_mx = []
     exclude_mv = ['15','10000']
 
     for mx in exclude_mx:
