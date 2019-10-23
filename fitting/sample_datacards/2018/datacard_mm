@@ -1,0 +1,75 @@
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------
+shapes data_obs            mm   workspace.root      w:data_obs_mm       
+shapes WJets               mm   workspace.root      w:WJets_mm          w:WJets_mm_$SYSTEMATIC
+shapes DiBoson             mm   workspace.root      w:DiBoson_mm        w:DiBoson_mm_$SYSTEMATIC
+shapes TTJets              mm   workspace.root      w:TTJets_mm         w:TTJets_mm_$SYSTEMATIC
+shapes DYJets              mm   workspace.root      w:DYJets_mm         w:DYJets_mm_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------
+bin             mm
+observation     -1
+----------------------------------------------------------------------------------------------------
+bin                           mm                  mm                  mm                  mm                  
+process                       WJets               DiBoson             TTJets              DYJets              
+process                       1                   2                   3                   4                   
+rate                          -1                  -1                  -1                  -1                  
+----------------------------------------------------------------------------------------------------
+JES                 shape     -                   1                   1                   1                   
+PSW_fsrCon          shape     1                   1                   1                   1                   
+PSW_isrCon          shape     1                   1                   1                   1                   
+bjet_veto           lnN       1.02                1.02                1.02                1.02                
+et_trigg            lnN       1.01                1.01                1.01                1.01                
+lumi                lnN       1.026               1.026               1.026               1.026               
+----------------------------------------------------------------------------------------------------
+DYJets_mm_bin1_Runc  param 0 1
+DYJets_mm_bin2_Runc  param 0 1
+DYJets_mm_bin3_Runc  param 0 1
+DYJets_mm_bin4_Runc  param 0 1
+DYJets_mm_bin5_Runc  param 0 1
+DYJets_mm_bin6_Runc  param 0 1
+DYJets_mm_bin7_Runc  param 0 1
+DYJets_mm_bin8_Runc  param 0 1
+DYJets_mm_bin9_Runc  param 0 1
+DYJets_mm_bin10_Runc param 0 1
+DYJets_mm_bin11_Runc param 0 1
+DYJets_mm_bin12_Runc param 0 1
+DYJets_mm_bin13_Runc param 0 1
+DYJets_mm_bin14_Runc param 0 1
+DYJets_mm_bin15_Runc param 0 1
+DYJets_mm_bin16_Runc param 0 1
+DYJets_mm_bin17_Runc param 0 1
+DYJets_mm_bin18_Runc param 0 1
+DYJets_mm_bin19_Runc param 0 1
+DYJets_mm_bin20_Runc param 0 1
+DYJets_mm_bin21_Runc param 0 1
+DYJets_mm_bin22_Runc param 0 1
+DYJets_mm_bin23_Runc param 0 1
+DYJets_mm_bin24_Runc param 0 1
+DYJets_mm_bin25_Runc param 0 1
+DYJets_mm_bin26_Runc param 0 1
+DYJets_mm_bin27_Runc param 0 1
+DYJets_mm_bin28_Runc param 0 1
+DYJets_mm_bin29_Runc param 0 1
+DYJets_mm_bin30_Runc param 0 1
+DYJets_mm_bin31_Runc param 0 1
+DYJets_mm_bin32_Runc param 0 1
+DYJets_mm_bin33_Runc param 0 1
+DYJets_mm_bin34_Runc param 0 1
+DYJets_mm_bin35_Runc param 0 1
+DYJets_mm_bin36_Runc param 0 1
+DYJets_mm_bin37_Runc param 0 1
+DYJets_mm_bin38_Runc param 0 1
+DYJets_mm_bin39_Runc param 0 1
+DYJets_mm_bin40_Runc param 0 1
+DYJets_mm_bin41_Runc param 0 1
+DYJets_mm_bin42_Runc param 0 1
+DYJets_mm_bin43_Runc param 0 1
+DYJets_mm_bin44_Runc param 0 1
+DYJets_mm_bin45_Runc param 0 1
+DYJets_mm_bin46_Runc param 0 1
+DYJets_mm_bin47_Runc param 0 1
+DYJets_mm_bin48_Runc param 0 1
+DYJets_mm_bin49_Runc param 0 1
+DYJets_mm_bin50_Runc param 0 1

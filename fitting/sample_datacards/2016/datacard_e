@@ -1,0 +1,77 @@
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------
+shapes data_obs            e    workspace.root      w:data_obs_e        
+shapes ZJets               e    workspace.root      w:ZJets_e           w:ZJets_e_$SYSTEMATIC
+shapes WJets               e    workspace.root      w:WJets_e           w:WJets_e_$SYSTEMATIC
+shapes DiBoson             e    workspace.root      w:DiBoson_e         w:DiBoson_e_$SYSTEMATIC
+shapes GJets               e    workspace.root      w:GJets_e           w:GJets_e_$SYSTEMATIC
+shapes TTJets              e    workspace.root      w:TTJets_e          w:TTJets_e_$SYSTEMATIC
+shapes DYJets              e    workspace.root      w:DYJets_e          w:DYJets_e_$SYSTEMATIC
+shapes QCD                 e    workspace.root      w:QCD_e             w:QCD_e_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------
+bin             e
+observation     -1
+----------------------------------------------------------------------------------------------------
+bin                           e                   e                   e                   e                   e                   e                   e                   
+process                       ZJets               WJets               DiBoson             GJets               TTJets              DYJets              QCD                 
+process                       1                   2                   3                   4                   5                   6                   7                   
+rate                          -1                  -1                  -1                  -1                  -1                  -1                  -1                  
+----------------------------------------------------------------------------------------------------
+JES                 shape     -                   -                   1                   1                   1                   1                   1                   
+PFU_ecal            shape     1                   1                   1                   1                   1                   1                   1                   
+bjet_veto           lnN       1.02                1.02                1.02                1.02                1.02                1.02                1.02                
+et_trigg            lnN       1.01                1.01                1.01                1.01                1.01                1.01                1.01                
+lumi                lnN       1.026               1.026               1.026               1.026               1.026               1.026               1.026               
+----------------------------------------------------------------------------------------------------
+WJets_e_bin1_Runc    param 0 1
+WJets_e_bin2_Runc    param 0 1
+WJets_e_bin3_Runc    param 0 1
+WJets_e_bin4_Runc    param 0 1
+WJets_e_bin5_Runc    param 0 1
+WJets_e_bin6_Runc    param 0 1
+WJets_e_bin7_Runc    param 0 1
+WJets_e_bin8_Runc    param 0 1
+WJets_e_bin9_Runc    param 0 1
+WJets_e_bin10_Runc   param 0 1
+WJets_e_bin11_Runc   param 0 1
+WJets_e_bin12_Runc   param 0 1
+WJets_e_bin13_Runc   param 0 1
+WJets_e_bin14_Runc   param 0 1
+WJets_e_bin15_Runc   param 0 1
+WJets_e_bin16_Runc   param 0 1
+WJets_e_bin17_Runc   param 0 1
+WJets_e_bin18_Runc   param 0 1
+WJets_e_bin19_Runc   param 0 1
+WJets_e_bin20_Runc   param 0 1
+WJets_e_bin21_Runc   param 0 1
+WJets_e_bin22_Runc   param 0 1
+WJets_e_bin23_Runc   param 0 1
+WJets_e_bin24_Runc   param 0 1
+WJets_e_bin25_Runc   param 0 1
+WJets_e_bin26_Runc   param 0 1
+WJets_e_bin27_Runc   param 0 1
+WJets_e_bin28_Runc   param 0 1
+WJets_e_bin29_Runc   param 0 1
+WJets_e_bin30_Runc   param 0 1
+WJets_e_bin31_Runc   param 0 1
+WJets_e_bin32_Runc   param 0 1
+WJets_e_bin33_Runc   param 0 1
+WJets_e_bin34_Runc   param 0 1
+WJets_e_bin35_Runc   param 0 1
+WJets_e_bin36_Runc   param 0 1
+WJets_e_bin37_Runc   param 0 1
+WJets_e_bin38_Runc   param 0 1
+WJets_e_bin39_Runc   param 0 1
+WJets_e_bin40_Runc   param 0 1
+WJets_e_bin41_Runc   param 0 1
+WJets_e_bin42_Runc   param 0 1
+WJets_e_bin43_Runc   param 0 1
+WJets_e_bin44_Runc   param 0 1
+WJets_e_bin45_Runc   param 0 1
+WJets_e_bin46_Runc   param 0 1
+WJets_e_bin47_Runc   param 0 1
+WJets_e_bin48_Runc   param 0 1
+WJets_e_bin49_Runc   param 0 1
+WJets_e_bin50_Runc   param 0 1

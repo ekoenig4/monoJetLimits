@@ -76,11 +76,14 @@ def makeWorkspace():
     if not os.path.isdir("Limits/"): os.mkdir("Limits/")
 
     args = getargs()
+    year = re.findall(r"20\d\d",args.input)[0]
+    if not os.path.isdir("Limits/%s/" % year): os.mkdir("Limits/%s/" % year)
+    
     mxlist = GetMxlist(args.input)
     fname = args.input.split('/')[-1]
     sysfile = os.path.abspath(args.input)
     ##########################################################
-    dir = 'Limits/'+fname.replace('.root', '')
+    dir = ('Limits/%s/' % year) +fname.replace('.root', '')
     dir = os.path.abspath(dir)
     
     if args.reset and os.path.isdir(dir): rmtree(dir)

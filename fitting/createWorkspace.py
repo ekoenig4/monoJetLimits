@@ -9,9 +9,12 @@ gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
 mclist = ['ZJets','WJets','DYJets','TTJets','DiBoson','GJets','QCD']
 
+zw_variations = ["QCD_Scale","QCD_Shape","QCD_Proc","NNLO_EWK","NNLO_Miss","NNLO_Sud","QCD_EWK_Mix"]
+cs_variations = []
+
 options = {
     'doStats':False,
-    'doTrans':False,
+    'doTrans':True,
 }
 
 def validHisto(hs,total=0,threshold=0.2):
@@ -23,7 +26,7 @@ def validShape(up,dn):
 def getVariations(dir):
     variations = [ key.GetName().replace('ZJets_','').replace('Up','')
                    for key in dir.GetListOfKeys()
-                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() ]
+                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() and not any( variation in key.GetName() for variation in zw_variations ) ]
     return variations
 
 def addStat(dir,ws,hs,name=None):
@@ -66,7 +69,7 @@ def getFractionalShift(norm,up,dn):
         sh[ibin] = shiftEnvelope
     return sh
 
-def ZWLink(dir,ws,variations,connect):
+def ZWLink(dir,ws,connect):
     if not options['doTrans']: return [],[]
     print 'Processing %s Transfer Factors' % dir.GetName()
     zjet = dir.Get("ZJets")
@@ -76,7 +79,7 @@ def ZWLink(dir,ws,variations,connect):
     zwdir = dir.GetDirectory("zwlink"); zwdir.cd()
     woverz_hs = zwdir.Get("ZWlink")
     syslist = []
-    for variation in variations:
+    for variation in zw_variations:
         if variation == 'JES': continue
         for process in ('WJets','ZJets'):
             woverz_up = zwdir.Get("ZWlink_%sUp_%s" % (variation,process))
@@ -129,19 +132,19 @@ def getSignalRegion(dir,rfile,ws,signal,isScaled):
         signal_scale = addSignal(dir,ws,variations,signals,isScaled)
         
 
-    zbinlist,wbinlist = ZWLink(dir,ws,variations,True)
+    zbinlist,wbinlist = ZWLink(dir,ws,True)
 
     addMC(dir,ws,variations)
 
     return zbinlist,wbinlist,signal_scale
 
-def getLLTransfer(dir,ws,variations,zbinlist):
+def getLLTransfer(dir,ws,zbinlist):
     if not options['doTrans']: return
     print 'Processing %s Transfer Factors' % dir.GetName()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
     covers_hs = tfdir.Get("ZJets")
     syslist = []
-    for variation in variations:
+    for variation in cs_variations:
         covers_up = tfdir.Get("ZJets_%sUp" % variation)
         covers_dn = tfdir.Get("ZJets_%sDown" % variation)
         if not validShape(covers_up,covers_dn): continue
@@ -159,17 +162,17 @@ def getLLCR(dir,rfile,ws,zbinlist):
     data_obs = dir.Get('data_obs'); data_obs.SetDirectory(0)
     ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
 
-    getLLTransfer(dir,ws,variations,zbinlist)
+    getLLTransfer(dir,ws,zbinlist)
 
     addMC(dir,ws,variations)
 
-def getLTransfer(dir,ws,variations,wbinlist):
+def getLTransfer(dir,ws,wbinlist):
     if not options['doTrans']: return
     print 'Processing %s Transfer Factors' % dir.GetName()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
     covers_hs = tfdir.Get("WJets")
     syslist = []
-    for variation in variations:
+    for variation in cs_variations:
         covers_up = tfdir.Get("WJets_%sUp" % variation)
         covers_dn = tfdir.Get("WJets_%sDown" % variation)
         if not validShape(covers_up,covers_dn): continue
@@ -187,7 +190,7 @@ def getLCR(dir,rfile,ws,wbinlist):
     data_obs = dir.Get('data_obs'); data_obs.SetDirectory(0)
     ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
 
-    getLTransfer(dir,ws,variations,wbinlist)
+    getLTransfer(dir,ws,wbinlist)
 
     addMC(dir,ws,variations)
 
