@@ -14,9 +14,9 @@ def getargs():
     parser.add_argument("-d","--dir",help="specify directory to run pulls in",action="store",type=str,required=True)
     parser.add_argument("-s","--signal",help="specify signal sample to run pulls on",action="store",type=str,default="Mx1_Mv1000")
     return parser.parse_args()
-def export():
+def export(signal):
     from ROOT import TFile
-    TFile.Open("test.root").Get("nuisances").Print("test.pdf")
+    TFile.Open("test.root").Get("nuisances").Print("%s_pulls.pdf" % signal)
 def run(command):
     print command
     Popen(command.split()).wait()
@@ -24,8 +24,8 @@ def run(command):
 if __name__ == "__main__":
     args = getargs()
     os.chdir(args.dir)
-    if not os.path.isdir("test"): os.mkdir("test")
-    os.chdir("test")
+    if not os.path.isdir("pulls"): os.mkdir("pulls")
+    os.chdir("pulls")
     workspace = "%s_sr.root" % args.signal
     mx = args.signal.split("_")[0].replace("Mx","")
     mv = args.signal.split("_")[1].replace("Mv","")
@@ -33,4 +33,4 @@ if __name__ == "__main__":
     run( text2workspace % (mx,mv,workspace) )
     run( combine % workspace )
     run( diffNuisances )
-    export()
+    export(args.signal)
