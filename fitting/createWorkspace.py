@@ -26,7 +26,7 @@ def validShape(up,dn):
 def getVariations(dir):
     variations = [ key.GetName().replace('ZJets_','').replace('Up','')
                    for key in dir.GetListOfKeys()
-                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() and not any( variation in key.GetName() for variation in zw_variations ) ]
+                   if 'ZJets' in key.GetName() and 'Up' in key.GetName() ]
     return variations
 
 def addStat(dir,ws,hs,name=None):
@@ -37,6 +37,7 @@ def addStat(dir,ws,hs,name=None):
         dn = hs.Clone("%s_%s_histBinDown" % (hs.GetName(),dir.GetName()))
         up[ibin] = up[ibin] + up.GetBinError(ibin)
         dn[ibin] = max( 0.01*dn[ibin],dn[ibin] - dn.GetBinError(ibin))
+        if not validShape(up,dn): continue
 
         ws.addTemplate("%s_%s_%s%sBin%iUp" % (hs.GetName(),dir.GetName(),name,dir.GetName(),ibin),up)
         ws.addTemplate("%s_%s_%s%sBin%iDown" % (hs.GetName(),dir.GetName(),name,dir.GetName(),ibin),dn)

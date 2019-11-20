@@ -9,10 +9,6 @@ from fitting.createDatacards import createDatacards,signal
 import re
 from subprocess import Popen,PIPE,STDOUT
 
-mv_exclude = ['10000']
-mx_exclude = ['1']
-mx_include = ['10','50','100']
-
 def GetMxlist(sysfile):
     rfile = TFile.Open(sysfile)
     rfile.cd('sr')
@@ -21,10 +17,8 @@ def GetMxlist(sysfile):
     for sample in gDirectory.GetListOfKeys():
         if regexp.search(sample.GetName()):
             mx = sample.GetName().split('_')[0].replace('Mx','')
-            # if mx not in mx_include: continue
             mv = sample.GetName().split('_')[1].replace('Mv','')
             if mx not in mxlist: mxlist[mx] = []
-            # if mv in mv_exclude: continue
             mxlist[mx].append(mv)
     return mxlist
 def makeMxDir(mx,mvlist,cr=False):

@@ -107,7 +107,6 @@ def createDatacards(input,doCR=True,noSys=False):
   ws = getWorkspace(input)
 
   for ch,info in channels.iteritems():
-    if info['isCR'] and not doCR: continue
     makeCard(input,ch,info,ws=ws,noSys=noSys)
         
 
