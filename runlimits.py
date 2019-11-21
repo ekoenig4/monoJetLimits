@@ -14,7 +14,6 @@ class cPopen(Popen):
     def duration(self): return time() - self.start
 ##############################################################################
 def collectWorkspace(mxdirs,show=False):
-    print 'Collecting Workspace'
     with open('signal_scaling.json') as f: scaling = json.load(f)
     mxjsons = {}
     cwd = os.getcwd()
@@ -53,11 +52,12 @@ def collectMxdir(mxdir,show=False,reset=False):
             args.append( 'higgsCombineMx%s_Mv%s.AsymptoticLimits.mH%s.root' % (mx,mv,mv) )
         args += ['-o',output]
         if show:
+            print cwd,mxdir
             mxproc = cPopen(args)
-            proc.wait()
+            mxproc.wait()
         else:
             mxproc = cPopen(args,stdout=PIPE,stderr=STDOUT)
-        mxdict[mx] = mxproc
+        mxdict['%s_%s' % (cwd,mx)] = mxproc
     #####
     os.chdir(cwd)
     return mxdict
@@ -74,12 +74,12 @@ def runMxdir(mxdir,show=False,reset=False):
         if not reset and os.path.isfile(output): continue
         args =  [ 'combine','-M','AsymptoticLimits','-n','Mx%s_Mv%s' % (mx,mv),'-m',mv,'datacard' ]
         if show:
-            print 'Mx %s Mv %s' % (mx,mv)
+            print cwd,mxdir,mv
             proc = cPopen(args)
             proc.wait()
         else:
             proc = cPopen(args,stdout=PIPE,stderr=STDOUT)
-            mvprocs['Mx%sMv%s' % (mx,mv)] = proc
+            mvprocs['%s_Mx%sMv%s' % (cwd,mx,mv)] = proc
     os.chdir(cwd)
     return mvprocs
 ##############################################################################
@@ -106,16 +106,44 @@ def printProcs(procs,name):
             out = '%s : %.3f%%' % (prompt,percent)
             sys.stdout.write(out)
             sys.stdout.flush()
-    out = '%s : %i%%\n' % (prompt,100)
+    out = '%s : %.3f%%\n' % (prompt,100.)
     sys.stdout.write(out)
     sys.stdout.flush()
+##############################################################################
+def runLimits(path,show=False,reset=False):
+    cwd = os.getcwd()
+    os.chdir(path)
+    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
+    procs = {}
+    for mxdir in sorted(mxdirs):
+        procs.update( runMxdir(mxdir,show,reset) )
+    os.chdir(cwd)
+    return procs
+##############################################################################
+def collectLimits(path,show=False,reset=False):
+    cwd = os.getcwd()
+    os.chdir(path)
+    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
+    procs = {}
+    for mxdir in sorted(mxdirs):
+        procs.update( collectMxdir(mxdir,show,reset) )
+    os.chdir(cwd)
+    return procs
+##############################################################################
+def collectWorkspaces(path,show=False):
+    cwd = os.getcwd()
+    os.chdir(path)
+    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
+    print 'Collecting %s' % path
+    collectWorkspace(mxdirs,show=show)
+    os.chdir(cwd)
 ##############################################################################
 def getargs():
     def directory(arg):
         if os.path.isdir(arg): return arg
         else: raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
-    parser.add_argument("-d","--dir",help='Specify the directory to run limits in',action='store',type=directory,default=None,required=True)
+    parser.add_argument("-d","--dir",help='Specify the directory to run limits in',action='store',type=directory,default=None,nargs='+',required=True)
     parser.add_argument("-v","--verbose",help='Show output from combine',action='store_true',default=False)
     parser.add_argument("-r","--reset",help='Run limits event if they have already been done',action='store_true',default=False)
     try: args = parser.parse_args()
@@ -126,14 +154,12 @@ def getargs():
 ##############################################################################
 if __name__ == "__main__":
     args = getargs()
-    os.chdir(args.dir)
-    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
-    procs = {}
     print 'Running Limits'
-    for mxdir in sorted(mxdirs): procs.update( runMxdir(mxdir,show=args.verbose,reset=args.reset) )
+    procs = {}
+    for path in args.dir: procs.update( runLimits(path,show=args.verbose,reset=args.reset) )
     printProcs(procs,'Mx Limits')
     print 'Collecting Limits'
-    for mxdir in sorted(mxdirs): procs.update( collectMxdir(mxdir,show=args.verbose,reset=args.reset) )
+    for path in args.dir: procs.update( collectLimits(path,show=args.verbose,reset=args.reset) )
     printProcs(procs,'Mx Output')
-    collectWorkspace(mxdirs,show=args.verbose)
+    for path in args.dir: collectWorkspaces(path,show=args.verbose)
 #################################################################################################

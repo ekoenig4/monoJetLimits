@@ -13,7 +13,7 @@ zw_variations = ["QCD_Scale","QCD_Shape","QCD_Proc","NNLO_EWK","NNLO_Miss","NNLO
 cs_variations = []
 
 options = {
-    'doStats':False,
+    'doStats':True,
     'doTrans':True,
 }
 

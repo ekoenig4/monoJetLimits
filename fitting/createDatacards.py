@@ -50,8 +50,13 @@ channels = {
     'isCR':True
   }
 }
+zw_variations = ["QCD_Scale","QCD_Shape","QCD_Proc","NNLO_EWK","NNLO_Miss","NNLO_Sud","QCD_EWK_Mix"]
 
-def makeCard(wsfname,ch,info,ws=None,noSys=False):
+def isZWVariation(variation,doCR):
+  if not doCR: return False
+  return any( zw in variation for zw in zw_variations )
+
+def makeCard(wsfname,ch,info,ws=None,noSys=False,doCR=False):
   if ws == None:
     rfile = TFile.Open(wsfname)
     ws = rfile.Get('w')
@@ -84,7 +89,7 @@ def makeCard(wsfname,ch,info,ws=None,noSys=False):
     ch_card.addNuisance(mc,'bjet_veto','lnN',1.02)
     variations = [ key.replace('%s_' % proc ,'').replace('Up','') for key in ch_hist if re.search(r'%s_%s_\S*Up$' % (mc,ch),key) ]
     for variation in variations:
-      if 'PFU' in variation: continue
+      if 'PFU' in variation or isZWVariation(variation,doCR): continue
       ch_card.addNuisance(mc,variation,'shape',1)
   #####
   # if not noSys:
@@ -94,8 +99,9 @@ def makeCard(wsfname,ch,info,ws=None,noSys=False):
   # Remove possibly uneeded nuisance parameters from certain processes
   for process in ('WJets','ZJets'):
     ch_card.removeNuisance(process,'JES')
-    
-  for transfer in ch_vars: ch_card.addTransfer(transfer)
+
+  if doCR:
+    for transfer in ch_vars: ch_card.addTransfer(transfer)
   ch_card.write()
 
 def getWorkspace(fname):
@@ -107,7 +113,7 @@ def createDatacards(input,doCR=True,noSys=False):
   ws = getWorkspace(input)
 
   for ch,info in channels.iteritems():
-    makeCard(input,ch,info,ws=ws,noSys=noSys)
+    makeCard(input,ch,info,ws=ws,noSys=noSys,doCR=doCR)
         
 
 if __name__ == "__main__":

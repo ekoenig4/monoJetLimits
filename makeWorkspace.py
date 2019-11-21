@@ -66,6 +66,11 @@ def getargs():
         exit()
     return args
 #####
+def modify(dir,args):
+    if args.no_sys: return dir.replace('.sys','nSy.sys')
+    if args.cr:     return dir.replace('.sys','wCR.sys')
+    return dir
+#####
 def makeWorkspace():
     if not os.path.isdir("Limits/"): os.mkdir("Limits/")
 
@@ -78,6 +83,7 @@ def makeWorkspace():
     sysfile = os.path.abspath(args.input)
     ##########################################################
     dir = ('Limits/%s/' % year) +fname.replace('.root', '')
+    dir = modify(dir,args)
     dir = os.path.abspath(dir)
     
     if args.reset and os.path.isdir(dir): rmtree(dir)
