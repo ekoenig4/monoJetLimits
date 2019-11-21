@@ -209,12 +209,13 @@ def getMetadata(sysfile,output):
 def createWorkspace(input,isScaled=True,doCR=True):
     ws = Workspace('w','w')
 
-    outfname = 'workspace.root'
-    output = TFile(outfname,'recreate')
-    var = RooRealVar('chnemptfrac','Ch + Nem P^{123}_{T} Fraction',0,1.1)
-    ws.setVar(var)
 
     sysfile = TFile(input)
+    hs_var = sysfile.Get("variable")
+    outfname = 'workspace.root'
+    output = TFile(outfname,'recreate')
+    var = RooRealVar(hs_var.GetTitle(),hs_var.GetXaxis().GetTitle(),hs_var.GetXaxis().GetXmin(),hs_var.GetXaxis().GetXmax())
+    ws.setVar(var)
 
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')

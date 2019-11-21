@@ -4,3 +4,4 @@ Limits/*
 cards
 *.pyc
 *.root
+nohup.out

@@ -8,9 +8,12 @@ from time import time
 import json
 
 class cPopen(Popen):
-    def __init__(self,*args,**kwargs):
+    def __init__(self,args,stdout=None,stderr=STDOUT):
         self.start = time()
-        super(cPopen,self).__init__(*args,**kwargs)
+        self.cwd = os.getcwd()
+        self.args = args
+        if stdout == None: super(cPopen,self).__init__(args)
+        else:              super(cPopen,self).__init__(args,stdout=stdout,stderr=STDOUT)
     def duration(self): return time() - self.start
 ##############################################################################
 def collectWorkspace(mxdirs,show=False):
@@ -78,7 +81,8 @@ def runMxdir(mxdir,show=False,reset=False):
             proc = cPopen(args)
             proc.wait()
         else:
-            proc = cPopen(args,stdout=PIPE,stderr=STDOUT)
+            if not os.path.isdir('log'): os.mkdir('log')
+            proc = cPopen(args,stdout=open('log/Mx%s_Mv%s.log' % (mx,mv),'w'))
             mvprocs['%s_Mx%sMv%s' % (cwd,mx,mv)] = proc
     os.chdir(cwd)
     return mvprocs
@@ -138,6 +142,29 @@ def collectWorkspaces(path,show=False):
     collectWorkspace(mxdirs,show=show)
     os.chdir(cwd)
 ##############################################################################
+def runParallel():
+    args = getargs()
+    print 'Running Limits'
+    procs = {}
+    for path in args.dir: procs.update( runLimits(path,show=args.verbose,reset=args.reset) )
+    printProcs(procs,'Mx Limits')
+    print 'Collecting Limits'
+    for path in args.dir: procs.update( collectLimits(path,show=args.verbose,reset=args.reset) )
+    printProcs(procs,'Mx Output')
+    for path in args.dir: collectWorkspaces(path,show=args.verbose)
+##############################################################################
+def runSerial():
+    args = getargs()
+    for path in args.dir:
+        print 'Running Limits',path
+        procs = {}
+        procs.update( runLimits(path,show=args.verbose,reset=args.reset) )
+        printProcs(procs,'Mx Limits')
+        print 'Collecting Limits'
+        procs.update( collectLimits(path,show=args.verbose,reset=args.reset) )
+        printProcs(procs,'Mx Output')
+        collectWorkspaces(path,show=args.verbose)
+##############################################################################
 def getargs():
     def directory(arg):
         if os.path.isdir(arg): return arg
@@ -152,14 +179,5 @@ def getargs():
         exit()
     return args
 ##############################################################################
-if __name__ == "__main__":
-    args = getargs()
-    print 'Running Limits'
-    procs = {}
-    for path in args.dir: procs.update( runLimits(path,show=args.verbose,reset=args.reset) )
-    printProcs(procs,'Mx Limits')
-    print 'Collecting Limits'
-    for path in args.dir: procs.update( collectLimits(path,show=args.verbose,reset=args.reset) )
-    printProcs(procs,'Mx Output')
-    for path in args.dir: collectWorkspaces(path,show=args.verbose)
+if __name__ == "__main__": runSerial()
 #################################################################################################
