@@ -212,9 +212,10 @@ def getMetadata(sysfile,output):
         hs_meta = sysfile.Get(meta)
         hs_meta.Write()
         
-def createWorkspace(input,isScaled=True,doCR=True):
+def createWorkspace(input,isScaled=True,options=None):
+    if options == None: doCR = True
+    else:               doCR = options.cr
     ws = Workspace('w','w')
-
 
     sysfile = TFile(input)
     hs_var = sysfile.Get("variable")

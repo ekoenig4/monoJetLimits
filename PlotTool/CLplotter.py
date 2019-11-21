@@ -44,48 +44,10 @@ def drawPlot2D(data):
 
     limit.Draw('COLZ TEXT89')
     limit.SetStats(0)
-    
-    limit.GetXaxis().SetTitleOffset(999)
-    limit.GetXaxis().SetLabelOffset(999)
-    limit.GetXaxis().SetTickLength(0)
-
-    limit.GetYaxis().SetTitleOffset(999)
-    limit.GetYaxis().SetLabelOffset(999)
-    limit.GetYaxis().SetTickLength(0)
 
     limit.GetZaxis().SetTitle("95% CL limit on #sigma/#sigma_{theory}")
     limit.GetZaxis().SetTitleOffset(1.2)
-    ########################################################################
-    xaxis = TGaxis(0,0,xbins,0,0,xbins,xbins)
-    xaxis.SetTitle("m_{med} [GeV]")
-    xaxis.SetLabelFont(42);
-    xaxis.SetLabelSize(0);
-    xaxis.SetTitleFont(42);
-    xaxis.SetTitleSize(0.05);
-    xaxis.SetTitleOffset(0.9);
-    xaxis.Draw("SAME")
-
-    label=TLatex()
-    label.SetTextSize(0.015);
-    label.SetTextFont(42)
     
-    for i,mv in enumerate(mvlist):
-        size=float(len(mv))
-        label.DrawLatex(i+0.5/size,-0.08,str(int(float(mv))))
-
-    yaxis = TGaxis(0,0,0,ybins,0,ybins,ybins)
-    yaxis.SetTitle("m_{#chi} [GeV]")
-    yaxis.SetLabelFont(42);
-    yaxis.SetLabelSize(0);
-    yaxis.SetTitleFont(42);
-    yaxis.SetTitleSize(0.05);
-    # yaxis.SetTitleOffset(1.2);
-    yaxis.Draw("SAME")
-
-    label.SetTextSize(0.04);
-    for i,mx in enumerate(mxlist):
-        size=len(mx)
-        label.DrawLatex(-0.5*size,i+0.5,mx)
     ################################################################
     lumi_label = '%s' % float('%.3g' % (lumi/1000.)) + " fb^{-1}"
     texS = TLatex(0.55,0.93,("#sqrt{s} = 13 TeV, "+lumi_label));
@@ -119,10 +81,32 @@ def drawPlot1D(data):
     extra = data.extra
     plots,mxlist = Plot1D(data)
 
-    maxX = max( max( float(mv) for mv in mvlist ) for mx,mvlist in data.items() )
-    minX = min( min( float(mv) for mv in mvlist ) for mx,mvlist in data.items() )
-    maxY = max( max( lim['exp0'] for mv,lim in mvlist.items() ) for mx,mvlist in data.items() )
-    minY = min( min( lim['exp0'] for mv,lim in mvlist.items() ) for mx,mvlist in data.items() )
+    class Bounds:
+        def __init__(self):
+            self.xmax = None
+            self.xmin = None
+            self.ymax = None
+            self.ymin = None
+        def setBounds(self,x,y):
+            if self.xmax is None: self.xmax = x
+            if self.xmin is None: self.xmin = x
+            if self.ymax is None: self.ymax = y
+            if self.ymin is None: self.ymin = y
+
+            self.xmax = max(self.xmax,x)
+            self.xmin = min(self.xmin,x)
+            self.ymax = max(self.ymax,y)
+            self.ymin = min(self.ymin,y)
+        def getBounds(self): return self.xmin,self.xmax,self.ymin,self.ymax
+        def __str__(self): return 'x: [%f-%f] y: [%f-%f]' % (self.xmin,self.xmax,self.ymin,self.ymax)
+    bounds = Bounds()
+    for mx,graph in plots.iteritems():
+        x,y = Double(0),Double(0)
+        for i in range(graph.GetN()):
+            graph.GetPoint(i,x,y)
+            bounds.setBounds(float(x),float(y))
+
+    minX,maxX,minY,maxY = bounds.getBounds()
     ######################################################################
     c = TCanvas("c","c",800,800)
     c.SetLogy()
@@ -182,6 +166,13 @@ def drawPlot1D(data):
     fname = '%s%s_%s1D.png' % (variable,cut,''.join(extra))
     c.SaveAs( '%s/%s' % (outdir,fname) )
 #####################################################################
+def plotLimits(path,verlist):
+    print path
+    data = Limits(path)
+    for ver in verlist:
+        if   ver == '1D': drawPlot1D(data)
+        elif ver == '2D': drawPlot2D(data)
+#####################################################################
 def getargs():
     def directory(arg):
         if os.path.isdir(arg): return arg
@@ -190,7 +181,7 @@ def getargs():
         if '1D' in arg or '2D' == arg:  return arg
         else:  return None
     parser = ArgumentParser(description="Plot limit information from specified directory")
-    parser.add_argument("-d","--dir",help='Specify the directory to read limits from',action='store',type=directory,default=None,required=True)
+    parser.add_argument("-d","--dir",help='Specify the directory to read limits from',action='store',nargs='+',type=directory,default=None,required=True)
     parser.add_argument("-v","--version",help='Specify the version of plot (1D or 2D)',action='store',type=version,default=None)
     try: arg = parser.parse_args()
     except:
@@ -205,8 +196,4 @@ if __name__ == "__main__":
         exit()
     if args.version == None: version = ('1D','2D')
     else:  version = (args.version,)
-    data = Limits(args.dir)
-    for ver in version:
-        if   ver == '1D': drawPlot1D(data)
-        elif ver == '2D': drawPlot2D(data)
-
+    for path in args.dir: plotLimits(path,version)

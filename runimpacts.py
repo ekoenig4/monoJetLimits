@@ -19,6 +19,7 @@ def mvimpacts(sysdir):
     outdir = outdir_base % year
     outname = 'impacts_%s.pdf' % sysdir.replace('.sys','')
     output = '%s/%s/%s' % (outdir,variable,outname)
+    if not os.path.isfile('impacts/impacts.pdf'): return
     print 'Moving impacts/impacts.pdf to %s' % output
     copyfile('impacts/impacts.pdf',output)
 ##############################################################################
@@ -43,26 +44,10 @@ def getText2WS(mxdir,mv,signal):
     proc = Popen(args)
     proc.wait()
 ##############################################################################
-def getargs():
-    def directory(arg):
-        if os.path.isdir(arg): return arg
-        raise ValueError()
-    def signal(arg):
-        regex = re.compile(r"Mx\d*_Mv\d*$")
-        if regex.match(arg): return arg
-        raise ValueError()
-    parser = ArgumentParser(description='Run all avaiable limits in specified directory')
-    parser.add_argument("-d","--dir",help='Specify the directory to run limits in',action='store',type=directory,required=True)
-    parser.add_argument("-s","--signal",help='Specify the signal (Mxd_Mvd) sample to get impact for',action='store',type=signal,required=True)
-    try: args = parser.parse_args()
-    except:
-        parser.print_help()
-        exit()
-    return args
-##############################################################################
-if __name__ == "__main__":
-    args = getargs()
-    os.chdir(args.dir)
+def runDirectory(path,args):
+    print path
+    home = os.getcwd()
+    os.chdir(path)
     cwd = os.getcwd()
     with open('signal_scaling.json') as f: scaling = json.load(f)
     scale = 1/float(scaling[args.signal])
@@ -78,4 +63,26 @@ if __name__ == "__main__":
     runImpacts(args.signal,scale,mv,impactdir)
     os.chdir(cwd)
     mvimpacts(sysdir)
+    os.chdir(home)
+##############################################################################
+def getargs():
+    def directory(arg):
+        if os.path.isdir(arg): return arg
+        raise ValueError()
+    def signal(arg):
+        regex = re.compile(r"Mx\d*_Mv\d*$")
+        if regex.match(arg): return arg
+        raise ValueError()
+    parser = ArgumentParser(description='Run all avaiable limits in specified directory')
+    parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
+    parser.add_argument("-s","--signal",help='Specify the signal (Mxd_Mvd) sample to get impact for',action='store',type=signal,required=True)
+    try: args = parser.parse_args()
+    except:
+        parser.print_help()
+        exit()
+    return args
+##############################################################################
+if __name__ == "__main__":
+    args = getargs()
+    for path in args.dir: runDirectory(path,args)
 #################################################################################################

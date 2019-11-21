@@ -27,9 +27,9 @@ def GetMxlist(sysfile):
             if mx not in mxlist: mxlist[mx] = []
             mxlist[mx].append(mv)
     return mxlist
-def makeMxDir(mx,mvlist,cr=False):
+def makeMxDir(mx,mvlist,options):
     cwd = os.getcwd()
-    if cr: regions = ('sr','e','m','ee','mm')
+    if options.cr: regions = ('sr','e','m','ee','mm')
     else:  regions = ('sr',)
     mxdir = 'Mx_%s' % mx
     print 'Creating %s Directory' % mxdir
@@ -65,6 +65,7 @@ def getargs():
     parser.add_argument('--cr',help="Include CR datacards in datacard",action='store_true',default=False)
     parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
     parser.add_argument('--no-sys',help="Remove systematics from datacards",action='store_true',default=False)
+    parser.add_argument('--no-stat',help="Remove statistical uncertainty from datacards",action='store_true',default=False)
     try: args = parser.parse_args()
     except ValueError as err:
         print err
@@ -74,7 +75,9 @@ def getargs():
 #####
 def modify(dir,args):
     if args.no_sys: return dir.replace('.sys','nSy.sys')
-    if args.cr:     return dir.replace('.sys','wCR.sys')
+    elif args.cr and args.no_stat: return dir.replace('.sys','ntC.sys')
+    elif args.cr:     return dir.replace('.sys','wCR.sys')
+    elif args.no_stat:return dir.replace('.sys','nSt.sys')
     return dir
 #####
 def makeWorkspace():
@@ -97,10 +100,10 @@ def makeWorkspace():
     ##################################################
     os.chdir(dir)
     wsfname = 'workspace.root'
-    if not os.path.isfile(wsfname): createWorkspace(sysfile,doCR=args.cr)
-    createDatacards(wsfname,doCR=args.cr,noSys=args.no_sys)
+    if not os.path.isfile(wsfname): createWorkspace(sysfile,options=args)
+    createDatacards(wsfname,options=args)
     ########################################################
-    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,cr=args.cr)
+    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,options=args)
 ######################################################################
 if __name__ == "__main__": makeWorkspace()
     
