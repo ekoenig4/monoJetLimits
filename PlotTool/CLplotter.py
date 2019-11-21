@@ -4,6 +4,7 @@ import os
 from argparse import ArgumentParser
 import json
 from array import array
+from PlotTool import *
 import re
 
 gROOT.SetBatch(1)
@@ -24,58 +25,13 @@ def exclude(data):
         for _,mvlist in data.items():
             if mv in mvlist: mvlist.pop(mv) 
 #####################################################################
-def GetData(dir,exclude=exclude):
-    data = {}
-    os.chdir(dir)
-    cwd = os.getcwd()
-    sysdir = next( sub for sub in dir.split('/') if '.sys' in sub )
-    wsfile = TFile.Open('workspace.root')
-    data['lumi'] = wsfile.Get('lumi').Integral()
-    year = str(int(float(wsfile.Get('year').Integral())))
-    variable = wsfile.Get('variable').GetTitle()
-    info = sysdir.replace('.sys','').replace(variable,'').replace(year,"").split('_')
-    cut = info[0]
-    extra = re.findall('...',info[1])
-    data['year'] = year
-    data['variable'] = variable
-    data['cut'] = cut
-    data['extra'] = extra
-    with open('limits.json') as f: d_json = json.load(f)
-    limits = {}
-    for mx,mxinfo in d_json.iteritems():
-        mxlim = {}
-        for mv,mvinfo in mxinfo.iteritems():
-            scale = d_json[mx][mv]['scale']
-            mxlim[mv] = { exp:scale*val for exp,val in mvinfo['limits'].iteritems() }
-        limits[mx] = mxlim
-    exclude(limits)
-    data['limit'] = limits
-    os.chdir(home)
-    return data
-#####################################################################
-def Plot2D(data):
-    mxlist = sorted(data.keys(),key=int)
-    mxbins = { mx:i+1 for i,mx in enumerate(mxlist) }
-    mvlist = []
-    for mx in mxlist:
-        for mv in sorted(data[mx],key=float):
-            if mv not in mvlist: mvlist.append(mv); mvlist.sort(key=float)
-    mvbins = { mv:i+1 for i,mv in enumerate(mvlist) }
-    xbins = len(mvlist); ybins = len(mxlist)
-    limit = TH2D("Expected Limits","",xbins,0,xbins,ybins,0,ybins)
-    for mx in mxlist:
-        for mv in data[mx]:
-            limit.SetBinContent(mvbins[mv],mxbins[mx],data[mx][mv]['exp0'])
-    return limit,mxlist,mvlist
-#######################################################################
 def drawPlot2D(data):
     print 'Plotting 2D'
-    lumi = data['lumi']
-    year = data['year']
-    variable = data['variable']
-    cut = data['cut']
-    extra = data['extra']
-    data = data['limit']
+    lumi = data.lumi
+    year = data.year
+    variable = data.variable
+    cut = data.cut
+    extra = data.extra
     limit,mxlist,mvlist = Plot2D(data)
     xbins = len(mvlist)
     ybins = len(mxlist)
@@ -154,26 +110,13 @@ def drawPlot2D(data):
     fname = '%s%s_%s2D.png' % (variable,cut,''.join(extra))
     c.SaveAs( '%s/%s' % (outdir,fname) )
 #####################################################################
-def Plot1D(data):
-    mxlist = sorted(data.keys(),key=int)
-    limits = {}
-    for mx in mxlist:
-        xlist = []; ylist = []
-        for i,mv in enumerate( sorted(data[mx],key=float) ):
-            x = float(mv); y = data[mx][mv]['exp0']
-            xlist.append(x); ylist.append(y)
-        xlist = array('d',xlist); ylist = array('d',ylist);
-        limits[mx] = TGraph(len(xlist),xlist,ylist)
-    return limits,mxlist
-#####################################################################
 def drawPlot1D(data):
     print 'Plotting 1D'
-    lumi = data['lumi']
-    year = data['year']
-    variable = data['variable']
-    cut = data['cut']
-    extra = data['extra']
-    data = data['limit']
+    lumi = data.lumi
+    year = data.year
+    variable = data.variable
+    cut = data.cut
+    extra = data.extra
     plots,mxlist = Plot1D(data)
 
     maxX = max( max( float(mv) for mv in mvlist ) for mx,mvlist in data.items() )
@@ -262,7 +205,7 @@ if __name__ == "__main__":
         exit()
     if args.version == None: version = ('1D','2D')
     else:  version = (args.version,)
-    data = GetData(args.dir)
+    data = Limits(args.dir)
     for ver in version:
         if   ver == '1D': drawPlot1D(data)
         elif ver == '2D': drawPlot2D(data)

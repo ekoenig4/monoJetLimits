@@ -37,7 +37,7 @@ def addStat(dir,ws,hs,name=None):
         dn = hs.Clone("%s_%s_histBinDown" % (hs.GetName(),dir.GetName()))
         up[ibin] = up[ibin] + up.GetBinError(ibin)
         dn[ibin] = max( 0.01*dn[ibin],dn[ibin] - dn.GetBinError(ibin))
-        if not validShape(up,dn): continue
+        if not validShape(up,dn) and name != 'signal': continue
 
         ws.addTemplate("%s_%s_%s%sBin%iUp" % (hs.GetName(),dir.GetName(),name,dir.GetName(),ibin),up)
         ws.addTemplate("%s_%s_%s%sBin%iDown" % (hs.GetName(),dir.GetName(),name,dir.GetName(),ibin),dn)
@@ -98,11 +98,17 @@ def addSignal(dir,ws,variations,signals,isScaled):
     print 'Processing Signal'
     if type(signals) != list: signals = [signals]
     signal_scale = {}
+    def valid_signal(hs):
+        # some signal has negative events, ignore them
+        for ibin in range(1,len(hs)):
+            if hs[ibin] < 0: return False
+        return True
     for signal in signals:
         signal_hs = dir.Get(signal)
         signal_multi = 1
+        signal_yield = signal_hs.Integral()
+        if not valid_signal(signal_hs): print '%s has negative bins' % signal; continue
         if isScaled:
-            signal_yield = signal_hs.Integral()
             signal_multi = 80.0 / signal_yield # Normalize so that combine limits are close to 1
             signal_hs.Scale(signal_multi)
             signal_scale[signal] = signal_multi

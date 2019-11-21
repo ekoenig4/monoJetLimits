@@ -2,7 +2,8 @@ from ROOT import *
 import os
 from optparse import OptionParser
 from array import array
-from CLplotter import GetData,Plot1D
+from CLplotter import Plot1D
+from parseLimits import ParseLimits
 import re
 
 parser = OptionParser()
@@ -13,7 +14,7 @@ if options.dir == None or len(options.dir) == 1:
     print "Please specify at least 2 directories for comparison (separatly using the -d option for each directory)"
     exit()
 ###################################################################################################################
-dataset = { dir:{'data':GetData(dir)} for dir in options.dir }
+dataset = { dir:{'data':ParseLimits(dir)} for dir in options.dir }
 varlist = []; yearlist = []
 for dir,info in dataset.items():
     lumi = info['data']['lumi']
