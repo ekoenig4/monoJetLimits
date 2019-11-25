@@ -3,6 +3,7 @@
 from ROOT import *
 from Datacard import Datacard
 import re
+import os
 
 def loop_iterator(iterator):
   object = iterator.Next()
@@ -83,14 +84,14 @@ def makeCard(wsfname,ch,info,options,ws=None):
     if mc == signal: ch_card.addSignal(mc,shape=(wsfname,'w:%s' % proc))
     else:              ch_card.addBkg(mc,shape=(wsfname,'w:%s' % proc))
 
-    if options.no_sys: continue
+    if options.nSYS: continue
     ch_card.addNuisance(mc,'lumi','lnN',1.026)
     ch_card.addNuisance(mc,'et_trigg','lnN',1.01)
     ch_card.addNuisance(mc,'bjet_veto','lnN',1.02)
     variations = [ key.replace('%s_' % proc ,'').replace('Up','') for key in ch_hist if re.search(r'%s_%s_\S*Up$' % (mc,ch),key) ]
     for variation in variations:
       if isZWVariation(variation,options.cr): continue
-      if options.no_stat and re.search('Bin\d*',variation): continue
+      if options.nSTAT and re.search('Bin\d*',variation): continue
       ch_card.addNuisance(mc,variation,'shape',1)
   #####
   # if not options.no_sys:
@@ -101,8 +102,10 @@ def makeCard(wsfname,ch,info,options,ws=None):
   for process in ('WJets','ZJets'):
     ch_card.removeNuisance(process,'JES')
 
-  if options.cr:
-    for transfer in ch_vars: ch_card.addTransfer(transfer)
+  for transfer in ch_vars:
+    if options.nCR or options.nTRAN: continue
+    if 'Runc' not in transfer and options.nSYS: continue
+    ch_card.addTransfer(transfer)
   ch_card.write()
 
 def getWorkspace(fname):
@@ -111,11 +114,12 @@ def getWorkspace(fname):
   return ws
       
 def createDatacards(input,options):
+  cwd = os.getcwd()
   ws = getWorkspace(input)
-
   for ch,info in channels.iteritems():
+    if ch != 'sr' and options.nCR: continue
     makeCard(input,ch,info,options,ws=ws)
-        
+  os.chdir(cwd)
 
 if __name__ == "__main__":
   wsfname = 'workspace.root'

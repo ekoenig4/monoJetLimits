@@ -100,7 +100,7 @@ def printProcs(procs,name):
     sys.stdout.flush()
 ##############################################################################
 def collectWorkspace(mxdirs,show=False):
-    with open('signal_scaling.json') as f: scaling = json.load(f)
+    with open('../signal_scaling.json') as f: scaling = json.load(f)
     mxjsons = {}
     cwd = os.getcwd()
     for mxdir in mxdirs:
@@ -149,7 +149,7 @@ def runSerial():
         print 'Running Limits',path
         if args.verbose: procmap=None
         else:         procmap={}
-        # runLimits(path,procmap)
+        runLimits(path,procmap)
         printProcs(procmap,'Mx Limits')
         print 'Collecting Limits'
         collectLimits(path,procmap)

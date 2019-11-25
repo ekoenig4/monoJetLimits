@@ -41,7 +41,8 @@ def drawPlot2D(data):
     year = data.year
     variable = data.variable
     cut = data.cut
-    extra = data.extra
+    mods = data.mods
+    sysdir = data.sysdir
     limit,mxlist,mvlist = Plot2D(data)
     xbins = len(mvlist)
     ybins = len(mxlist)
@@ -82,7 +83,9 @@ def drawPlot2D(data):
     subdir = variable
     outdir += '/%s' % subdir
     checkdir(outdir)
-    fname = '%s%s_%s2D.png' % (variable,cut,''.join(extra))
+    outdir += '/%s' % sysdir
+    checkdir(outdir)
+    fname = 'limits_%s2D.png' % (sysdir)
     c.SaveAs( '%s/%s' % (outdir,fname) )
 #####################################################################
 def drawPlot1D(data):
@@ -91,7 +94,8 @@ def drawPlot1D(data):
     year = data.year
     variable = data.variable
     cut = data.cut
-    extra = data.extra
+    mods = data.mods
+    sysdir = data.sysdir
     plots,mxlist = Plot1D(data)
 
     class Bounds:
@@ -177,7 +181,9 @@ def drawPlot1D(data):
     subdir = variable
     outdir += '/%s' % subdir
     checkdir(outdir)
-    fname = '%s%s_%s1D.png' % (variable,cut,''.join(extra))
+    outdir += '/%s' % sysdir
+    checkdir(outdir)
+    fname = 'limits_%s1D.png' % (sysdir)
     c.SaveAs( '%s/%s' % (outdir,fname) )
 #####################################################################
 def plotLimits(path,verlist):

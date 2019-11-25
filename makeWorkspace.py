@@ -65,14 +65,14 @@ def makeMvDir(mv,options,procmap=None):
         f.write('#!/bin/sh\n')
         f.write('cd ../\n')
         f.write(' '.join(text2workspace)+'\n')
-    proc = Popen(['sh','make_workspace.sh']);
+    proc = Popen(['sh','make_workspace.sh'],stdout=PIPE,stderr=STDOUT);
     if procmap is not None: procmap[os.getcwd()] = proc
     else:                   proc.wait()
     os.chdir(cwd)
 def makeMxDir(mx,mvlist,options,procmap=None):
     cwd = os.getcwd()
-    if options.cr: regions = ('sr','e','m','ee','mm')
-    else:  regions = ('sr',)
+    if options.nCR: regions = ('sr',)
+    else: regions = ('sr','e','m','ee','mm')
     mxdir = 'Mx_%s' % mx
     print 'Creating %s Directory' % mxdir
     if not os.path.isdir(mxdir): os.mkdir(mxdir)
@@ -87,7 +87,7 @@ def makeMxDir(mx,mvlist,options,procmap=None):
         f.write(' '.join(combine_cards)+'\n')
         f.write(' '.join(replace_mx)+'\n')
         f.write(' '.join(replace_mv)+'\n')
-    proc = Popen(['sh','make_datacard.sh']); proc.wait()
+    proc = Popen(['sh','make_datacard.sh'],stdout=PIPE,stderr=STDOUT); proc.wait()
     procmap = {}
     for mv in mvlist: makeMvDir(mv,options,procmap)
     printProcs(procmap,mxdir)
@@ -105,10 +105,11 @@ def getargs():
     
     parser = ArgumentParser(description='Make workspace for generating limits based on input systematics file')
     parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",action="store",type=sysfile,default=None,required=True)
-    parser.add_argument('--cr',help="Include CR datacards in datacard",action='store_true',default=False)
     parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
-    parser.add_argument('--no-sys',help="Remove systematics from datacards",action='store_true',default=False)
-    parser.add_argument('--no-stat',help="Remove statistical uncertainty from datacards",action='store_true',default=False)
+    parser.add_argument('--no-cr',dest='nCR',help="Include CR datacards in datacard",action='store_true',default=False)
+    parser.add_argument('--no-sys',dest='nSYS',help="Remove systematics from datacards",action='store_true',default=False)
+    parser.add_argument('--no-stat',dest='nSTAT',help="Remove statistical uncertainty from datacards",action='store_true',default=False)
+    parser.add_argument('--no-trans',dest='nTRAN',help="Remove Transfer factors from datacards",action='store_true',default=False)
     try: args = parser.parse_args()
     except ValueError as err:
         print err
@@ -117,11 +118,11 @@ def getargs():
     return args
 #####
 def modify(dir,args):
-    if args.no_sys: return dir.replace('.sys','nSy.sys')
-    elif args.cr and args.no_stat: return dir.replace('.sys','ntC.sys')
-    elif args.cr:     return dir.replace('.sys','wCR.sys')
-    elif args.no_stat:return dir.replace('.sys','nSt.sys')
-    return dir
+    n_pattern = re.compile('^n[A-Z]+$')
+    w_pattern = re.compile('^w[A-Z]+$')
+    modlist = sorted([ var for var in vars(args) if (n_pattern.search(var) or w_pattern.search(var)) and vars(args)[var] ])
+    modsuffix = '_'+(''.join(modlist))
+    return dir.replace('.sys','%s.sys' % modsuffix)
 #####
 def makeWorkspace():
     if not os.path.isdir("Limits/"): os.mkdir("Limits/")
@@ -134,16 +135,18 @@ def makeWorkspace():
     fname = args.input.split('/')[-1]
     sysfile = os.path.abspath(args.input)
     ##########################################################
-    dir = ('Limits/%s/' % year) +fname.replace('.root', '')
-    dir = modify(dir,args)
+    dir = ('Limits/%s/' % year) +fname.replace('.sys.root', '')
+    moddir = modify(fname.replace('.root',''),args)
     dir = os.path.abspath(dir)
-    
-    if args.reset and os.path.isdir(dir): rmtree(dir)
     if not os.path.isdir(dir): os.mkdir(dir)
     ##################################################
     os.chdir(dir)
     wsfname = 'workspace.root'
-    if not os.path.isfile(wsfname): createWorkspace(sysfile,options=args)
+    if not os.path.isfile(wsfname): createWorkspace(sysfile)
+    cwd = os.getcwd()
+    if not os.path.isdir(moddir): os.mkdir(moddir)
+    os.chdir(moddir)
+    wsfname = '../workspace.root'
     createDatacards(wsfname,options=args)
     ########################################################
     for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,options=args)
