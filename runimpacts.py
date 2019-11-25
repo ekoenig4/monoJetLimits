@@ -2,6 +2,8 @@
 import os
 from shutil import copyfile
 import sys
+sys.path.append('PlotTool')
+from PlotTool import SysInfo
 from argparse import ArgumentParser
 from subprocess import Popen,PIPE,STDOUT
 from time import time
@@ -9,16 +11,10 @@ import json
 import re
 
 outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
-def mvimpacts(sysdir):
-    first = sysdir.split('_')[0]
-    second = sysdir.split('_')[1]
-    variable = re.findall('^.*[\+-]',first)
-    if not any(variable): variable = first
-    else: variable = variable[0][:-1]
-    year = re.findall('\d\d\d\d',second)[0]
-    outdir = outdir_base % year
-    outname = 'impacts_%s.pdf' % sysdir.replace('.sys','')
-    output = '%s/%s/%s' % (outdir,variable,outname)
+def mvimpacts(info):
+    outdir = outdir_base % info.year
+    outname = 'impacts_%s.pdf' % info.sysdir
+    output = '%s/%s/%s' % (outdir,info.variable,info.sysdir,outname)
     if not os.path.isfile('impacts/impacts.pdf'): return
     print 'Moving impacts/impacts.pdf to %s' % output
     copyfile('impacts/impacts.pdf',output)
@@ -46,6 +42,7 @@ def getText2WS(mxdir,mv,signal):
 ##############################################################################
 def runDirectory(path,args):
     print path
+    info = SysInfo(path)
     home = os.getcwd()
     os.chdir(path)
     cwd = os.getcwd()
@@ -62,7 +59,7 @@ def runDirectory(path,args):
     getText2WS(mxdir,mv,args.signal)
     runImpacts(args.signal,scale,mv,impactdir)
     os.chdir(cwd)
-    mvimpacts(sysdir)
+    mvimpacts(info)
     os.chdir(home)
 ##############################################################################
 def getargs():

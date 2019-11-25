@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 import os
+import sys
+sys.path.append('PlotTool')
+from PlotTool import SysInfo
 from subprocess import Popen,STDOUT,PIPE
 import re
 from shutil import copyfile
@@ -17,16 +20,10 @@ def getargs():
     parser.add_argument("-d","--dir",help="specify directory to run pulls in",nargs='+',action="store",type=str,required=True)
     parser.add_argument("-s","--signal",help="specify signal sample to run pulls on",action="store",type=str,default="Mx1_Mv1000")
     return parser.parse_args()
-def mvpulls(sysdir):
-    first = sysdir.split('_')[0]
-    second = sysdir.split('_')[1]
-    variable = re.findall('^.*[\+-]',first)
-    if not any(variable): variable = first
-    else: variable = variable[0][:-1]
-    year = re.findall('\d\d\d\d',second)[0]
-    outdir = outdir_base % year
-    outname = 'pulls_%s.pdf' % sysdir.replace('.sys','')
-    output = '%s/%s/%s' % (outdir,variable,outname)
+def mvpulls(info):
+    outdir = outdir_base % info.year
+    outname = 'pulls_%s.pdf' % info.sysdir
+    output = '%s/%s/%s' % (outdir,info.variable,info.sysdir,outname)
     if not os.path.isfile('pulls/pulls.pdf'): return
     print 'Moving pulls/pulls.pdf to %s' % output
     copyfile('pulls/pulls.pdf',output)
@@ -38,6 +35,7 @@ def run(command):
     Popen(command.split()).wait()
 def runPulls(path,args):
     print path
+    info = SysInfo(path)
     home = os.getcwd()
     os.chdir(path)
     cwd = os.getcwd()
@@ -53,7 +51,7 @@ def runPulls(path,args):
     run( diffNuisances )
     export()
     os.chdir(cwd)
-    mvpulls(sysdir)
+    mvpulls(info)
     os.chdir(home)
 if __name__ == "__main__":
     args = getargs()
