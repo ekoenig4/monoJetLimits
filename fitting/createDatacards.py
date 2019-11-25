@@ -89,7 +89,7 @@ def makeCard(wsfname,ch,info,options,ws=None):
     ch_card.addNuisance(mc,'bjet_veto','lnN',1.02)
     variations = [ key.replace('%s_' % proc ,'').replace('Up','') for key in ch_hist if re.search(r'%s_%s_\S*Up$' % (mc,ch),key) ]
     for variation in variations:
-      if 'PFU' in variation or isZWVariation(variation,options.cr): continue
+      if isZWVariation(variation,options.cr): continue
       if options.no_stat and re.search('Bin\d*',variation): continue
       ch_card.addNuisance(mc,variation,'shape',1)
   #####

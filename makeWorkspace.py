@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from ROOT import *
 import os
+import sys
 from shutil import rmtree
 from argparse import ArgumentParser
 from array import array
@@ -9,6 +10,32 @@ from fitting.createDatacards import createDatacards,signal
 import re
 from subprocess import Popen,PIPE,STDOUT
 
+def printProcs(procs,name):
+    cutoff = 300 # seconds
+    prompt = '{0:<22}'.format( '\rProcessing %i %s' % (len(procs),name) )
+    total = len(procs)
+    current = total
+    out = '%s : %i%%' % (prompt,0)
+    sys.stdout.write(out)
+    sys.stdout.flush()
+    while any(procs):
+        IDlist = procs.keys()
+        for ID in IDlist:
+            if procs[ID].poll() != None:
+                procs.pop(ID)
+            # elif procs[ID].duration() > cutoff:
+            #     procs[ID].terminate()
+            #     procs.pop(ID)
+        ##################################################
+        if current != len(procs):
+            current = len(procs)
+            percent = 100 * (total - current)/float(total)
+            out = '%s : %.3f%%' % (prompt,percent)
+            sys.stdout.write(out)
+            sys.stdout.flush()
+    out = '%s : %.3f%%\n' % (prompt,100.)
+    sys.stdout.write(out)
+    sys.stdout.flush()
 def GetMxlist(sysfile):
     rfile = TFile.Open(sysfile)
     rfile.cd('sr')
@@ -27,7 +54,22 @@ def GetMxlist(sysfile):
             if mx not in mxlist: mxlist[mx] = []
             mxlist[mx].append(mv)
     return mxlist
-def makeMxDir(mx,mvlist,options):
+def makeMvDir(mv,options,procmap=None):
+    cwd = os.getcwd()
+    mvdir = 'Mv_%s' % mv
+    print '--Create %s Directory' % mvdir
+    if not os.path.isdir(mvdir): os.mkdir(mvdir)
+    os.chdir(mvdir)
+    text2workspace = ['text2workspace.py','datacard','-m',mv,'-o','%s/workspace_Mv%s.root' % (mvdir,mv)]
+    with open('make_workspace.sh','w') as f:
+        f.write('#!/bin/sh\n')
+        f.write('cd ../\n')
+        f.write(' '.join(text2workspace)+'\n')
+    proc = Popen(['sh','make_workspace.sh']);
+    if procmap is not None: procmap[os.getcwd()] = proc
+    else:                   proc.wait()
+    os.chdir(cwd)
+def makeMxDir(mx,mvlist,options,procmap=None):
     cwd = os.getcwd()
     if options.cr: regions = ('sr','e','m','ee','mm')
     else:  regions = ('sr',)
@@ -35,19 +77,20 @@ def makeMxDir(mx,mvlist,options):
     print 'Creating %s Directory' % mxdir
     if not os.path.isdir(mxdir): os.mkdir(mxdir)
     os.chdir(mxdir)
-    args = ['combineCards.py']
-    for region in regions: args.append('%s=../datacard_%s' % (region,region))
-    args += ['>','datacard']
-    command = ''
-    for arg in args: command += '%s ' % arg 
-    os.system( command )
-
-    with open('datacard','r') as f: card = f.read()
-    card = card.replace(signal,'Mx%s_Mv$MASS' % mx)
-    with open('datacard','w') as f: f.write(card)
-    with open('mvlist','w') as f:
-        for mv in mvlist:
-            f.write(mv+'\n')
+    combine_cards = ['combineCards.py']
+    for region in regions: combine_cards.append('%s=../datacard_%s' % (region,region))
+    combine_cards += ['>','datacard']
+    replace_mx = ['sed','-i',"'s/Mx1/Mx%s/g'" % mx,'datacard']
+    replace_mv = ['sed','-i',"'s/Mv1000/Mv$MASS/g'",'datacard']
+    with open('make_datacard.sh','w') as f:
+        f.write('#!/bin/sh\n')
+        f.write(' '.join(combine_cards)+'\n')
+        f.write(' '.join(replace_mx)+'\n')
+        f.write(' '.join(replace_mv)+'\n')
+    proc = Popen(['sh','make_datacard.sh']); proc.wait()
+    procmap = {}
+    for mv in mvlist: makeMvDir(mv,options,procmap)
+    printProcs(procmap,mxdir)
     os.chdir(cwd)
 #####
 def getargs():

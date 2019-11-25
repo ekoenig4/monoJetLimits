@@ -11,6 +11,16 @@ gROOT.SetBatch(1)
 
 outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 home = os.getcwd()
+colormap = {
+    '1':kRed-10,
+    '10':kAzure+10,
+    '50':kGray+2,
+    '100':kTeal-9,
+    '150':kOrange-2,
+    '500':kCyan-10,
+    '1000':kGray
+}
+#####################################################################
 def checkdir(dir):
     if not os.path.isdir(dir): os.mkdir(dir)
 #####################################################################
@@ -38,6 +48,7 @@ def drawPlot2D(data):
     ######################################################################
     c = TCanvas("c","c",800,800)
     c.SetMargin(0.15,0.15,0.15,0.08)
+    c.SetLogz()
     gStyle.SetOptStat(0);
     gStyle.SetLegendBorderSize(0);
     gStyle.SetPaintTextFormat("4.3f")
@@ -47,6 +58,8 @@ def drawPlot2D(data):
 
     limit.GetZaxis().SetTitle("95% CL limit on #sigma/#sigma_{theory}")
     limit.GetZaxis().SetTitleOffset(1.2)
+    zmin = min( ibin for ibin in limit if ibin > 0); zmax = limit.GetMaximum()
+    limit.GetZaxis().SetRangeUser(zmin*0.8,zmax*1.2)
     
     ################################################################
     lumi_label = '%s' % float('%.3g' % (lumi/1000.)) + " fb^{-1}"
@@ -121,10 +134,11 @@ def drawPlot1D(data):
     legend.SetFillColor(0)
     for mx in mxlist:
         limit = plots[mx]
-        legend.AddEntry(limit,'m_{#chi} = '+mx+' GeV','l')
+        limit.SetLineColor(colormap[mx])
         limit.SetLineWidth(3)
+        legend.AddEntry(limit,'m_{#chi} = '+mx+' GeV','l')
         limits.Add(limit)
-    limits.Draw('a l plc')
+    limits.Draw('a l')
     limits.GetXaxis().SetRangeUser(minX,maxX)
     limits.GetYaxis().SetRangeUser(minY*(10**-0.2),maxY*(10**1))
     limits.GetXaxis().SetTitle("m_{med} (GeV)")
