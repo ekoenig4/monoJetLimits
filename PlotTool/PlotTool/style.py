@@ -48,11 +48,11 @@ def ratio_style(ratio,color,rymin=0.65,rymax=1.35):
     ratio.GetYaxis().SetTitle("Data/MC")
     ratio.SetMarkerStyle(20);
     ratio.SetMarkerSize(1);
-    ratio.GetYaxis().SetLabelSize(0.1);
-    ratio.GetYaxis().SetTitleSize(0.1);
+    ratio.GetYaxis().SetLabelSize(0.14);
+    ratio.GetYaxis().SetTitleSize(0.14);
     ratio.GetYaxis().SetLabelFont(42);
     ratio.GetYaxis().SetTitleFont(42);
-    ratio.GetYaxis().SetTitleOffset(0.35);
+    ratio.GetYaxis().SetTitleOffset(0.25);
     ratio.GetYaxis().SetNdivisions(4);
     ratio.GetYaxis().SetTickLength(0.05);
     
@@ -62,14 +62,30 @@ def ratio_style(ratio,color,rymin=0.65,rymax=1.35):
     ratio.GetXaxis().SetTitleFont(42);
     ratio.GetXaxis().SetTitleOffset(1.2);
     ratio.GetXaxis().SetTickLength(0.05);
-def makeHistogram(graph,template):
-    hs = template.Clone();
-    npoints = graph.GetN()
-    for i in range(npoints):
-        x,y=Double(0),Double(0)
-        graph.GetPoint(i,x,y)
-        xerr = graph.GetErrorX(i)
-        yerr = graph.GetErrorY(i)
-        hs.SetBinContent(i+1,y)
-        hs.SetBinError(i+1,yerr)
-    return hs;
+def pull_style(pull,color,pymin=-3,pymax=3):
+    gPad.SetGridy();
+    # pull.SetMarkerStyle(20)
+    pull.SetFillStyle(1001)
+    pull.SetFillColor(color)
+    pull.SetLineColor(color)
+    pull.SetTitle("")
+    pull.GetYaxis().SetRangeUser(pymin,pymax);
+    pull.SetStats(0);
+    pull.GetYaxis().CenterTitle();
+    pull.GetYaxis().SetTitle("#frac{(Data-MC)}{#sigma}")
+    pull.SetMarkerStyle(20);
+    pull.SetMarkerSize(1);
+    pull.GetYaxis().SetLabelSize(0.1);
+    pull.GetYaxis().SetTitleSize(0.1);
+    pull.GetYaxis().SetLabelFont(42);
+    pull.GetYaxis().SetTitleFont(42);
+    pull.GetYaxis().SetTitleOffset(0.35);
+    pull.GetYaxis().SetNdivisions(4);
+    pull.GetYaxis().SetTickLength(0.05);
+    
+    pull.GetXaxis().SetLabelSize(0.1);
+    pull.GetXaxis().SetTitleSize(0.1);
+    pull.GetXaxis().SetLabelFont(42);
+    pull.GetXaxis().SetTitleFont(42);
+    pull.GetXaxis().SetTitleOffset(1.2);
+    pull.GetXaxis().SetTickLength(0.05);

@@ -47,7 +47,7 @@ def plotCR(cr,tfile,info):
     #c.SetLogy();
     #c.cd();
     
-    pad1 = TPad("pad1","pad1",0.01,0.25,0.99,0.99);
+    pad1 = TPad("pad1","pad1",0.01,0.3,0.99,0.99);
     pad1.Draw(); pad1.cd();
     pad1.SetLogy();
     pad1.SetFillColor(0); pad1.SetFrameBorderMode(0); pad1.SetBorderMode(0);
@@ -69,17 +69,32 @@ def plotCR(cr,tfile,info):
 
     ##############################
     c.cd();
-    pad2 = TPad("pad2","pad2",0.01,0.01,0.99,0.25);
+    pad2 = TPad("pad2","pad2",0.01,0.176,0.99,0.3);
     pad2.Draw(); pad2.cd();
     pad2.SetFillColor(0); pad2.SetFrameBorderMode(0); pad2.SetBorderMode(0);
     pad2.SetTopMargin(0);
-    pad2.SetBottomMargin(0.35);
+    pad2.SetBottomMargin(0.);
+    
+    data_hs = makeHistogram(data_graph,prefit_hs)
 
-    prefit_ratio = makeHistogram(data_graph,prefit_hs); prefit_ratio.Divide(prefit_hs)
-    postfit_ratio = makeHistogram(data_graph,postfit_hs); postfit_ratio.Divide(postfit_hs)
+    prefit_ratio = data_hs.Clone('prefit_ratio'); prefit_ratio.Divide(prefit_hs)
+    postfit_ratio = data_hs.Clone('postfit_ratio'); postfit_ratio.Divide(postfit_hs)
 
     prefit_ratio.Draw('pex0'); ratio_style(prefit_ratio,kRed)
     postfit_ratio.Draw('pex0same'); ratio_style(postfit_ratio,kBlue)
+
+    ###############################
+    c.cd()
+    pad3 = TPad("pad3","pad3",0.01,0.01,0.99,0.175)
+    pad3.Draw(); pad3.cd();
+    pad3.SetFillColor(0); pad3.SetFrameBorderMode(0); pad3.SetBorderMode(0);
+    pad3.SetTopMargin(0);
+    pad3.SetBottomMargin(0.35);
+    
+    sigma_pull = SigmaPull(data_hs,prefit_hs,postfit_hs)
+    sigma_pull.Draw('hist'); pull_style(sigma_pull,kBlue)
+
+    ##############################
 
     outdir = outdir_base % info.year
     outname = 'fit_CRonly_%s_%s.png' % (cr,info.sysdir)

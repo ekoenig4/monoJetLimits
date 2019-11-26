@@ -53,8 +53,8 @@ channels = {
 }
 zw_variations = ["QCD_Scale","QCD_Shape","QCD_Proc","NNLO_EWK","NNLO_Miss","NNLO_Sud","QCD_EWK_Mix"]
 
-def isZWVariation(variation,doCR):
-  if not doCR: return False
+def isZWVariation(variation,nCR):
+  if nCR: return False
   return any( zw in variation for zw in zw_variations )
 
 def makeCard(wsfname,ch,info,options,ws=None):
@@ -90,7 +90,7 @@ def makeCard(wsfname,ch,info,options,ws=None):
     ch_card.addNuisance(mc,'bjet_veto','lnN',1.02)
     variations = [ key.replace('%s_' % proc ,'').replace('Up','') for key in ch_hist if re.search(r'%s_%s_\S*Up$' % (mc,ch),key) ]
     for variation in variations:
-      if isZWVariation(variation,options.cr): continue
+      if isZWVariation(variation,options.nCR): continue
       if options.nSTAT and re.search('Bin\d*',variation): continue
       ch_card.addNuisance(mc,variation,'shape',1)
   #####
