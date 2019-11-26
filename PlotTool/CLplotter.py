@@ -12,28 +12,29 @@ gROOT.SetBatch(1)
 outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 home = os.getcwd()
 colormap = {
-    '1':kRed-10,
+    '1':kRed,
     '10':kAzure+10,
     '50':kGray+2,
     '100':kTeal-9,
     '150':kOrange-2,
-    '500':kCyan-10,
-    '1000':kGray
+    '500':kGreen,
+    '1000':kBlack
 }
 #####################################################################
 def checkdir(dir):
     if not os.path.isdir(dir): os.mkdir(dir)
 #####################################################################
 def exclude(data):
-    exclude_mx = ['1','150','500','1000']
-    exclude_mx = []
-    exclude_mv = ['15','10000']
-
-    for mx in exclude_mx:
-        if mx in data: data.pop(mx)
-    for mv in exclude_mv:
-        for _,mvlist in data.items():
-            if mv in mvlist: mvlist.pop(mv) 
+    mx_pattern = re.compile('Mx\d+'); mv_pattern = re.compile('Mv\d+')
+    
+    mx_include = [ mx_pattern.findall(signal)[0].replace('Mx','') for signal in central_signal ]
+    mv_include = [ mv_pattern.findall(signal)[0].replace('Mv','') for signal in central_signal ]
+    
+    for mx in data.keys():
+        if str(mx) not in mx_include: data.pop(mx)
+    for _,mvlist in data.items():
+        rmlist = [ mv for mv in mvlist if not str(mv) in mv_include ]
+        for rm in rmlist: mvlist.remove(rm)
 #####################################################################
 def drawPlot2D(data):
     print 'Plotting 2D'
@@ -43,7 +44,7 @@ def drawPlot2D(data):
     cut = data.cut
     mods = data.mods
     sysdir = data.sysdir
-    limit,mxlist,mvlist = Plot2D(data)
+    limit,mxlist,mvlist = Plot2D(data,exclude)
     xbins = len(mvlist)
     ybins = len(mxlist)
     ######################################################################
@@ -96,7 +97,7 @@ def drawPlot1D(data):
     cut = data.cut
     mods = data.mods
     sysdir = data.sysdir
-    plots,mxlist = Plot1D(data)
+    plots,mxlist = Plot1D(data,exclude)
 
     class Bounds:
         def __init__(self):
