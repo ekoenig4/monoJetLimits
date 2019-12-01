@@ -39,8 +39,9 @@ def addStat(dir,ws,hs,name=None):
         dn[ibin] = max( 0.01*dn[ibin],dn[ibin] - dn.GetBinError(ibin))
         if not validShape(up,dn) and name != 'signal': continue
 
-        ws.addTemplate("%s_%s_%s%sBin%iUp" % (hs.GetName(),dir.GetName(),name,dir.GetName(),ibin),up)
-        ws.addTemplate("%s_%s_%s%sBin%iDown" % (hs.GetName(),dir.GetName(),name,dir.GetName(),ibin),dn)
+        variation = '%s_%s_bin%i_stat' % (name,dir.GetName(),ibin)
+        ws.addTemplate("%s_%s_%sUp" % (hs.GetName(),dir.GetName(),variation),up)
+        ws.addTemplate("%s_%s_%sDown" % (hs.GetName(),dir.GetName(),variation),dn)
 
 def addMC(dir,ws,variations):
     print 'Processing %s MC' % dir.GetName()
@@ -227,20 +228,20 @@ def createWorkspace(input,isScaled=True):
     zbinlist,wbinlist,signal_scale = getSignalRegion(dir_sr,sysfile,ws,r"Mx\d*_Mv\d*$",isScaled)
 
     #-----Double Muon-----#
-    dir_mm = sysfile.GetDirectory('mm')
-    getLLCR(dir_mm,sysfile,ws,zbinlist)
+    dir_zm = sysfile.GetDirectory('zm')
+    getLLCR(dir_zm,sysfile,ws,zbinlist)
     
     #-----Double Electron-----#
-    dir_mm = sysfile.GetDirectory('ee')
-    getLLCR(dir_mm,sysfile,ws,zbinlist)
+    dir_ze = sysfile.GetDirectory('ze')
+    getLLCR(dir_ze,sysfile,ws,zbinlist)
     
     #-----Single Muon-----#
-    dir_m = sysfile.GetDirectory('m')
-    getLCR(dir_m,sysfile,ws,wbinlist)
+    dir_wm = sysfile.GetDirectory('wm')
+    getLCR(dir_wm,sysfile,ws,wbinlist)
     
     #-----Single Electron-----#
-    dir_e = sysfile.GetDirectory('e')
-    getLCR(dir_e,sysfile,ws,wbinlist)
+    dir_we = sysfile.GetDirectory('we')
+    getLCR(dir_we,sysfile,ws,wbinlist)
     
     #-----Meta Data-----#
     getMetadata(sysfile,output)

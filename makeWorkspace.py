@@ -72,7 +72,7 @@ def makeMvDir(mv,options,procmap=None):
 def makeMxDir(mx,mvlist,options,procmap=None):
     cwd = os.getcwd()
     if options.nCR: regions = ('sr',)
-    else: regions = ('sr','e','m','ee','mm')
+    else: regions = ('sr','we','wm','ze','zm')
     mxdir = 'Mx_%s' % mx
     print 'Creating %s Directory' % mxdir
     if not os.path.isdir(mxdir): os.mkdir(mxdir)
@@ -88,9 +88,7 @@ def makeMxDir(mx,mvlist,options,procmap=None):
         f.write(' '.join(replace_mx)+'\n')
         f.write(' '.join(replace_mv)+'\n')
     proc = Popen(['sh','make_datacard.sh'],stdout=PIPE,stderr=STDOUT); proc.wait()
-    procmap = {}
     for mv in mvlist: makeMvDir(mv,options,procmap)
-    printProcs(procmap,mxdir)
     os.chdir(cwd)
 #####
 def getargs():
@@ -98,7 +96,7 @@ def getargs():
         tfile = TFile.Open(arg)
         valid = True
         if tfile.IsZombie(): raise ValueError()
-        validdir = ['sr','e','ee','m','mm']
+        validdir = ['sr','we','ze','wm','zm']
         for dir in validdir:
             if tfile.GetDirectory(dir) != None: return arg
         raise ValueError()
@@ -109,7 +107,9 @@ def getargs():
     parser.add_argument('--no-cr',dest='nCR',help="Include CR datacards in datacard",action='store_true',default=False)
     parser.add_argument('--no-sys',dest='nSYS',help="Remove systematics from datacards",action='store_true',default=False)
     parser.add_argument('--no-stat',dest='nSTAT',help="Remove statistical uncertainty from datacards",action='store_true',default=False)
-    parser.add_argument('--no-trans',dest='nTRAN',help="Remove Transfer factors from datacards",action='store_true',default=False)
+    parser.add_argument('--no-tran',dest='nTRAN',help="Remove Transfer factors from datacards",action='store_true',default=False)
+    parser.add_argument('--no-pfu',dest='nPFU',help="Remove PF uncertainty from datacards",action='store_true',default=False)
+    parser.add_argument('--no-jes',dest='nJES',help='Remove JES uncertainty from datacards',action='store_true',default=False)
     try: args = parser.parse_args()
     except ValueError as err:
         print err
@@ -142,14 +142,16 @@ def makeWorkspace():
     ##################################################
     os.chdir(dir)
     wsfname = 'workspace.root'
-    if not os.path.isfile(wsfname): createWorkspace(sysfile)
+    if not os.path.isfile(wsfname) or args.reset: createWorkspace(sysfile)
     cwd = os.getcwd()
     if not os.path.isdir(moddir): os.mkdir(moddir)
     os.chdir(moddir)
     wsfname = '../workspace.root'
     createDatacards(wsfname,options=args)
     ########################################################
-    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,options=args)
+    procmap = {}
+    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,options=args,procmap=procmap)
+    printProcs(procmap,'Mx_Mv Directories')
 ######################################################################
 if __name__ == "__main__": makeWorkspace()
     

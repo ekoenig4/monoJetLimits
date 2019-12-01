@@ -26,28 +26,28 @@ channels = {
     'transfer':[r'^zoverw_\S*$',r'^WJets_sr_\S*_Runc$'],
     'isCR':False
   },
-  'e':
+  'we':
   {
     'mc':mclist,
-    'transfer':[r'^WJets_e_\S*_Runc$'],
+    'transfer':[r'^WJets_we_\S*_Runc$'],
     'isCR':True
   },
-  'm':
+  'wm':
   {
     'mc':mclist,
-    'transfer':[r'^WJets_m_\S*_Runc$'],
+    'transfer':[r'^WJets_wm_\S*_Runc$'],
     'isCR':True
   },
-  'ee':
+  'ze':
   {
     'mc':mclist,
-    'transfer':[r'^DYJets_ee_\S*_Runc$'],
+    'transfer':[r'^DYJets_ze_\S*_Runc$'],
     'isCR':True
   },
-  'mm':
+  'zm':
   {
     'mc':mclist,
-    'transfer':[r'^DYJets_mm_\S*_Runc$'],
+    'transfer':[r'^DYJets_zm_\S*_Runc$'],
     'isCR':True
   }
 }
@@ -56,6 +56,9 @@ zw_variations = ["QCD_Scale","QCD_Shape","QCD_Proc","NNLO_EWK","NNLO_Miss","NNLO
 def isZWVariation(variation,nCR):
   if nCR: return False
   return any( zw in variation for zw in zw_variations )
+def getVariations(mc,ch,ch_hist):
+  procname = '%s_%s' % (mc,ch)
+  return [ key[len(procname)+1:].replace('Up','') for key in ch_hist if re.search('%s_\S*Up$' % procname,key) ]
 
 def makeCard(wsfname,ch,info,options,ws=None):
   if ws == None:
@@ -88,10 +91,12 @@ def makeCard(wsfname,ch,info,options,ws=None):
     ch_card.addNuisance(mc,'lumi','lnN',1.026)
     ch_card.addNuisance(mc,'et_trigg','lnN',1.01)
     ch_card.addNuisance(mc,'bjet_veto','lnN',1.02)
-    variations = [ key.replace('%s_' % proc ,'').replace('Up','') for key in ch_hist if re.search(r'%s_%s_\S*Up$' % (mc,ch),key) ]
+    variations = getVariations(mc,ch,ch_hist)
     for variation in variations:
       if isZWVariation(variation,options.nCR): continue
       if options.nSTAT and re.search('Bin\d*',variation): continue
+      if options.nPFU and 'PFU' in variation: continue
+      if options.nJES and 'JES' in variation: continue
       ch_card.addNuisance(mc,variation,'shape',1)
   #####
   # if not options.no_sys:

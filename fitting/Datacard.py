@@ -90,10 +90,10 @@ class Datacard:
 
             #----Processes----#
             proclist = self.signals + self.bkgs
-            binline = "{0:<30}".format("bin")
-            procline = "{0:<30}".format("process")
-            indexline = "{0:<30}".format("process")
-            rateline = "{0:<30}".format("rate")
+            binline = "{0:<35}".format("bin")
+            procline = "{0:<35}".format("process")
+            indexline = "{0:<35}".format("process")
+            rateline = "{0:<35}".format("rate")
             for proc in proclist:
                 process = self.processes[proc]
                 binline += "{0:<20}".format(self.channel)
@@ -106,7 +106,7 @@ class Datacard:
 
             #----Nuisance----#
             for nuis in sort_nicely(self.nuisances.keys()):
-                line = "{0:<20}".format(nuis)
+                line = "{0:<25}".format(nuis)
                 line += "{0:<10}".format(self.nuisances[nuis])
                 for proc in proclist:
                     process = self.processes[proc]

@@ -23,6 +23,7 @@ def GetLabel(data):
     else:                  label = '%s Sim Fit' % label
     if 'nSYS' in info.mods: label = '%s no Systematics' % label
     else:                   label = '%s with Systematics' % label
+    if 'nPFU' in info.mods: label = '%s no PFU' % label
     return label
 
 def compareLimits(norm,inputs):

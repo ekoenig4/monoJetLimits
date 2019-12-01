@@ -20,7 +20,7 @@ def drawPlot2D(data):
     cut = data.cut
     mods = data.mods
     sysdir = data.sysdir
-    limit,mxlist,mvlist = Plot2D(data,exclude)
+    limit,mxlist,mvlist = Plot2D(data,include_central)
     xbins = len(mvlist)
     ybins = len(mxlist)
     ######################################################################
@@ -73,7 +73,7 @@ def drawPlot1D(data):
     cut = data.cut
     mods = data.mods
     sysdir = data.sysdir
-    plots,mxlist = Plot1D(data,exclude)
+    plots,mxlist = Plot1D(data,include_central)
 
     class Bounds:
         def __init__(self):
