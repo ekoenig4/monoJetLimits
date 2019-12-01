@@ -25,11 +25,13 @@ def runFit(args):
 ##############################################################################
 def runDirectory(path,args):
     print path
+    if 'nCR' in path: return
     cwd = os.getcwd()
     os.chdir(path)
     if not os.path.isdir('cr_fit'): os.mkdir('cr_fit')
     os.chdir('cr_fit')
     runFit(args)
+    os.chdir(cwd)
 ##############################################################################
 def getargs():
     def directory(arg):

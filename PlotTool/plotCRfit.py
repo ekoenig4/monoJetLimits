@@ -91,7 +91,7 @@ def plotCR(cr,tfile,info):
     pad3.SetTopMargin(0);
     pad3.SetBottomMargin(0.35);
     
-    sigma_pull = SigmaPull(data_hs,prefit_hs,postfit_hs)
+    sigma_pull = SigmaPull(data_hs,postfit_hs)
     sigma_pull.Draw('hist'); pull_style(sigma_pull,kBlue)
 
     ##############################
@@ -105,6 +105,7 @@ def plotCR(cr,tfile,info):
     output = '%s/%s' % (outsys,outname)
     c.SaveAs(output)
 def plotCRFit(path):
+    if 'nCR' in path: return
     cwd = os.getcwd()
     info = SysInfo(path)
     os.chdir('%s/cr_fit' % path)

@@ -1,120 +1,105 @@
+#!/usr/bin/env python
 from ROOT import *
 import os
-from optparse import OptionParser
+from argparse import ArgumentParser
+import json
 from array import array
-from CLplotter import Plot1D
-from parseLimits import ParseLimits
-import re
+from PlotTool import *
 
-parser = OptionParser()
-parser.add_option("-d","--dir",help="Specify directory per option for comparison",action="append",default=None)
-options,args = parser.parse_args()
+gROOT.SetBatch(1)
 
-if options.dir == None or len(options.dir) == 1:
-    print "Please specify at least 2 directories for comparison (separatly using the -d option for each directory)"
-    exit()
-###################################################################################################################
-dataset = { dir:{'data':ParseLimits(dir)} for dir in options.dir }
-varlist = []; yearlist = []
-for dir,info in dataset.items():
-    lumi = info['data']['lumi']
-    data = info['data']['limit']
-    graphs,mxlist = Plot1D(data)
-    info['graph'] = graphs
-    if info['data']['variable'] not in varlist: varlist.append(info['data']['variable'])
-    if info['data']['year'] not in yearlist: yearlist.append( info['data']['year'] )
-################################
-c = TCanvas("c","c",800,800)
-c.SetLogy()
-# c.SetMargin(0.15,0.15,0.15,0.08)
-gStyle.SetOptStat(0);
-gStyle.SetLegendBorderSize(0);
+outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
+mxval = u'1'
+def one_mx(data):
+    include_central(data)
+    mxlist = data.keys()
+    for mx in mxlist:
+        if mx != mxval: data.pop(mx)
 
-palette = [color for color in TColor.GetPalette()]
+def GetLabel(data):
+    info = data['info']
+    label = '%s m_{#chi} = %s' % (info.year,mxval)
+    if 'nCR' in info.mods: label = '%s no CR' % label
+    else:                  label = '%s Sim Fit' % label
+    if 'nSYS' in info.mods: label = '%s no Systematics' % label
+    else:                   label = '%s with Systematics' % label
+    return label
 
-maxX = float('-inf')
-minX = float('inf')
-maxY = float('-inf')
-minY = float('inf') 
+def compareLimits(norm,inputs):
+    limitmap = { directory:{'info':Limits(directory)} for directory in [norm] + inputs }
+    for directory,data in limitmap.iteritems(): data['graph'],data['mxlist'] = Plot1D(data['info'],one_mx);
+    
+    c = TCanvas("c","c",800,800)
+    c.SetLogy()
+    # c.SetMargin(0.15,0.15,0.15,0.08)
+    gStyle.SetOptStat(0);
+    gStyle.SetLegendBorderSize(0);
+    
+    pad1 = TPad("pad1","pad1",0.01,0.25,0.99,0.99);
+    pad1.Draw(); pad1.cd();
+    pad1.SetLogy();
+    pad1.SetFillColor(0); pad1.SetFrameBorderMode(0); pad1.SetBorderMode(0);
+    pad1.SetBottomMargin(0.);
 
-limits = TMultiGraph()
-mxgraphs = {}
-for i,dir in enumerate(options.dir):
-    graphs = dataset[dir]['graph']
-    colorIter = iter(TColor.GetPalette())
-    for j,mx in enumerate(mxlist):
-        limit = graphs[mx]
-        maxX = max( (maxX, max( max( float(mv) for mv in mvlist ) for mx,mvlist in dataset[dir]['data']['limit'].items() ) ) )
-        minX = min( (minX, min( min( float(mv) for mv in mvlist ) for mx,mvlist in dataset[dir]['data']['limit'].items() ) ) )
-        maxY = max( (maxY, max( max( lim['exp0'] for mv,lim in mvlist.items() ) for mx,mvlist in dataset[dir]['data']['limit'].items() ) ) )
-        minY = min( (minY, min( min( lim['exp0'] for mv,lim in mvlist.items() ) for mx,mvlist in dataset[dir]['data']['limit'].items() ) ) )
-        
-        if mx not in mxgraphs: mxgraphs[mx] = []
-        limit.SetLineStyle(i+1)
-        limit.SetLineWidth(3)
-        index = int(j*254./(len(mxlist)-1))
-        color = palette[ index ]
-        limit.SetLineColor( color )
-        limits.Add(limit,'l')
-####################################################
-legend = TLegend(0.2,0.65,0.65,0.82,"")
-legend.SetTextSize(0.02)
-legend.SetFillColor(0)
-# legend.SetNColumns(len(options.dir))
-limits.Draw('a l')
+    norm_g = limitmap[norm]['graph'][mxval]
+    var_gs = { input:limitmap[input]['graph'][mxval] for input in inputs }
+    coliter = iter(colormap.values())
+    var_col = { input:next(coliter) for input in inputs }
 
-for mx in mxlist:
-    for dir in options.dir:
-        label = 'm_{#chi} = '+mx+' GeV'
-        if len(yearlist) >1: label += ' '+dataset[dir]['data']['year']
-        if len(varlist) > 1: label += ' '+dataset[dir]['data']['variable']
-        legend.AddEntry(dataset[dir]['graph'][mx],label,"l")
-##########################################################
-limits.GetXaxis().SetRangeUser(minX,maxX)
-limits.GetYaxis().SetRangeUser(minY*(10**-0.2),maxY*(10**1))
-limits.GetXaxis().SetTitle("m_{med} (GeV)")
-limits.GetYaxis().SetTitle("95% CL limit on #sigma/#sigma_{theor}")
-limits.GetXaxis().SetTitleSize(0.04)
-limits.GetYaxis().SetTitleSize(0.04)
-limits.GetXaxis().SetTitleOffset(0.92)
-limits.GetYaxis().SetTitleOffset(0.92)
-limits.GetXaxis().SetLabelSize(0.03)
-limits.GetYaxis().SetLabelSize(0.03)
-################################################################
+    norm_g.Draw('ap'); data_style(norm_g)
+    norm_g.GetYaxis().SetRangeUser(10**-3.5,10**5.5)
+    norm_g.GetYaxis().SetTitle("95% CL limit on #sigma/#sigma_{theory}")
+    for name,var_g in var_gs.iteritems():
+        var_g.Draw('l same'); fit_style(var_g,var_col[name]); var_g.SetLineWidth(3)
+    norm_g.Draw('p same')
 
-lumi_label = '%s' % float('%.3g' % (lumi/1000.)) + " fb^{-1}"
-texS = TLatex(0.20,0.837173,("#sqrt{s} = 13 TeV, "+lumi_label));
-texS.SetNDC();
-texS.SetTextFont(42);
-texS.SetTextSize(0.040);
-texS.Draw('same');
-texS1 = TLatex(0.12092,0.907173,"#bf{CMS} : #it{Preliminary}"+( " ("+yearlist[0]+")" if len(yearlist) == 1 else "" ) );
-texS1.SetNDC();
-texS1.SetTextFont(42);
-texS1.SetTextSize(0.040);
-texS1.Draw('same');
+    leg = getLegend(xmin=0.5,xmax=0.7)
+    leg.AddEntry(norm_g,GetLabel(limitmap[norm]),'p')
+    for name,var_g in var_gs.iteritems():
+        leg.AddEntry(var_g,GetLabel(limitmap[name]),'l')
+    leg.Draw()
+    #################################################
+    c.cd()
+    pad2 = TPad("pad2","pad2",0.01,0.01,0.99,0.25);
+    pad2.Draw(); pad2.cd();
+    pad2.SetTopMargin(0);
+    pad2.SetFillColor(0); pad2.SetFrameBorderMode(0);
+    pad2.SetBorderMode(0);
+    pad2.SetBottomMargin(0.35);
 
-legend.Draw('same')
+    ratios = { input:GetRatio(norm_g,var_g) for input,var_g in var_gs.iteritems() }
+    first = True
+    for name,ratio in ratios.iteritems():
+        if first: ratio.Draw('al'); first = False
+        else:     ratio.Draw('l')
+        ratio_style(ratio,var_col[name],name='Norm/Var')
+        ratio.SetLineWidth(2)
+        ratio.SetLineColor(var_col[name])
+        ratio.GetXaxis().SetTitle("m_{med} (GeV)")
+        ratio.GetYaxis().SetTitleSize(0.1)
+        ratio.GetYaxis().SetTitleOffset(0.5)
+        ratio.GetYaxis().SetLabelSize(0.1)
 
-line = TLine(minX,1,maxX,1)
-line.SetLineStyle(8)
-line.Draw('same')
+    norm_info = limitmap[norm]['info']
+    input_info = {input:limitmap[input]['info'] for input in inputs }
+    outdir = outdir_base % norm_info.year; checkdir(outdir)
+    outdir += '/%s' % norm_info.variable; checkdir(outdir)
+    outdir += '/%s' % norm_info.sysdir; checkdir(outdir)
+    outdir += '/ratios'; checkdir(outdir)
+    input_label ='_'.join([input_info[input].sysdir for input in inputs])
+    fname = 'ratio_%s_vs_%s.png' % (norm_info.sysdir,input_label)
+    c.SaveAs('%s/%s' % (outdir,fname))
+    
+def getargs():
+    parser = ArgumentParser()
+    parser.add_argument('-n','--norm',help='Specify the norm limits to compare everything to',action='store',required=True)
+    parser.add_argument('-i','--input',help='Specify input limits to comapre to the norm limit',nargs='+',action='store',required=True)
+    args = parser.parse_args()
+    if args.norm in args.input: args.input.remove(args.norm)
+    return args
 
-c.Modified()
-c.Update()
-out = ""
-if len(yearlist) == 1:
-    if len(varlist) == 1: out += yearlist[0]+'_'+varlist[0]
-    else:
-        out += yearlist[0]
-        for var in varlist: out += '_'+var
-else:
-    if len(varlist) == 1:
-        for year in yearlist: out += year + '_'
-        out += varlist[0]
-    else:
-        for i in range(len(varlist)):
-            out += yearlist[i]+'_'+varlist[i]
-            if i != len(varlist)-1: out += '_'
-###########################################################
-c.SaveAs("expectedevents1D_"+out+".png")
+if __name__ == "__main__":
+    args = getargs()
+    compareLimits(args.norm,args.input)
+
+

@@ -1,5 +1,14 @@
 from ROOT import *
 
+colormap = {
+    '1':kRed,
+    '10':kAzure+10,
+    '50':kViolet,
+    '100':kBlack,
+    '150':kOrange-2,
+    '500':kGreen,
+    '1000':kBlue
+}
 def getLegend(xmin=0.5,ymin=0.65,xmax=0.7,ymax=0.887173):
     leg = TLegend(xmin,ymin,xmax,ymax,"")
     leg.SetFillColor(kWhite);
@@ -37,15 +46,15 @@ def set_bounds(hs):
 
     hs.SetMinimum(0.05)
     hs.SetMaximum(ymax*(10**2.5))
-def ratio_style(ratio,color,rymin=0.65,rymax=1.35):
+def ratio_style(ratio,color,rymin=0.65,rymax=1.35,name='Data/MC'):
     gPad.SetGridy();
     ratio.SetMarkerStyle(20)
     ratio.SetMarkerColor(color)
     ratio.SetTitle("")
     ratio.GetYaxis().SetRangeUser(rymin,rymax);
-    ratio.SetStats(0);
+    if type(ratio) == TH1: ratio.SetStats(0);
     ratio.GetYaxis().CenterTitle();
-    ratio.GetYaxis().SetTitle("Data/MC")
+    ratio.GetYaxis().SetTitle(name)
     ratio.SetMarkerStyle(20);
     ratio.SetMarkerSize(1);
     ratio.GetYaxis().SetLabelSize(0.14);

@@ -16,3 +16,12 @@ class SysInfo:
         self.mods = sysdir.split("_")[-1].replace('.sys','')
         self.sysdir = sysdir.replace('.sys','').replace('_%s' % self.year,'')
         os.chdir(home)
+    def __str__(self):
+        string  = 'Directory: %s\n' % self.cwd
+        string += 'SysDir:    %s\n' % self.sysdir
+        string += 'Year:      %s\n' % self.year
+        string += 'Lumi:      %f\n' % self.lumi
+        string += 'variable:  %s\n' % self.variable
+        string += 'cut:       %s\n' % self.cut
+        string += 'mods:      %s\n' % self.mods
+        return string

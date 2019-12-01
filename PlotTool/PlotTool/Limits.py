@@ -24,4 +24,5 @@ class Limits(SysInfo):
             datalist[mx] = mvinfo.keys()
         if exclude is not None: exclude(datalist)
         return datalist
+    def __str__(self): return SysInfo.__str__(self)
 #####################################################################

@@ -23,7 +23,7 @@ def getargs():
 def mvpulls(info):
     outdir = outdir_base % info.year
     outname = 'pulls_%s.pdf' % info.sysdir
-    output = '%s/%s/%s' % (outdir,info.variable,info.sysdir,outname)
+    output = '%s/%s/%s/%s' % (outdir,info.variable,info.sysdir,outname)
     if not os.path.isfile('pulls/pulls.pdf'): return
     print 'Moving pulls/pulls.pdf to %s' % output
     copyfile('pulls/pulls.pdf',output)
@@ -35,6 +35,7 @@ def run(command):
     Popen(command.split()).wait()
 def runPulls(path,args):
     print path
+    if 'nSYS' in path and 'nSTAT' in path: return
     info = SysInfo(path)
     home = os.getcwd()
     os.chdir(path)

@@ -14,7 +14,7 @@ outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s
 def mvimpacts(info):
     outdir = outdir_base % info.year
     outname = 'impacts_%s.pdf' % info.sysdir
-    output = '%s/%s/%s' % (outdir,info.variable,info.sysdir,outname)
+    output = '%s/%s/%s/%s' % (outdir,info.variable,info.sysdir,outname)
     if not os.path.isfile('impacts/impacts.pdf'): return
     print 'Moving impacts/impacts.pdf to %s' % output
     copyfile('impacts/impacts.pdf',output)
@@ -42,11 +42,12 @@ def getText2WS(mxdir,mv,signal):
 ##############################################################################
 def runDirectory(path,args):
     print path
+    if 'nSYS' in path and 'nSTAT' in path: return
     info = SysInfo(path)
     home = os.getcwd()
     os.chdir(path)
     cwd = os.getcwd()
-    with open('signal_scaling.json') as f: scaling = json.load(f)
+    with open('../signal_scaling.json') as f: scaling = json.load(f)
     scale = 1/float(scaling[args.signal])
     sysdir = next( sub for sub in cwd.split('/') if '.sys' in sub )
     mx = args.signal.split('_')[0].replace('Mx','')
@@ -72,7 +73,7 @@ def getargs():
         raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
-    parser.add_argument("-s","--signal",help='Specify the signal (Mxd_Mvd) sample to get impact for',action='store',type=signal,required=True)
+    parser.add_argument("-s","--signal",help='Specify the signal (Mxd_Mvd) sample to get impact for',action='store',type=signal,default="Mx1_Mv1000")
     try: args = parser.parse_args()
     except:
         parser.print_help()

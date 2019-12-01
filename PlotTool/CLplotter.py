@@ -11,30 +11,6 @@ gROOT.SetBatch(1)
 
 outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 home = os.getcwd()
-colormap = {
-    '1':kRed,
-    '10':kAzure+10,
-    '50':kGray+2,
-    '100':kTeal-9,
-    '150':kOrange-2,
-    '500':kGreen,
-    '1000':kBlack
-}
-#####################################################################
-def checkdir(dir):
-    if not os.path.isdir(dir): os.mkdir(dir)
-#####################################################################
-def exclude(data):
-    mx_pattern = re.compile('Mx\d+'); mv_pattern = re.compile('Mv\d+')
-    
-    mx_include = [ mx_pattern.findall(signal)[0].replace('Mx','') for signal in central_signal ]
-    mv_include = [ mv_pattern.findall(signal)[0].replace('Mv','') for signal in central_signal ]
-    
-    for mx in data.keys():
-        if str(mx) not in mx_include: data.pop(mx)
-    for _,mvlist in data.items():
-        rmlist = [ mv for mv in mvlist if not str(mv) in mv_include ]
-        for rm in rmlist: mvlist.remove(rm)
 #####################################################################
 def drawPlot2D(data):
     print 'Plotting 2D'
@@ -48,14 +24,14 @@ def drawPlot2D(data):
     xbins = len(mvlist)
     ybins = len(mxlist)
     ######################################################################
-    c = TCanvas("c","c",800,800)
-    c.SetMargin(0.15,0.15,0.15,0.08)
+    c = TCanvas("c","c",1000,800)
+    c.SetMargin(0.1,0.15,0.15,0.08)
     c.SetLogz()
     gStyle.SetOptStat(0);
     gStyle.SetLegendBorderSize(0);
-    gStyle.SetPaintTextFormat("4.3f")
+    gStyle.SetPaintTextFormat("0.1e")
 
-    limit.Draw('COLZ TEXT89')
+    limit.Draw('COLZ TEXT')
     limit.SetStats(0)
 
     limit.GetZaxis().SetTitle("95% CL limit on #sigma/#sigma_{theory}")
@@ -145,7 +121,7 @@ def drawPlot1D(data):
         limits.Add(limit)
     limits.Draw('a l')
     limits.GetXaxis().SetRangeUser(minX,maxX)
-    limits.GetYaxis().SetRangeUser(minY*(10**-0.2),maxY*(10**1))
+    limits.GetYaxis().SetRangeUser(10**-3.5,10**5.5)
     limits.GetXaxis().SetTitle("m_{med} (GeV)")
     limits.GetYaxis().SetTitle("95% CL limit on #sigma/#sigma_{theor}")
     limits.GetXaxis().SetTitleSize(0.04)
