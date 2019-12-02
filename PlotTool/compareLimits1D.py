@@ -24,6 +24,7 @@ def GetLabel(data):
     if 'nSYS' in info.mods: label = '%s no Systematics' % label
     else:                   label = '%s with Systematics' % label
     if 'nPFU' in info.mods: label = '%s no PFU' % label
+    if 'nJES' in info.mods: label = '%s no JES' % label
     return label
 
 def compareLimits(norm,inputs):
@@ -93,14 +94,14 @@ def compareLimits(norm,inputs):
     
 def getargs():
     parser = ArgumentParser()
-    parser.add_argument('-n','--norm',help='Specify the norm limits to compare everything to',action='store',required=True)
-    parser.add_argument('-i','--input',help='Specify input limits to comapre to the norm limit',nargs='+',action='store',required=True)
+    parser.add_argument('-n','--numerator',help='Specify the norm limits to compare everything to',action='store',required=True)
+    parser.add_argument('-d','--denomenator',help='Specify input limits to comapre to the norm limit',nargs='+',action='store',required=True)
     args = parser.parse_args()
-    if args.norm in args.input: args.input.remove(args.norm)
+    if args.numerator in args.denomenator: args.denomenator.remove(args.numerator)
     return args
 
 if __name__ == "__main__":
     args = getargs()
-    compareLimits(args.norm,args.input)
+    compareLimits(args.numerator,args.denomenator)
 
 

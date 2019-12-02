@@ -121,8 +121,10 @@ def modify(dir,args):
     n_pattern = re.compile('^n[A-Z]+$')
     w_pattern = re.compile('^w[A-Z]+$')
     modlist = sorted([ var for var in vars(args) if (n_pattern.search(var) or w_pattern.search(var)) and vars(args)[var] ])
-    modsuffix = '_'+(''.join(modlist))
-    return dir.replace('.sys','%s.sys' % modsuffix)
+    if any(modlist):
+        modsuffix = '_'+(''.join(modlist))
+        return dir.replace('.sys','%s.sys' % modsuffix)
+    return dir
 #####
 def makeWorkspace():
     if not os.path.isdir("Limits/"): os.mkdir("Limits/")

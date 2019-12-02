@@ -12,7 +12,7 @@ from ROOT import *
 def runFit(args):
     if os.path.isfile('fitDiagnostics_fit_CRonly_result.root') and not args.reset: return
     combine_cards = ['combineCards.py','sr=../datacard_sr']
-    for cr in ('e','ee','m','mm'): combine_cards.append('%s=../datacard_%s' % (cr,cr))
+    for cr in ('we','ze','wm','zm'): combine_cards.append('%s=../datacard_%s' % (cr,cr))
     combine_cards += ['>','datacard']
     text2workspace = ['text2workspace.py','datacard','--channel-masks']
     cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--setParameters","mask_sr=1"]

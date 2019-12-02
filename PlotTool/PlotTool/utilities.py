@@ -12,8 +12,12 @@ def include_central(data):
     mx_pattern = re.compile('Mx\d+'); mv_pattern = re.compile('Mv\d+')
     
     mx_include = [ mx_pattern.findall(signal)[0].replace('Mx','') for signal in central_signal ]
-    mv_include = [ mv_pattern.findall(signal)[0].replace('Mv','') for signal in central_signal ]
-    
+    mv_include = [ ]
+    for signal in central_signal:
+        mv = mv_pattern.findall(signal)[0].replace('Mv','')
+        if mv == '10000': continue
+        if not mv in mv_include: mv_include.append(mv)
+        
     for mx in data.keys():
         if str(mx) not in mx_include: data.pop(mx)
     for _,mvlist in data.items():

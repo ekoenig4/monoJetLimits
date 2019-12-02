@@ -94,7 +94,7 @@ def makeCard(wsfname,ch,info,options,ws=None):
     variations = getVariations(mc,ch,ch_hist)
     for variation in variations:
       if isZWVariation(variation,options.nCR): continue
-      if options.nSTAT and re.search('Bin\d*',variation): continue
+      if options.nSTAT and re.search('bin\d+_stat',variation): continue
       if options.nPFU and 'PFU' in variation: continue
       if options.nJES and 'JES' in variation: continue
       ch_card.addNuisance(mc,variation,'shape',1)

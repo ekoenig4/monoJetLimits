@@ -16,10 +16,10 @@ outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s
 mclist = ['ZJets','WJets','DYJets','GJets','TTJets','QCD','EWK']
 
 crmap = {
-    'e':{'mc':'WJets','leg':'W #rightarrow e#nu'},
-    'm':{'mc':'WJets','leg':'W #rightarrow #mu#nu'},
-    'ee':{'mc':'DYJets','leg':'Z #rightarrow ee'},
-    'mm':{'mc':'DYJets','leg':'Z #rightarrow #mu#mu'}
+    'we':{'mc':'WJets','leg':'W #rightarrow e#nu'},
+    'wm':{'mc':'WJets','leg':'W #rightarrow #mu#nu'},
+    'ze':{'mc':'DYJets','leg':'Z #rightarrow ee'},
+    'zm':{'mc':'DYJets','leg':'Z #rightarrow #mu#mu'}
 }
 def getOtherBkg(cr,tfile):
     bkg = None
