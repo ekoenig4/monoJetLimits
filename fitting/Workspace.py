@@ -33,7 +33,7 @@ class Workspace:
         for i in range(1,hist.GetNbinsX() + 1):
             binv = hist[i]
             binss = '%s_bin%i' % (procname,i)
-            if not setConst: binvar = RooRealVar(binss,'',binv,0.,1.1)
+            if not setConst: binvar = RooRealVar(binss,'',binv,self.var.getMin(),self.var.getMax())
             else:            binvar = RooRealVar(binss,'',binv)
             self.store.append(binvar)
             binlist.add(binvar)
@@ -41,16 +41,15 @@ class Workspace:
         normss = '%s_norm' % procname
         phist = RooParametricHist(procname,'',self.var,binlist,hist)
         norm = RooAddition(normss,'',binlist)
-
         getattr(self.ws,'import')(phist)
         getattr(self.ws,'import')(norm,RooFit.RecycleConflictNodes())
     def makeConnectedBinList(self,procname,rhist,syst,srbinlist,crbinlist=None):
         if crbinlist == None: crbinlist = RooArgList()
         for i in range(1,rhist.GetNbinsX() + 1):
-            rbinv = rhist[i]
-            rerrbinv = rhist.GetBinError(i)
             rbinss= 'r_%s_bin%i' % (procname,i)
+            rbinv = rhist[i]
             rbinvar = RooRealVar(rbinss,'',rbinv)
+            rerrbinv = rhist.GetBinError(i)
 
             rerrbinss = '%s_bin%i_Runc' % (procname,i)
             rerrbinvar = RooRealVar(rerrbinss,'',0.,-5.,5.)
