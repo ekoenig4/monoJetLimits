@@ -23,31 +23,31 @@ channels = {
   'sr':
   {
     'mc':[signal] + mclist,
-    'transfer':[r'^zoverw_\S*$',r'^WJets_sr_\S*_Runc$'],
+    'transfer':[r'^ZoverW_\S*$'],
     'isCR':False
   },
   'we':
   {
     'mc':mclist,
-    'transfer':[r'^WJets_we_\S*_Runc$'],
+    'transfer':[r'^SRoverCR_we_\S*_Runc$'],
     'isCR':True
   },
   'wm':
   {
     'mc':mclist,
-    'transfer':[r'^WJets_wm_\S*_Runc$'],
+    'transfer':[r'^SRoverCR_wm_\S*_Runc$'],
     'isCR':True
   },
   'ze':
   {
     'mc':mclist,
-    'transfer':[r'^DYJets_ze_\S*_Runc$'],
+    'transfer':[r'^SRoverCR_ze_\S*_Runc$'],
     'isCR':True
   },
   'zm':
   {
     'mc':mclist,
-    'transfer':[r'^DYJets_zm_\S*_Runc$'],
+    'transfer':[r'^SRoverCR_zm_\S*_Runc$'],
     'isCR':True
   }
 }
