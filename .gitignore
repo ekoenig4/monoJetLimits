@@ -5,3 +5,4 @@ cards
 *.pyc
 *.root
 nohup.out
+!workspace/*.root
