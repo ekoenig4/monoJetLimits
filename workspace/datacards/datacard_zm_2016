@@ -1,0 +1,44 @@
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------
+shapes data_obs            zm_2016   ../workspace_2016.root   w:data_obs_zm_2016            
+shapes WJets               zm_2016   ../workspace_2016.root   w:WJets_zm_2016               w:WJets_zm_2016_$SYSTEMATIC
+shapes DiBoson             zm_2016   ../workspace_2016.root   w:DiBoson_zm_2016             w:DiBoson_zm_2016_$SYSTEMATIC
+shapes TTJets              zm_2016   ../workspace_2016.root   w:TTJets_zm_2016              w:TTJets_zm_2016_$SYSTEMATIC
+shapes DYJets              zm_2016   ../workspace_2016.root   w:DYJets_zm_2016              w:DYJets_zm_2016_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------
+bin             zm_2016
+observation     -1
+----------------------------------------------------------------------------------------------------
+bin                                zm_2016             zm_2016             zm_2016             zm_2016             
+process                            WJets               DiBoson             TTJets              DYJets              
+process                            1                   2                   3                   4                   
+rate                               -1                  -1                  -1                  -1                  
+----------------------------------------------------------------------------------------------------
+JES                      shape     -                   1                   1                   1                   
+PFU_ecal                 shape     1                   1                   1                   1                   
+bjet_veto                lnN       1.02                1.02                1.02                1.02                
+et_trigg                 lnN       1.01                1.01                1.01                1.01                
+lumi                     lnN       1.026               1.026               1.026               1.026               
+----------------------------------------------------------------------------------------------------
+CRoverSR_zm_2016_bin1_Runc param 0 1
+CRoverSR_zm_2016_bin2_Runc param 0 1
+CRoverSR_zm_2016_bin3_Runc param 0 1
+CRoverSR_zm_2016_bin4_Runc param 0 1
+CRoverSR_zm_2016_bin5_Runc param 0 1
+CRoverSR_zm_2016_bin6_Runc param 0 1
+CRoverSR_zm_2016_bin7_Runc param 0 1
+CRoverSR_zm_2016_bin8_Runc param 0 1
+CRoverSR_zm_2016_bin9_Runc param 0 1
+CRoverSR_zm_2016_bin10_Runc param 0 1
+CRoverSR_zm_2016_bin11_Runc param 0 1
+CRoverSR_zm_2016_bin12_Runc param 0 1
+CRoverSR_zm_2016_bin13_Runc param 0 1
+CRoverSR_zm_2016_bin14_Runc param 0 1
+CRoverSR_zm_2016_bin15_Runc param 0 1
+CRoverSR_zm_2016_bin16_Runc param 0 1
+CRoverSR_zm_2016_bin17_Runc param 0 1
+CRoverSR_zm_2016_bin18_Runc param 0 1
+CRoverSR_zm_2016_bin19_Runc param 0 1
+CRoverSR_zm_2016_bin20_Runc param 0 1

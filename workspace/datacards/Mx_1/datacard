@@ -1,0 +1,474 @@
+Combination of sr_2016=../datacard_sr_2016  sr_2017=../datacard_sr_2017  sr_2018=../datacard_sr_2018  we_2016=../datacard_we_2016  we_2017=../datacard_we_2017  we_2018=../datacard_we_2018  wm_2016=../datacard_wm_2016  wm_2017=../datacard_wm_2017  wm_2018=../datacard_wm_2018  ze_2016=../datacard_ze_2016  ze_2017=../datacard_ze_2017  ze_2018=../datacard_ze_2018  zm_2016=../datacard_zm_2016  zm_2017=../datacard_zm_2017  zm_2018=../datacard_zm_2018
+imax 15 number of bins
+jmax 7 number of processes minus 1
+kmax 349 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes DYJets      sr_2016     ../../workspace_2016.root w:DYJets_sr_2016 w:DYJets_sr_2016_$SYSTEMATIC
+shapes DiBoson     sr_2016     ../../workspace_2016.root w:DiBoson_sr_2016 w:DiBoson_sr_2016_$SYSTEMATIC
+shapes GJets       sr_2016     ../../workspace_2016.root w:GJets_sr_2016 w:GJets_sr_2016_$SYSTEMATIC
+shapes Mx1_Mv$MASS  sr_2016     ../../workspace_2016.root w:Mx1_Mv$MASS_sr_2016 w:Mx1_Mv$MASS_sr_2016_$SYSTEMATIC
+shapes QCD         sr_2016     ../../workspace_2016.root w:QCD_sr_2016 w:QCD_sr_2016_$SYSTEMATIC
+shapes TTJets      sr_2016     ../../workspace_2016.root w:TTJets_sr_2016 w:TTJets_sr_2016_$SYSTEMATIC
+shapes WJets       sr_2016     ../../workspace_2016.root w:WJets_sr_2016 w:WJets_sr_2016_$SYSTEMATIC
+shapes ZJets       sr_2016     ../../workspace_2016.root w:ZJets_sr_2016 w:ZJets_sr_2016_$SYSTEMATIC
+shapes data_obs    sr_2016     ../../workspace_2016.root w:data_obs_sr_2016
+shapes DYJets      sr_2017     ../../workspace_2017.root w:DYJets_sr_2017 w:DYJets_sr_2017_$SYSTEMATIC
+shapes DiBoson     sr_2017     ../../workspace_2017.root w:DiBoson_sr_2017 w:DiBoson_sr_2017_$SYSTEMATIC
+shapes GJets       sr_2017     ../../workspace_2017.root w:GJets_sr_2017 w:GJets_sr_2017_$SYSTEMATIC
+shapes Mx1_Mv$MASS  sr_2017     ../../workspace_2017.root w:Mx1_Mv$MASS_sr_2017 w:Mx1_Mv$MASS_sr_2017_$SYSTEMATIC
+shapes QCD         sr_2017     ../../workspace_2017.root w:QCD_sr_2017 w:QCD_sr_2017_$SYSTEMATIC
+shapes TTJets      sr_2017     ../../workspace_2017.root w:TTJets_sr_2017 w:TTJets_sr_2017_$SYSTEMATIC
+shapes WJets       sr_2017     ../../workspace_2017.root w:WJets_sr_2017 w:WJets_sr_2017_$SYSTEMATIC
+shapes ZJets       sr_2017     ../../workspace_2017.root w:ZJets_sr_2017 w:ZJets_sr_2017_$SYSTEMATIC
+shapes data_obs    sr_2017     ../../workspace_2017.root w:data_obs_sr_2017
+shapes DYJets      sr_2018     ../../workspace_2018.root w:DYJets_sr_2018 w:DYJets_sr_2018_$SYSTEMATIC
+shapes DiBoson     sr_2018     ../../workspace_2018.root w:DiBoson_sr_2018 w:DiBoson_sr_2018_$SYSTEMATIC
+shapes GJets       sr_2018     ../../workspace_2018.root w:GJets_sr_2018 w:GJets_sr_2018_$SYSTEMATIC
+shapes Mx1_Mv$MASS  sr_2018     ../../workspace_2018.root w:Mx1_Mv$MASS_sr_2018 w:Mx1_Mv$MASS_sr_2018_$SYSTEMATIC
+shapes QCD         sr_2018     ../../workspace_2018.root w:QCD_sr_2018 w:QCD_sr_2018_$SYSTEMATIC
+shapes TTJets      sr_2018     ../../workspace_2018.root w:TTJets_sr_2018 w:TTJets_sr_2018_$SYSTEMATIC
+shapes WJets       sr_2018     ../../workspace_2018.root w:WJets_sr_2018 w:WJets_sr_2018_$SYSTEMATIC
+shapes ZJets       sr_2018     ../../workspace_2018.root w:ZJets_sr_2018 w:ZJets_sr_2018_$SYSTEMATIC
+shapes data_obs    sr_2018     ../../workspace_2018.root w:data_obs_sr_2018
+shapes DYJets      we_2016     ../../workspace_2016.root w:DYJets_we_2016 w:DYJets_we_2016_$SYSTEMATIC
+shapes DiBoson     we_2016     ../../workspace_2016.root w:DiBoson_we_2016 w:DiBoson_we_2016_$SYSTEMATIC
+shapes GJets       we_2016     ../../workspace_2016.root w:GJets_we_2016 w:GJets_we_2016_$SYSTEMATIC
+shapes QCD         we_2016     ../../workspace_2016.root w:QCD_we_2016 w:QCD_we_2016_$SYSTEMATIC
+shapes TTJets      we_2016     ../../workspace_2016.root w:TTJets_we_2016 w:TTJets_we_2016_$SYSTEMATIC
+shapes WJets       we_2016     ../../workspace_2016.root w:WJets_we_2016 w:WJets_we_2016_$SYSTEMATIC
+shapes ZJets       we_2016     ../../workspace_2016.root w:ZJets_we_2016 w:ZJets_we_2016_$SYSTEMATIC
+shapes data_obs    we_2016     ../../workspace_2016.root w:data_obs_we_2016
+shapes DYJets      we_2017     ../../workspace_2017.root w:DYJets_we_2017 w:DYJets_we_2017_$SYSTEMATIC
+shapes DiBoson     we_2017     ../../workspace_2017.root w:DiBoson_we_2017 w:DiBoson_we_2017_$SYSTEMATIC
+shapes GJets       we_2017     ../../workspace_2017.root w:GJets_we_2017 w:GJets_we_2017_$SYSTEMATIC
+shapes QCD         we_2017     ../../workspace_2017.root w:QCD_we_2017 w:QCD_we_2017_$SYSTEMATIC
+shapes TTJets      we_2017     ../../workspace_2017.root w:TTJets_we_2017 w:TTJets_we_2017_$SYSTEMATIC
+shapes WJets       we_2017     ../../workspace_2017.root w:WJets_we_2017 w:WJets_we_2017_$SYSTEMATIC
+shapes ZJets       we_2017     ../../workspace_2017.root w:ZJets_we_2017 w:ZJets_we_2017_$SYSTEMATIC
+shapes data_obs    we_2017     ../../workspace_2017.root w:data_obs_we_2017
+shapes DYJets      we_2018     ../../workspace_2018.root w:DYJets_we_2018 w:DYJets_we_2018_$SYSTEMATIC
+shapes DiBoson     we_2018     ../../workspace_2018.root w:DiBoson_we_2018 w:DiBoson_we_2018_$SYSTEMATIC
+shapes GJets       we_2018     ../../workspace_2018.root w:GJets_we_2018 w:GJets_we_2018_$SYSTEMATIC
+shapes QCD         we_2018     ../../workspace_2018.root w:QCD_we_2018 w:QCD_we_2018_$SYSTEMATIC
+shapes TTJets      we_2018     ../../workspace_2018.root w:TTJets_we_2018 w:TTJets_we_2018_$SYSTEMATIC
+shapes WJets       we_2018     ../../workspace_2018.root w:WJets_we_2018 w:WJets_we_2018_$SYSTEMATIC
+shapes ZJets       we_2018     ../../workspace_2018.root w:ZJets_we_2018 w:ZJets_we_2018_$SYSTEMATIC
+shapes data_obs    we_2018     ../../workspace_2018.root w:data_obs_we_2018
+shapes DYJets      wm_2016     ../../workspace_2016.root w:DYJets_wm_2016 w:DYJets_wm_2016_$SYSTEMATIC
+shapes DiBoson     wm_2016     ../../workspace_2016.root w:DiBoson_wm_2016 w:DiBoson_wm_2016_$SYSTEMATIC
+shapes GJets       wm_2016     ../../workspace_2016.root w:GJets_wm_2016 w:GJets_wm_2016_$SYSTEMATIC
+shapes QCD         wm_2016     ../../workspace_2016.root w:QCD_wm_2016 w:QCD_wm_2016_$SYSTEMATIC
+shapes TTJets      wm_2016     ../../workspace_2016.root w:TTJets_wm_2016 w:TTJets_wm_2016_$SYSTEMATIC
+shapes WJets       wm_2016     ../../workspace_2016.root w:WJets_wm_2016 w:WJets_wm_2016_$SYSTEMATIC
+shapes ZJets       wm_2016     ../../workspace_2016.root w:ZJets_wm_2016 w:ZJets_wm_2016_$SYSTEMATIC
+shapes data_obs    wm_2016     ../../workspace_2016.root w:data_obs_wm_2016
+shapes DYJets      wm_2017     ../../workspace_2017.root w:DYJets_wm_2017 w:DYJets_wm_2017_$SYSTEMATIC
+shapes DiBoson     wm_2017     ../../workspace_2017.root w:DiBoson_wm_2017 w:DiBoson_wm_2017_$SYSTEMATIC
+shapes GJets       wm_2017     ../../workspace_2017.root w:GJets_wm_2017 w:GJets_wm_2017_$SYSTEMATIC
+shapes QCD         wm_2017     ../../workspace_2017.root w:QCD_wm_2017 w:QCD_wm_2017_$SYSTEMATIC
+shapes TTJets      wm_2017     ../../workspace_2017.root w:TTJets_wm_2017 w:TTJets_wm_2017_$SYSTEMATIC
+shapes WJets       wm_2017     ../../workspace_2017.root w:WJets_wm_2017 w:WJets_wm_2017_$SYSTEMATIC
+shapes ZJets       wm_2017     ../../workspace_2017.root w:ZJets_wm_2017 w:ZJets_wm_2017_$SYSTEMATIC
+shapes data_obs    wm_2017     ../../workspace_2017.root w:data_obs_wm_2017
+shapes DYJets      wm_2018     ../../workspace_2018.root w:DYJets_wm_2018 w:DYJets_wm_2018_$SYSTEMATIC
+shapes DiBoson     wm_2018     ../../workspace_2018.root w:DiBoson_wm_2018 w:DiBoson_wm_2018_$SYSTEMATIC
+shapes GJets       wm_2018     ../../workspace_2018.root w:GJets_wm_2018 w:GJets_wm_2018_$SYSTEMATIC
+shapes QCD         wm_2018     ../../workspace_2018.root w:QCD_wm_2018 w:QCD_wm_2018_$SYSTEMATIC
+shapes TTJets      wm_2018     ../../workspace_2018.root w:TTJets_wm_2018 w:TTJets_wm_2018_$SYSTEMATIC
+shapes WJets       wm_2018     ../../workspace_2018.root w:WJets_wm_2018 w:WJets_wm_2018_$SYSTEMATIC
+shapes ZJets       wm_2018     ../../workspace_2018.root w:ZJets_wm_2018 w:ZJets_wm_2018_$SYSTEMATIC
+shapes data_obs    wm_2018     ../../workspace_2018.root w:data_obs_wm_2018
+shapes DYJets      ze_2016     ../../workspace_2016.root w:DYJets_ze_2016 w:DYJets_ze_2016_$SYSTEMATIC
+shapes DiBoson     ze_2016     ../../workspace_2016.root w:DiBoson_ze_2016 w:DiBoson_ze_2016_$SYSTEMATIC
+shapes GJets       ze_2016     ../../workspace_2016.root w:GJets_ze_2016 w:GJets_ze_2016_$SYSTEMATIC
+shapes TTJets      ze_2016     ../../workspace_2016.root w:TTJets_ze_2016 w:TTJets_ze_2016_$SYSTEMATIC
+shapes WJets       ze_2016     ../../workspace_2016.root w:WJets_ze_2016 w:WJets_ze_2016_$SYSTEMATIC
+shapes data_obs    ze_2016     ../../workspace_2016.root w:data_obs_ze_2016
+shapes DYJets      ze_2017     ../../workspace_2017.root w:DYJets_ze_2017 w:DYJets_ze_2017_$SYSTEMATIC
+shapes DiBoson     ze_2017     ../../workspace_2017.root w:DiBoson_ze_2017 w:DiBoson_ze_2017_$SYSTEMATIC
+shapes GJets       ze_2017     ../../workspace_2017.root w:GJets_ze_2017 w:GJets_ze_2017_$SYSTEMATIC
+shapes TTJets      ze_2017     ../../workspace_2017.root w:TTJets_ze_2017 w:TTJets_ze_2017_$SYSTEMATIC
+shapes WJets       ze_2017     ../../workspace_2017.root w:WJets_ze_2017 w:WJets_ze_2017_$SYSTEMATIC
+shapes data_obs    ze_2017     ../../workspace_2017.root w:data_obs_ze_2017
+shapes DYJets      ze_2018     ../../workspace_2018.root w:DYJets_ze_2018 w:DYJets_ze_2018_$SYSTEMATIC
+shapes DiBoson     ze_2018     ../../workspace_2018.root w:DiBoson_ze_2018 w:DiBoson_ze_2018_$SYSTEMATIC
+shapes GJets       ze_2018     ../../workspace_2018.root w:GJets_ze_2018 w:GJets_ze_2018_$SYSTEMATIC
+shapes QCD         ze_2018     ../../workspace_2018.root w:QCD_ze_2018 w:QCD_ze_2018_$SYSTEMATIC
+shapes TTJets      ze_2018     ../../workspace_2018.root w:TTJets_ze_2018 w:TTJets_ze_2018_$SYSTEMATIC
+shapes WJets       ze_2018     ../../workspace_2018.root w:WJets_ze_2018 w:WJets_ze_2018_$SYSTEMATIC
+shapes data_obs    ze_2018     ../../workspace_2018.root w:data_obs_ze_2018
+shapes DYJets      zm_2016     ../../workspace_2016.root w:DYJets_zm_2016 w:DYJets_zm_2016_$SYSTEMATIC
+shapes DiBoson     zm_2016     ../../workspace_2016.root w:DiBoson_zm_2016 w:DiBoson_zm_2016_$SYSTEMATIC
+shapes TTJets      zm_2016     ../../workspace_2016.root w:TTJets_zm_2016 w:TTJets_zm_2016_$SYSTEMATIC
+shapes WJets       zm_2016     ../../workspace_2016.root w:WJets_zm_2016 w:WJets_zm_2016_$SYSTEMATIC
+shapes data_obs    zm_2016     ../../workspace_2016.root w:data_obs_zm_2016
+shapes DYJets      zm_2017     ../../workspace_2017.root w:DYJets_zm_2017 w:DYJets_zm_2017_$SYSTEMATIC
+shapes DiBoson     zm_2017     ../../workspace_2017.root w:DiBoson_zm_2017 w:DiBoson_zm_2017_$SYSTEMATIC
+shapes QCD         zm_2017     ../../workspace_2017.root w:QCD_zm_2017 w:QCD_zm_2017_$SYSTEMATIC
+shapes TTJets      zm_2017     ../../workspace_2017.root w:TTJets_zm_2017 w:TTJets_zm_2017_$SYSTEMATIC
+shapes WJets       zm_2017     ../../workspace_2017.root w:WJets_zm_2017 w:WJets_zm_2017_$SYSTEMATIC
+shapes data_obs    zm_2017     ../../workspace_2017.root w:data_obs_zm_2017
+shapes DYJets      zm_2018     ../../workspace_2018.root w:DYJets_zm_2018 w:DYJets_zm_2018_$SYSTEMATIC
+shapes DiBoson     zm_2018     ../../workspace_2018.root w:DiBoson_zm_2018 w:DiBoson_zm_2018_$SYSTEMATIC
+shapes QCD         zm_2018     ../../workspace_2018.root w:QCD_zm_2018 w:QCD_zm_2018_$SYSTEMATIC
+shapes TTJets      zm_2018     ../../workspace_2018.root w:TTJets_zm_2018 w:TTJets_zm_2018_$SYSTEMATIC
+shapes WJets       zm_2018     ../../workspace_2018.root w:WJets_zm_2018 w:WJets_zm_2018_$SYSTEMATIC
+shapes data_obs    zm_2018     ../../workspace_2018.root w:data_obs_zm_2018
+----------------------------------------------------------------------------------------------------------------------------------
+bin          sr_2016  sr_2017  sr_2018  we_2016  we_2017  we_2018  wm_2016  wm_2017  wm_2018  ze_2016  ze_2017  ze_2018  zm_2016  zm_2017  zm_2018
+observation  -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1     
+----------------------------------------------------------------------------------------------------------------------------------
+bin                               sr_2016     sr_2016     sr_2016     sr_2016     sr_2016     sr_2016     sr_2016     sr_2016     sr_2017     sr_2017     sr_2017     sr_2017     sr_2017     sr_2017     sr_2017     sr_2017     sr_2018     sr_2018     sr_2018     sr_2018     sr_2018     sr_2018     sr_2018     sr_2018     we_2016     we_2016     we_2016     we_2016     we_2016     we_2016     we_2016     we_2017     we_2017     we_2017     we_2017     we_2017     we_2017     we_2017     we_2018     we_2018     we_2018     we_2018     we_2018     we_2018     we_2018     wm_2016     wm_2016     wm_2016     wm_2016     wm_2016     wm_2016     wm_2016     wm_2017     wm_2017     wm_2017     wm_2017     wm_2017     wm_2017     wm_2017     wm_2018     wm_2018     wm_2018     wm_2018     wm_2018     wm_2018     wm_2018     ze_2016     ze_2016     ze_2016     ze_2016     ze_2016     ze_2017     ze_2017     ze_2017     ze_2017     ze_2017     ze_2018     ze_2018     ze_2018     ze_2018     ze_2018     ze_2018     zm_2016     zm_2016     zm_2016     zm_2016     zm_2017     zm_2017     zm_2017     zm_2017     zm_2017     zm_2018     zm_2018     zm_2018     zm_2018     zm_2018   
+process                           Mx1_Mv$MASS  GJets       DiBoson     QCD         TTJets      WJets       ZJets       DYJets      Mx1_Mv$MASS  GJets       DiBoson     QCD         TTJets      WJets       ZJets       DYJets      Mx1_Mv$MASS  GJets       DiBoson     QCD         TTJets      WJets       ZJets       DYJets      GJets       DiBoson     QCD         TTJets      WJets       DYJets      ZJets       GJets       DiBoson     QCD         TTJets      WJets       DYJets      ZJets       GJets       DiBoson     QCD         TTJets      WJets       DYJets      ZJets       GJets       DiBoson     QCD         TTJets      WJets       DYJets      ZJets       GJets       DiBoson     QCD         TTJets      WJets       DYJets      ZJets       GJets       DiBoson     QCD         TTJets      WJets       DYJets      ZJets       WJets       DiBoson     TTJets      GJets       DYJets      WJets       DiBoson     TTJets      GJets       DYJets      GJets       DiBoson     TTJets      WJets       QCD         DYJets      WJets       DiBoson     TTJets      DYJets      WJets       DiBoson     QCD         TTJets      DYJets      WJets       DiBoson     QCD         TTJets      DYJets    
+process                           0           1           2           3           4           5           6           7           0           1           2           3           4           5           6           7           0           1           2           3           4           5           6           7           1           2           3           4           5           7           6           1           2           3           4           5           7           6           1           2           3           4           5           7           6           1           2           3           4           5           7           6           1           2           3           4           5           7           6           1           2           3           4           5           7           6           5           2           4           1           7           5           2           4           1           7           1           2           4           5           3           7           5           2           4           7           5           2           3           4           7           5           2           3           4           7         
+rate                              -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1          -1        
+----------------------------------------------------------------------------------------------------------------------------------
+JES                     shape     1.0         1.0         1.0         1.0         1.0         -           -           1.0         1.0         1.0         1.0         1.0         1.0         -           -           1.0         1.0         1.0         1.0         1.0         1.0         -           -           1.0         1.0         1.0         1.0         1.0         -           1.0         -           1.0         1.0         1.0         1.0         -           1.0         -           1.0         1.0         1.0         1.0         -           1.0         -           1.0         1.0         1.0         1.0         -           1.0         -           1.0         1.0         1.0         1.0         -           1.0         -           1.0         1.0         1.0         1.0         -           1.0         -           -           1.0         1.0         -           1.0         -           1.0         1.0         -           1.0         -           1.0         1.0         -           -           1.0         -           1.0         1.0         1.0         -           1.0         -           1.0         1.0         -           1.0         -           1.0         1.0       
+PFU_ecal                shape     1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         -           1.0         1.0         1.0         -           1.0         1.0         1.0         1.0         1.0         1.0         1.0         -           1.0         1.0         1.0         1.0         -           1.0         1.0       
+PSW_fsrCon              shape     -           -           -           -           -           -           -           -           1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         -           1.0         1.0         1.0         -           -           -           -           -           -           -           1.0         1.0         1.0         1.0         1.0         1.0         1.0         -           1.0         -           -           1.0         1.0         1.0         -           -           -           -           -           -           -           -           1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         -           1.0         1.0         1.0         -           -           -           -           -           1.0         -           1.0         -           1.0         -           1.0         -           1.0         -           1.0         -           -           -           -           1.0         -           -           -           1.0         1.0         1.0         -           -           1.0       
+PSW_isrCon              shape     -           -           -           -           -           -           -           -           1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         -           1.0         1.0         1.0         -           -           -           -           -           -           -           1.0         1.0         1.0         1.0         1.0         1.0         1.0         -           1.0         -           -           1.0         1.0         1.0         -           -           -           -           -           -           -           -           1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         1.0         -           1.0         1.0         1.0         -           -           -           -           -           1.0         -           1.0         -           1.0         -           1.0         -           1.0         -           1.0         -           -           -           -           1.0         -           -           -           1.0         1.0         1.0         -           -           1.0       
+bjet_veto               lnN       1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02        1.02      
+et_trigg                lnN       1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01        1.01      
+lumi                    lnN       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026       1.026     
+ZoverW_sr_2017_Wln_NNLO_EWK  param  0 1
+ZoverW_sr_2018_Znn_NNLO_Sud  param  0 1
+CRoverSR_wm_2017_bin17_Runc  param  0 1
+ZoverW_sr_2016_bin4_Runc  param  0 1
+CRoverSR_we_2017_bin12_Runc  param  0 1
+CRoverSR_we_2016_bin11_Runc  param  0 1
+CRoverSR_we_2018_bin10_Runc  param  0 1
+CRoverSR_ze_2018_bin7_Runc  param  0 1
+CRoverSR_zm_2016_bin19_Runc  param  0 1
+CRoverSR_zm_2016_bin18_Runc  param  0 1
+CRoverSR_wm_2016_bin4_Runc  param  0 1
+CRoverSR_ze_2016_bin11_Runc  param  0 1
+ZoverW_sr_2016_Znn_QCD_Scale  param  0 1
+CRoverSR_we_2018_bin1_Runc  param  0 1
+CRoverSR_we_2017_bin11_Runc  param  0 1
+ZoverW_sr_2018_bin15_Runc  param  0 1
+CRoverSR_we_2018_bin11_Runc  param  0 1
+CRoverSR_wm_2018_bin1_Runc  param  0 1
+CRoverSR_wm_2017_bin11_Runc  param  0 1
+CRoverSR_wm_2017_bin3_Runc  param  0 1
+ZoverW_sr_2018_Znn_QCD_Shape  param  0 1
+CRoverSR_we_2017_bin4_Runc  param  0 1
+CRoverSR_zm_2016_bin14_Runc  param  0 1
+CRoverSR_we_2018_bin3_Runc  param  0 1
+ZoverW_sr_2018_bin1_Runc  param  0 1
+ZoverW_sr_2018_Znn_NNLO_Miss  param  0 1
+CRoverSR_ze_2016_bin4_Runc  param  0 1
+CRoverSR_wm_2016_bin1_Runc  param  0 1
+ZoverW_sr_2016_bin5_Runc  param  0 1
+ZoverW_sr_2017_Znn_QCD_Proc  param  0 1
+ZoverW_sr_2017_bin12_Runc  param  0 1
+CRoverSR_we_2017_bin17_Runc  param  0 1
+CRoverSR_wm_2018_bin16_Runc  param  0 1
+CRoverSR_wm_2017_bin8_Runc  param  0 1
+ZoverW_sr_2018_bin14_Runc  param  0 1
+ZoverW_sr_2018_bin5_Runc  param  0 1
+ZoverW_sr_2016_bin19_Runc  param  0 1
+CRoverSR_zm_2016_bin5_Runc  param  0 1
+ZoverW_sr_2018_Znn_QCD_Scale  param  0 1
+CRoverSR_wm_2017_bin12_Runc  param  0 1
+CRoverSR_wm_2016_bin18_Runc  param  0 1
+CRoverSR_ze_2018_bin5_Runc  param  0 1
+CRoverSR_zm_2016_bin13_Runc  param  0 1
+CRoverSR_zm_2017_bin15_Runc  param  0 1
+CRoverSR_zm_2018_bin3_Runc  param  0 1
+CRoverSR_we_2017_bin8_Runc  param  0 1
+ZoverW_sr_2018_Wln_NNLO_Sud  param  0 1
+CRoverSR_zm_2016_bin9_Runc  param  0 1
+CRoverSR_we_2017_bin6_Runc  param  0 1
+CRoverSR_zm_2018_bin13_Runc  param  0 1
+ZoverW_sr_2017_Znn_NNLO_Sud  param  0 1
+CRoverSR_zm_2018_bin10_Runc  param  0 1
+CRoverSR_we_2016_bin17_Runc  param  0 1
+CRoverSR_wm_2016_bin20_Runc  param  0 1
+CRoverSR_zm_2017_bin14_Runc  param  0 1
+CRoverSR_we_2016_bin5_Runc  param  0 1
+CRoverSR_ze_2016_bin6_Runc  param  0 1
+ZoverW_sr_2017_Wln_NNLO_Sud  param  0 1
+ZoverW_sr_2016_bin14_Runc  param  0 1
+CRoverSR_we_2018_bin19_Runc  param  0 1
+CRoverSR_zm_2018_bin11_Runc  param  0 1
+CRoverSR_we_2017_bin1_Runc  param  0 1
+CRoverSR_we_2016_bin2_Runc  param  0 1
+CRoverSR_we_2018_bin14_Runc  param  0 1
+ZoverW_sr_2017_bin3_Runc  param  0 1
+CRoverSR_zm_2017_bin9_Runc  param  0 1
+ZoverW_sr_2016_bin2_Runc  param  0 1
+CRoverSR_ze_2017_bin13_Runc  param  0 1
+CRoverSR_ze_2017_bin8_Runc  param  0 1
+CRoverSR_zm_2018_bin1_Runc  param  0 1
+ZoverW_sr_2017_Znn_QCD_Shape  param  0 1
+CRoverSR_ze_2016_bin20_Runc  param  0 1
+CRoverSR_zm_2017_bin10_Runc  param  0 1
+ZoverW_sr_2017_bin11_Runc  param  0 1
+CRoverSR_we_2017_bin18_Runc  param  0 1
+ZoverW_sr_2016_Wln_QCD_Shape  param  0 1
+CRoverSR_wm_2018_bin5_Runc  param  0 1
+CRoverSR_zm_2018_bin5_Runc  param  0 1
+ZoverW_sr_2017_bin20_Runc  param  0 1
+ZoverW_sr_2016_bin16_Runc  param  0 1
+CRoverSR_we_2017_bin16_Runc  param  0 1
+ZoverW_sr_2017_bin9_Runc  param  0 1
+CRoverSR_zm_2016_bin16_Runc  param  0 1
+CRoverSR_ze_2017_bin17_Runc  param  0 1
+CRoverSR_zm_2016_bin20_Runc  param  0 1
+CRoverSR_we_2016_bin8_Runc  param  0 1
+ZoverW_sr_2017_Znn_QCD_Scale  param  0 1
+CRoverSR_ze_2016_bin16_Runc  param  0 1
+CRoverSR_zm_2016_bin12_Runc  param  0 1
+CRoverSR_wm_2018_bin12_Runc  param  0 1
+CRoverSR_zm_2017_bin5_Runc  param  0 1
+CRoverSR_wm_2016_bin10_Runc  param  0 1
+CRoverSR_zm_2017_bin8_Runc  param  0 1
+CRoverSR_zm_2017_bin11_Runc  param  0 1
+CRoverSR_wm_2017_bin5_Runc  param  0 1
+ZoverW_sr_2016_bin8_Runc  param  0 1
+CRoverSR_zm_2018_bin9_Runc  param  0 1
+CRoverSR_zm_2018_bin6_Runc  param  0 1
+CRoverSR_zm_2018_bin12_Runc  param  0 1
+CRoverSR_wm_2018_bin15_Runc  param  0 1
+CRoverSR_we_2016_bin9_Runc  param  0 1
+CRoverSR_wm_2017_bin10_Runc  param  0 1
+CRoverSR_ze_2017_bin4_Runc  param  0 1
+ZoverW_sr_2018_bin3_Runc  param  0 1
+CRoverSR_zm_2018_bin4_Runc  param  0 1
+CRoverSR_we_2016_bin4_Runc  param  0 1
+CRoverSR_we_2018_bin2_Runc  param  0 1
+CRoverSR_we_2018_bin9_Runc  param  0 1
+ZoverW_sr_2018_bin11_Runc  param  0 1
+CRoverSR_wm_2018_bin20_Runc  param  0 1
+CRoverSR_wm_2017_bin19_Runc  param  0 1
+ZoverW_sr_2016_bin12_Runc  param  0 1
+CRoverSR_ze_2017_bin11_Runc  param  0 1
+CRoverSR_ze_2016_bin19_Runc  param  0 1
+CRoverSR_we_2016_bin16_Runc  param  0 1
+CRoverSR_wm_2018_bin18_Runc  param  0 1
+ZoverW_sr_2016_bin9_Runc  param  0 1
+CRoverSR_we_2018_bin17_Runc  param  0 1
+CRoverSR_wm_2018_bin7_Runc  param  0 1
+ZoverW_sr_2017_bin16_Runc  param  0 1
+CRoverSR_we_2017_bin9_Runc  param  0 1
+ZoverW_sr_2018_bin7_Runc  param  0 1
+ZoverW_sr_2018_bin9_Runc  param  0 1
+CRoverSR_ze_2018_bin13_Runc  param  0 1
+CRoverSR_zm_2018_bin14_Runc  param  0 1
+CRoverSR_ze_2016_bin8_Runc  param  0 1
+CRoverSR_wm_2017_bin15_Runc  param  0 1
+CRoverSR_we_2018_bin6_Runc  param  0 1
+ZoverW_sr_2016_Znn_NNLO_Sud  param  0 1
+CRoverSR_ze_2016_bin17_Runc  param  0 1
+CRoverSR_ze_2017_bin15_Runc  param  0 1
+ZoverW_sr_2017_Znn_QCD_EWK_Mix  param  0 1
+CRoverSR_wm_2016_bin2_Runc  param  0 1
+CRoverSR_ze_2016_bin14_Runc  param  0 1
+CRoverSR_ze_2017_bin9_Runc  param  0 1
+CRoverSR_we_2018_bin13_Runc  param  0 1
+ZoverW_sr_2016_Wln_NNLO_Sud  param  0 1
+ZoverW_sr_2017_bin14_Runc  param  0 1
+CRoverSR_wm_2017_bin18_Runc  param  0 1
+ZoverW_sr_2017_bin19_Runc  param  0 1
+CRoverSR_ze_2016_bin18_Runc  param  0 1
+ZoverW_sr_2017_bin6_Runc  param  0 1
+ZoverW_sr_2017_bin17_Runc  param  0 1
+ZoverW_sr_2018_bin12_Runc  param  0 1
+CRoverSR_wm_2018_bin19_Runc  param  0 1
+ZoverW_sr_2016_Znn_QCD_Proc  param  0 1
+CRoverSR_ze_2018_bin8_Runc  param  0 1
+CRoverSR_wm_2018_bin17_Runc  param  0 1
+ZoverW_sr_2017_bin1_Runc  param  0 1
+CRoverSR_we_2018_bin5_Runc  param  0 1
+ZoverW_sr_2017_bin4_Runc  param  0 1
+ZoverW_sr_2018_bin4_Runc  param  0 1
+CRoverSR_ze_2018_bin1_Runc  param  0 1
+ZoverW_sr_2016_bin3_Runc  param  0 1
+CRoverSR_we_2018_bin7_Runc  param  0 1
+CRoverSR_we_2016_bin14_Runc  param  0 1
+CRoverSR_wm_2018_bin13_Runc  param  0 1
+CRoverSR_we_2017_bin7_Runc  param  0 1
+CRoverSR_ze_2017_bin12_Runc  param  0 1
+ZoverW_sr_2016_bin13_Runc  param  0 1
+CRoverSR_ze_2018_bin12_Runc  param  0 1
+CRoverSR_zm_2016_bin2_Runc  param  0 1
+ZoverW_sr_2018_bin8_Runc  param  0 1
+ZoverW_sr_2016_bin17_Runc  param  0 1
+CRoverSR_wm_2016_bin13_Runc  param  0 1
+CRoverSR_we_2017_bin15_Runc  param  0 1
+CRoverSR_we_2016_bin13_Runc  param  0 1
+CRoverSR_ze_2018_bin16_Runc  param  0 1
+CRoverSR_zm_2018_bin17_Runc  param  0 1
+ZoverW_sr_2016_Wln_QCD_Proc  param  0 1
+CRoverSR_zm_2018_bin8_Runc  param  0 1
+CRoverSR_zm_2017_bin13_Runc  param  0 1
+CRoverSR_ze_2018_bin11_Runc  param  0 1
+CRoverSR_zm_2017_bin7_Runc  param  0 1
+CRoverSR_we_2018_bin20_Runc  param  0 1
+CRoverSR_zm_2018_bin15_Runc  param  0 1
+CRoverSR_zm_2018_bin7_Runc  param  0 1
+CRoverSR_ze_2017_bin19_Runc  param  0 1
+CRoverSR_we_2016_bin3_Runc  param  0 1
+CRoverSR_ze_2017_bin1_Runc  param  0 1
+ZoverW_sr_2016_Znn_QCD_Shape  param  0 1
+CRoverSR_ze_2018_bin17_Runc  param  0 1
+CRoverSR_zm_2017_bin1_Runc  param  0 1
+ZoverW_sr_2018_Wln_QCD_Shape  param  0 1
+CRoverSR_wm_2018_bin9_Runc  param  0 1
+CRoverSR_ze_2016_bin1_Runc  param  0 1
+CRoverSR_zm_2017_bin4_Runc  param  0 1
+CRoverSR_wm_2016_bin7_Runc  param  0 1
+CRoverSR_ze_2017_bin3_Runc  param  0 1
+ZoverW_sr_2018_bin17_Runc  param  0 1
+CRoverSR_wm_2016_bin9_Runc  param  0 1
+CRoverSR_wm_2017_bin2_Runc  param  0 1
+ZoverW_sr_2018_bin10_Runc  param  0 1
+CRoverSR_wm_2016_bin11_Runc  param  0 1
+CRoverSR_we_2016_bin18_Runc  param  0 1
+ZoverW_sr_2017_Znn_NNLO_EWK  param  0 1
+CRoverSR_we_2017_bin2_Runc  param  0 1
+CRoverSR_wm_2016_bin17_Runc  param  0 1
+ZoverW_sr_2017_Wln_QCD_Shape  param  0 1
+ZoverW_sr_2016_Znn_NNLO_Miss  param  0 1
+CRoverSR_ze_2018_bin9_Runc  param  0 1
+CRoverSR_ze_2018_bin15_Runc  param  0 1
+CRoverSR_zm_2017_bin3_Runc  param  0 1
+CRoverSR_zm_2018_bin16_Runc  param  0 1
+ZoverW_sr_2016_Wln_QCD_Scale  param  0 1
+ZoverW_sr_2017_Wln_NNLO_Miss  param  0 1
+CRoverSR_wm_2017_bin14_Runc  param  0 1
+ZoverW_sr_2016_bin15_Runc  param  0 1
+CRoverSR_zm_2018_bin20_Runc  param  0 1
+ZoverW_sr_2018_Znn_QCD_Proc  param  0 1
+ZoverW_sr_2017_Znn_NNLO_Miss  param  0 1
+ZoverW_sr_2018_bin20_Runc  param  0 1
+ZoverW_sr_2018_bin13_Runc  param  0 1
+CRoverSR_wm_2016_bin15_Runc  param  0 1
+CRoverSR_we_2016_bin12_Runc  param  0 1
+CRoverSR_we_2016_bin7_Runc  param  0 1
+ZoverW_sr_2016_Wln_NNLO_Miss  param  0 1
+CRoverSR_ze_2016_bin5_Runc  param  0 1
+CRoverSR_we_2018_bin4_Runc  param  0 1
+ZoverW_sr_2018_Wln_QCD_EWK_Mix  param  0 1
+CRoverSR_we_2017_bin3_Runc  param  0 1
+CRoverSR_wm_2018_bin14_Runc  param  0 1
+ZoverW_sr_2017_Wln_QCD_Scale  param  0 1
+CRoverSR_we_2018_bin15_Runc  param  0 1
+CRoverSR_wm_2016_bin3_Runc  param  0 1
+CRoverSR_ze_2018_bin4_Runc  param  0 1
+CRoverSR_ze_2018_bin20_Runc  param  0 1
+CRoverSR_zm_2016_bin11_Runc  param  0 1
+CRoverSR_zm_2017_bin20_Runc  param  0 1
+CRoverSR_ze_2016_bin2_Runc  param  0 1
+CRoverSR_wm_2016_bin19_Runc  param  0 1
+CRoverSR_ze_2017_bin16_Runc  param  0 1
+CRoverSR_zm_2016_bin1_Runc  param  0 1
+CRoverSR_wm_2016_bin16_Runc  param  0 1
+CRoverSR_ze_2018_bin6_Runc  param  0 1
+CRoverSR_ze_2016_bin9_Runc  param  0 1
+ZoverW_sr_2018_Wln_QCD_Scale  param  0 1
+CRoverSR_wm_2016_bin12_Runc  param  0 1
+CRoverSR_wm_2016_bin14_Runc  param  0 1
+CRoverSR_we_2018_bin8_Runc  param  0 1
+ZoverW_sr_2017_bin18_Runc  param  0 1
+CRoverSR_wm_2017_bin16_Runc  param  0 1
+CRoverSR_zm_2017_bin16_Runc  param  0 1
+CRoverSR_wm_2016_bin5_Runc  param  0 1
+CRoverSR_ze_2016_bin3_Runc  param  0 1
+CRoverSR_ze_2017_bin7_Runc  param  0 1
+CRoverSR_ze_2016_bin13_Runc  param  0 1
+ZoverW_sr_2016_bin20_Runc  param  0 1
+CRoverSR_we_2018_bin16_Runc  param  0 1
+ZoverW_sr_2018_bin2_Runc  param  0 1
+ZoverW_sr_2017_bin5_Runc  param  0 1
+CRoverSR_ze_2017_bin5_Runc  param  0 1
+CRoverSR_wm_2018_bin10_Runc  param  0 1
+CRoverSR_ze_2016_bin7_Runc  param  0 1
+CRoverSR_we_2016_bin15_Runc  param  0 1
+CRoverSR_zm_2016_bin3_Runc  param  0 1
+CRoverSR_ze_2017_bin20_Runc  param  0 1
+ZoverW_sr_2017_bin8_Runc  param  0 1
+ZoverW_sr_2018_bin6_Runc  param  0 1
+CRoverSR_we_2017_bin20_Runc  param  0 1
+CRoverSR_we_2016_bin6_Runc  param  0 1
+ZoverW_sr_2016_bin7_Runc  param  0 1
+ZoverW_sr_2018_Wln_NNLO_EWK  param  0 1
+ZoverW_sr_2018_Znn_NNLO_EWK  param  0 1
+ZoverW_sr_2016_bin11_Runc  param  0 1
+CRoverSR_wm_2016_bin6_Runc  param  0 1
+ZoverW_sr_2016_Wln_QCD_EWK_Mix  param  0 1
+CRoverSR_zm_2017_bin19_Runc  param  0 1
+ZoverW_sr_2017_Wln_QCD_Proc  param  0 1
+CRoverSR_wm_2017_bin9_Runc  param  0 1
+ZoverW_sr_2017_bin10_Runc  param  0 1
+CRoverSR_zm_2017_bin17_Runc  param  0 1
+CRoverSR_zm_2016_bin7_Runc  param  0 1
+CRoverSR_we_2017_bin14_Runc  param  0 1
+ZoverW_sr_2018_bin16_Runc  param  0 1
+CRoverSR_wm_2017_bin4_Runc  param  0 1
+CRoverSR_we_2017_bin19_Runc  param  0 1
+ZoverW_sr_2017_bin13_Runc  param  0 1
+CRoverSR_wm_2018_bin4_Runc  param  0 1
+CRoverSR_zm_2018_bin18_Runc  param  0 1
+ZoverW_sr_2018_Znn_QCD_EWK_Mix  param  0 1
+CRoverSR_zm_2018_bin19_Runc  param  0 1
+CRoverSR_ze_2018_bin18_Runc  param  0 1
+CRoverSR_we_2017_bin10_Runc  param  0 1
+CRoverSR_we_2017_bin5_Runc  param  0 1
+ZoverW_sr_2018_Wln_NNLO_Miss  param  0 1
+CRoverSR_ze_2017_bin6_Runc  param  0 1
+ZoverW_sr_2017_bin15_Runc  param  0 1
+CRoverSR_ze_2018_bin2_Runc  param  0 1
+CRoverSR_we_2018_bin12_Runc  param  0 1
+CRoverSR_ze_2017_bin14_Runc  param  0 1
+ZoverW_sr_2016_bin10_Runc  param  0 1
+CRoverSR_we_2017_bin13_Runc  param  0 1
+ZoverW_sr_2017_bin7_Runc  param  0 1
+CRoverSR_zm_2016_bin15_Runc  param  0 1
+ZoverW_sr_2017_bin2_Runc  param  0 1
+CRoverSR_wm_2018_bin3_Runc  param  0 1
+CRoverSR_ze_2018_bin19_Runc  param  0 1
+ZoverW_sr_2016_bin1_Runc  param  0 1
+CRoverSR_ze_2017_bin2_Runc  param  0 1
+CRoverSR_wm_2017_bin13_Runc  param  0 1
+CRoverSR_zm_2016_bin10_Runc  param  0 1
+CRoverSR_zm_2016_bin4_Runc  param  0 1
+CRoverSR_wm_2018_bin8_Runc  param  0 1
+CRoverSR_we_2016_bin19_Runc  param  0 1
+CRoverSR_zm_2017_bin18_Runc  param  0 1
+CRoverSR_ze_2016_bin12_Runc  param  0 1
+CRoverSR_zm_2016_bin6_Runc  param  0 1
+CRoverSR_zm_2018_bin2_Runc  param  0 1
+CRoverSR_we_2018_bin18_Runc  param  0 1
+CRoverSR_we_2016_bin20_Runc  param  0 1
+CRoverSR_zm_2016_bin8_Runc  param  0 1
+CRoverSR_wm_2016_bin8_Runc  param  0 1
+ZoverW_sr_2017_Wln_QCD_EWK_Mix  param  0 1
+CRoverSR_wm_2017_bin6_Runc  param  0 1
+ZoverW_sr_2018_bin19_Runc  param  0 1
+CRoverSR_wm_2017_bin20_Runc  param  0 1
+CRoverSR_we_2016_bin10_Runc  param  0 1
+CRoverSR_wm_2018_bin2_Runc  param  0 1
+ZoverW_sr_2016_Znn_NNLO_EWK  param  0 1
+CRoverSR_zm_2016_bin17_Runc  param  0 1
+CRoverSR_wm_2018_bin11_Runc  param  0 1
+CRoverSR_ze_2016_bin10_Runc  param  0 1
+ZoverW_sr_2018_bin18_Runc  param  0 1
+ZoverW_sr_2016_bin18_Runc  param  0 1
+ZoverW_sr_2018_Wln_QCD_Proc  param  0 1
+CRoverSR_wm_2017_bin1_Runc  param  0 1
+CRoverSR_zm_2017_bin12_Runc  param  0 1
+CRoverSR_ze_2016_bin15_Runc  param  0 1
+ZoverW_sr_2016_bin6_Runc  param  0 1
+CRoverSR_wm_2018_bin6_Runc  param  0 1
+CRoverSR_zm_2017_bin2_Runc  param  0 1
+CRoverSR_ze_2018_bin14_Runc  param  0 1
+ZoverW_sr_2016_Znn_QCD_EWK_Mix  param  0 1
+CRoverSR_ze_2017_bin18_Runc  param  0 1
+ZoverW_sr_2016_Wln_NNLO_EWK  param  0 1
+CRoverSR_we_2016_bin1_Runc  param  0 1
+CRoverSR_ze_2017_bin10_Runc  param  0 1
+CRoverSR_ze_2018_bin3_Runc  param  0 1
+CRoverSR_zm_2017_bin6_Runc  param  0 1
+CRoverSR_ze_2018_bin10_Runc  param  0 1
+CRoverSR_wm_2017_bin7_Runc  param  0 1
