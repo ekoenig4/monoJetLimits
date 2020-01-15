@@ -99,8 +99,11 @@ def printProcs(procs,name):
     sys.stdout.write(out)
     sys.stdout.flush()
 ##############################################################################
-def collectWorkspace(mxdirs,show=False):
-    with open('../signal_scaling.json') as f: scaling = json.load(f)
+def collectWorkspace(mxdirs,year,show=False):
+    print os.getcwd()
+    if year == 'Run2': scaling = {}
+    else:
+        with open('../signal_scaling_%s.json' % year) as f: scaling = json.load(f)
     mxjsons = {}
     cwd = os.getcwd()
     for mxdir in mxdirs:
@@ -126,9 +129,12 @@ def collectWorkspace(mxdirs,show=False):
 def collectWorkspaces(path,show=False):
     cwd = os.getcwd()
     os.chdir(path)
+    year = re.findall('\d\d\d\d',path)
+    if not any(year): year = 'Run2'
+    else:             year = year[0]
     mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
     print 'Collecting %s' % path
-    collectWorkspace(mxdirs,show=show)
+    collectWorkspace(mxdirs,year,show=show)
     os.chdir(cwd)
 ##############################################################################
 def runParallel():

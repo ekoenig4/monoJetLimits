@@ -5,8 +5,7 @@ import sys
 from shutil import rmtree
 from argparse import ArgumentParser
 from array import array
-from fitting.createWorkspace import createWorkspace
-from fitting.createDatacards import createDatacards,signal
+from fitting import *
 import re
 from subprocess import Popen,PIPE,STDOUT
 
@@ -36,25 +35,8 @@ def printProcs(procs,name):
     out = '%s : %.3f%%\n' % (prompt,100.)
     sys.stdout.write(out)
     sys.stdout.flush()
-def GetMxlist(sysfile):
-    rfile = TFile.Open(sysfile)
-    rfile.cd('sr')
-    regexp = re.compile(r'Mx\d+_Mv\d+$')
-    mxlist = {}
-    def valid_signal(hs):
-        # some signal has negative events, ignore them
-        for ibin in range(1,len(hs)):
-            if hs[ibin] < 0: return False
-        return True
-    for sample in gDirectory.GetListOfKeys():
-        if regexp.search(sample.GetName()):
-            if not valid_signal(gDirectory.Get(sample.GetName())): continue
-            mx = sample.GetName().split('_')[0].replace('Mx','')
-            mv = sample.GetName().split('_')[1].replace('Mv','')
-            if mx not in mxlist: mxlist[mx] = []
-            mxlist[mx].append(mv)
-    return mxlist
 def makeMvDir(mv,options,procmap=None):
+    if mv == '10000': return
     cwd = os.getcwd()
     mvdir = 'Mv_%s' % mv
     print '--Create %s Directory' % mvdir
@@ -69,10 +51,13 @@ def makeMvDir(mv,options,procmap=None):
     if procmap is not None: procmap[os.getcwd()] = proc
     else:                   proc.wait()
     os.chdir(cwd)
-def makeMxDir(mx,mvlist,options,procmap=None):
+def makeMxDir(mx,mvlist,yearlist,options,procmap=None):
     cwd = os.getcwd()
-    if options.nCR: regions = ('sr',)
-    else: regions = ('sr','we','wm','ze','zm')
+    regions = []
+    for ch in ('sr','we','wm','ze','zm'):
+        if options.nCR and ch != 'sr': continue
+        for year in yearlist:
+            regions.append('%s_%s' % (ch,year))
     mxdir = 'Mx_%s' % mx
     print 'Creating %s Directory' % mxdir
     if not os.path.isdir(mxdir): os.mkdir(mxdir)
@@ -88,7 +73,9 @@ def makeMxDir(mx,mvlist,options,procmap=None):
         f.write(' '.join(replace_mx)+'\n')
         f.write(' '.join(replace_mv)+'\n')
     proc = Popen(['sh','make_datacard.sh'],stdout=PIPE,stderr=STDOUT); proc.wait()
+    procmap = {}
     for mv in mvlist: makeMvDir(mv,options,procmap)
+    printProcs(procmap,"Mv Directories")
     os.chdir(cwd)
 #####
 def getargs():
@@ -110,6 +97,7 @@ def getargs():
     parser.add_argument('--no-tran',dest='nTRAN',help="Remove Transfer factors from datacards",action='store_true',default=False)
     parser.add_argument('--no-pfu',dest='nPFU',help="Remove PF uncertainty from datacards",action='store_true',default=False)
     parser.add_argument('--no-jes',dest='nJES',help='Remove JES uncertainty from datacards',action='store_true',default=False)
+    parser.add_argument('--run2',help='Create run2 limit cards',action='store_true',default=False)
     try: args = parser.parse_args()
     except ValueError as err:
         print err
@@ -126,34 +114,55 @@ def modify(dir,args):
         return dir.replace('.sys','%s.sys' % modsuffix)
     return dir
 #####
+def yearWorkspace(sysfile,args):
+    outfname = 'Limits/%s/workspace_%s.root' % (sysfile.variable.GetTitle(),sysfile.year)
+    if not os.path.isfile(outfname) or args.reset:
+        createWorkspace(sysfile,outfname=outfname)
+####################
 def makeWorkspace():
-    if not os.path.isdir("Limits/"): os.mkdir("Limits/")
-
+    if not os.path.isdir('Limits/'): os.mkdir('Limits/')
     args = getargs()
-    year = re.findall(r"20\d\d",args.input)[0]
-    if not os.path.isdir("Limits/%s/" % year): os.mkdir("Limits/%s/" % year)
-    
-    mxlist = GetMxlist(args.input)
-    fname = args.input.split('/')[-1]
-    sysfile = os.path.abspath(args.input)
-    ##########################################################
-    dir = ('Limits/%s/' % year) +fname.replace('.sys.root', '')
-    moddir = modify(fname.replace('.root',''),args)
-    dir = os.path.abspath(dir)
-    if not os.path.isdir(dir): os.mkdir(dir)
-    ##################################################
-    os.chdir(dir)
-    wsfname = 'workspace.root'
-    if not os.path.isfile(wsfname) or args.reset: createWorkspace(sysfile)
-    cwd = os.getcwd()
-    if not os.path.isdir(moddir): os.mkdir(moddir)
-    os.chdir(moddir)
-    wsfname = '../workspace.root'
-    createDatacards(wsfname,options=args)
-    ########################################################
-    procmap = {}
-    for mx,mvlist in mxlist.items(): makeMxDir(mx,mvlist,options=args,procmap=procmap)
-    printProcs(procmap,'Mx_Mv Directories')
-######################################################################
+
+    if not args.run2:
+        sysfile = SysFile(os.path.abspath(args.input))
+        if not os.path.isdir('Limits/%s' % sysfile.variable.GetTitle()): os.mkdir('Limits/%s' % sysfile.variable.GetTitle())
+        yearWorkspace(sysfile,args)
+        os.chdir('Limits/%s' % sysfile.variable.GetTitle())
+        sysdir = modify(sysfile.GetName().split('/')[-1].replace('.root',''),args)
+        if not os.path.isdir(sysdir): os.mkdir(sysdir)
+        os.chdir(sysdir)
+        createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year,args)
+        
+        for mx,mvlist in sysfile.getMxlist().items(): makeMxDir(mx,mvlist,[sysfile.year],args)
+    else:
+        yearlist = ['2016','2017','2018']
+        args.input = args.input.replace('2016','Run2').replace('2017','Run2').replace('2018','Run2')
+        sysfiles = [ SysFile(os.path.abspath(args.input.replace('Run2',year))) for year in yearlist ]
+        sysfile = sysfiles[0]
+        if not os.path.isdir('Limits/%s' % sysfile.variable.GetTitle()): os.mkdir('Limits/%s' % sysfile.variable.GetTitle())
+        for sysfile in sysfiles: yearWorkspace(sysfile,args)
+        os.chdir('Limits/%s' % sysfile.variable.GetTitle())
+        sysdir = modify(sysfiles[0].GetName().split('/')[-1].replace('.root','').replace('2016','Run2'),args)
+        if not os.path.isdir(sysdir): os.mkdir(sysdir)
+        os.chdir(sysdir)
+        for sysfile in sysfiles: createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year,args)
+
+        mxlists = [ sysfile.getMxlist() for sysfile in sysfiles ]
+        mxmap = {}
+        mxvalues = []
+        mvvalues = []
+        for mxlist in mxlists:
+            for mx,mvlist in mxlist.iteritems():
+                if mx not in mxvalues: mxvalues.append(mx)
+                for mv in mvlist:
+                    if mv not in mvvalues: mvvalues.append(mv)
+        for mx in mxvalues:
+            if any( mx not in mxlist for mxlist in mxlists ): continue
+            mxmap[mx] = []
+            for mv in mvvalues:
+                if any( mv not in mxlist[mx] for mxlist in mxlists ): continue
+                mxmap[mx].append(mv)
+        for mx,mvlist in mxmap.iteritems(): makeMxDir(mx,mvlist,yearlist,args)
+####################
 if __name__ == "__main__": makeWorkspace()
     

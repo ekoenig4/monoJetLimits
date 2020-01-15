@@ -35,7 +35,7 @@ def data_style(graph):
     graph.SetMarkerStyle(20)
 def fit_style(hs,color):
     hs.SetTitle("")
-    hs.GetYaxis().SetTitle("Events")
+    # hs.GetYaxis().SetTitle("Events")
     hs.SetLineColor(color)
     hs.SetLineWidth(2)
     hs.SetFillStyle(0)
@@ -57,8 +57,8 @@ def ratio_style(ratio,color,rymin=0.65,rymax=1.35,name='Data/MC'):
     ratio.GetYaxis().SetTitle(name)
     ratio.SetMarkerStyle(20);
     ratio.SetMarkerSize(1);
-    ratio.GetYaxis().SetLabelSize(0.14);
-    ratio.GetYaxis().SetTitleSize(0.14);
+    ratio.GetYaxis().SetLabelSize(0.1);
+    ratio.GetYaxis().SetTitleSize(0.1);
     ratio.GetYaxis().SetLabelFont(42);
     ratio.GetYaxis().SetTitleFont(42);
     ratio.GetYaxis().SetTitleOffset(0.25);

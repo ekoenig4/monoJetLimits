@@ -52,7 +52,7 @@ class Workspace:
             rerrbinv = rhist.GetBinError(i)
 
             rerrbinss = '%s_bin%i_Runc' % (procname,i)
-            rerrbinvar = RooRealVar(rerrbinss,'',0.,-5.,5.)
+            rerrbinvar = RooRealVar(rerrbinss,'',0.,-10.,10.)
 
             binss = '%s_bin%i' % (procname,i)
             fobinlist = RooArgList()
@@ -67,7 +67,7 @@ class Workspace:
             for j,sys in enumerate(syst):
                 if sys['var'] == None:
                     systbinss = '%s_%s_bin%i' % (procname,sys['histo'].GetName(),i)
-                    systbinvar = RooRealVar(systbinss,'',0,-5.,5.)
+                    systbinvar = RooRealVar(systbinss,'',0,-10.,10.)
                     sys['var'] = systbinvar
                 fobinlist.add(sys['var'])
                 self.store.append(sys['var'])

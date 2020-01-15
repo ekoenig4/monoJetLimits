@@ -47,8 +47,10 @@ def runDirectory(path,args):
     home = os.getcwd()
     os.chdir(path)
     cwd = os.getcwd()
-    with open('../signal_scaling.json') as f: scaling = json.load(f)
-    scale = 1/float(scaling[args.signal])
+    if info.year == 'Run2': scaling = {}
+    else:
+        with open('../signal_scaling_%s.json' % info.year) as f: scaling = json.load(f)
+    scale = 1/float(scaling[args.signal]) if args.signal in scaling else 1
     sysdir = next( sub for sub in cwd.split('/') if '.sys' in sub )
     mx = args.signal.split('_')[0].replace('Mx','')
     mxdir = 'Mx_%s' % mx

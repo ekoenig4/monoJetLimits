@@ -29,25 +29,25 @@ channels = {
   'we':
   {
     'mc':mclist,
-    'transfer':[r'^SRoverCR_we_\S*_Runc$'],
+    'transfer':[r'^CRoverSR_we_\S*$'],
     'isCR':True
   },
   'wm':
   {
     'mc':mclist,
-    'transfer':[r'^SRoverCR_wm_\S*_Runc$'],
+    'transfer':[r'^CRoverSR_wm_\S*$'],
     'isCR':True
   },
   'ze':
   {
     'mc':mclist,
-    'transfer':[r'^SRoverCR_ze_\S*_Runc$'],
+    'transfer':[r'^CRoverSR_ze_\S*$'],
     'isCR':True
   },
   'zm':
   {
     'mc':mclist,
-    'transfer':[r'^SRoverCR_zm_\S*_Runc$'],
+    'transfer':[r'^CRoverSR_zm_\S*$'],
     'isCR':True
   }
 }
@@ -68,7 +68,7 @@ def makeCard(wsfname,ch,info,options,ws=None):
   mclist = info['mc']
   transfers = info['transfer']
 
-  def validHist(ch,histname): return any( ch == w for w in histname.split('_') )
+  def validHist(ch,histname): return ch in histname
   ch_hist = { hist.GetName():hist for hist in ws.allData() if validHist(ch,hist.GetName()) }
   ch_vars = {}
   wsvar = ws.allVars()
@@ -109,21 +109,22 @@ def makeCard(wsfname,ch,info,options,ws=None):
 
   for transfer in ch_vars:
     if options.nCR or options.nTRAN: continue
-    if 'Runc' not in transfer and options.nSYS: continue
+    # if 'Runc' not in transfer: continue
     ch_card.addTransfer(transfer)
-  ch_card.write()
+  ch_card.write('datacard_%s' % ch)
 
 def getWorkspace(fname):
+  print os.getcwd()
   rfile = TFile.Open(fname)
   ws = rfile.Get('w')
   return ws
       
-def createDatacards(input,options):
+def createDatacards(input,year,options):
   cwd = os.getcwd()
   ws = getWorkspace(input)
   for ch,info in channels.iteritems():
     if ch != 'sr' and options.nCR: continue
-    makeCard(input,ch,info,options,ws=ws)
+    makeCard(input,'%s_%s' % (ch,year),info,options,ws=ws)
   os.chdir(cwd)
 
 if __name__ == "__main__":

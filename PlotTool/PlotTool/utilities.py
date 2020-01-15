@@ -1,4 +1,4 @@
-from ROOT import TMath,TGraph,Double
+from ROOT import TMath,TGraph,Double,TH1
 import os
 from central_signal import central_signal
 import re
@@ -23,15 +23,33 @@ def include_central(data):
     for _,mvlist in data.items():
         rmlist = [ mv for mv in mvlist if not str(mv) in mv_include ]
         for rm in rmlist: mvlist.remove(rm)
-def SigmaPull(norm,postfit):
-    tmp = norm.Clone()
-    nbins = tmp.GetNbinsX()
-    avg = sum( postfit[ibin] for ibin in range(1,nbins+1) )/float(nbins)
-    stdv = TMath.Sqrt( sum( (postfit[ibin] - avg)**2 for ibin in range(1,nbins+1) )/float(nbins-1) )
-    for ibin in range(1,nbins+1):
-        tmp[ibin] = (norm[ibin] - postfit[ibin])/stdv
-    return tmp
+def SigmaPull(data,postfit,show=True):
+    pull = data.Clone("pull")
+    pull.Add(postfit,-1)
+    TH1.StatOverflows(1)
 
+    addedsqrt = 0
+    mean = 0
+    sigma = 0
+    chi2 = 0
+    for ibin in range(1,pull.GetNbinsX()+1):
+        if postfit[ibin] <= 0: continue
+        addedsqrt += (pull.GetBinContent(ibin)**2)/(postfit.GetBinError(ibin)**2)
+        sigma = TMath.Sqrt(postfit.GetBinError(ibin)**2 + data.GetBinError(ibin)**2)
+        pull.SetBinContent(ibin,pull.GetBinContent(ibin)/sigma)
+
+        pull.SetBinError(ibin,0)
+        mean += pull.GetBinContent(ibin)
+        chi2 += pull.GetBinContent(ibin)**2
+
+    if show:
+        print "MEAN: ", mean/pull.GetNbinsX()
+        print "CHI2: ", TMath.Sqrt(chi2)/pull.GetNbinsX()
+        
+        print "Added", TMath.Sqrt(addedsqrt), "divided: ", TMath.Sqrt(addedsqrt)/pull.GetNbinsX()
+        print "Added2", addedsqrt, "divided: ", addedsqrt/pull.GetNbinsX()
+    
+    return pull
 def makeHistogram(graph,template):
     hs = template.Clone();
     npoints = graph.GetN()

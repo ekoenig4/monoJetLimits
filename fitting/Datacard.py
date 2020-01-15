@@ -70,9 +70,9 @@ class Datacard:
             def writeShape(process,sys=True):
                 line = 'shapes '
                 line += "{0:<20}".format(process.name)
-                line += "{0:<5}" .format(self.channel)
-                line += "{0:<20}".format(process.shape[0])
-                line += "{0:<20}".format(process.shape[1])
+                line += "{0:<10}" .format(self.channel)
+                line += "{0:<25}".format(process.shape[0])
+                line += "{0:<30}".format(process.shape[1])
                 if sys: line += process.shape[1]+'_$SYSTEMATIC'
                 return line + '\n'
             if self.data_obs.hasShape():

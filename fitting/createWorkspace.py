@@ -4,6 +4,7 @@ from os import getenv
 from Workspace import Workspace
 import re
 import json
+from SysFile import SysFile
 
 gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
@@ -33,30 +34,30 @@ def addStat(dir,ws,hs,name=None):
     if not options['doStats']: return
     if name == None: name = hs.GetName()
     for ibin in range(1,hs.GetNbinsX()+1):
-        up = hs.Clone("%s_%s_histBinUp" % (hs.GetName(),dir.GetName()))
-        dn = hs.Clone("%s_%s_histBinDown" % (hs.GetName(),dir.GetName()))
+        up = hs.Clone("%s_%s_histBinUp" % (hs.GetName(),dir.GetTitle()))
+        dn = hs.Clone("%s_%s_histBinDown" % (hs.GetName(),dir.GetTitle()))
         up[ibin] = up[ibin] + up.GetBinError(ibin)
         dn[ibin] = max( 0.01*dn[ibin],dn[ibin] - dn.GetBinError(ibin))
         if not validShape(up,dn) and name != 'signal': continue
 
-        variation = '%s_%s_bin%i_stat' % (name,dir.GetName(),ibin)
-        ws.addTemplate("%s_%s_%sUp" % (hs.GetName(),dir.GetName(),variation),up)
-        ws.addTemplate("%s_%s_%sDown" % (hs.GetName(),dir.GetName(),variation),dn)
+        variation = '%s_%s_bin%i_stat' % (name,dir.GetTitle(),ibin)
+        ws.addTemplate("%s_%s_%sUp" % (hs.GetName(),dir.GetTitle(),variation),up)
+        ws.addTemplate("%s_%s_%sDown" % (hs.GetName(),dir.GetTitle(),variation),dn)
 
 def addMC(dir,ws,variations):
-    print 'Processing %s MC' % dir.GetName()
-    total_bkg = dir.Get('sumOfBkg').Integral()
+    print 'Processing %s MC' % dir.GetTitle()
+    total_bkg = dir.Get('SumOfBkg').Integral()
     for mc in mclist:
         print 'Adding %s Process' % mc
         mc_hs = dir.Get(mc)
         if not validHisto(mc_hs): continue
-        ws.addTemplate("%s_%s" % (mc,dir.GetName()),dir.Get(mc))
+        ws.addTemplate("%s_%s" % (mc,dir.GetTitle()),dir.Get(mc))
         for variation in variations:
             mc_up = dir.Get("%s_%sUp" % (mc,variation))
             mc_dn = dir.Get("%s_%sDown" % (mc,variation))
             if not validShape(mc_up,mc_dn): continue
-            ws.addTemplate("%s_%s_%sUp" % (mc,dir.GetName(),variation),mc_up)
-            ws.addTemplate("%s_%s_%sDown" % (mc,dir.GetName(),variation),mc_dn)
+            ws.addTemplate("%s_%s_%sUp" % (mc,dir.GetTitle(),variation),mc_up)
+            ws.addTemplate("%s_%s_%sDown" % (mc,dir.GetTitle(),variation),mc_dn)
         if not validHisto(mc_hs,total=total_bkg): continue
         addStat(dir,ws,mc_hs)
 
@@ -73,26 +74,26 @@ def getFractionalShift(norm,up,dn):
 
 def ZWLink(dir,ws,connect):
     if not options['doTrans']: return [],[]
-    print 'Processing %s Transfer Factors' % dir.GetName()
+    print 'Processing %s Transfer Factors' % dir.GetTitle()
     zjet = dir.Get("ZJets")
     wjet = dir.Get("WJets")
     zbinlist = RooArgList()
-    ws.makeBinList("ZJets_%s" % dir.GetName(),zjet,zbinlist)
+    ws.makeBinList("ZJets_%s" % dir.GetTitle(),zjet,zbinlist)
     zwdir = dir.GetDirectory("zwlink"); zwdir.cd()
     zoverw_hs = zwdir.Get("ZWlink")
     syslist = []
     for variation in zw_variations:
         if variation == 'JES': continue
-        for process in ('WJets','ZJets'):
-            zoverw_up = zwdir.Get("ZWlink_%sUp_%s" % (variation,process))
-            zoverw_dn = zwdir.Get("ZWlink_%sDown_%s" % (variation,process))
+        for process in ('Znn','Wln'):
+            zoverw_up = zwdir.Get("ZWlink_%s_%sUp" % (variation,process))
+            zoverw_dn = zwdir.Get("ZWlink_%s_%sDown" % (variation,process))
             if not validShape(zoverw_up,zoverw_dn): continue
             zoverw_sh = getFractionalShift(zoverw_hs,zoverw_up,zoverw_dn)
-            var = RooRealVar("ZoverW_%s_%s_%s" % (dir.GetName(),process,variation),"",0.,-5.,5.)
+            var = RooRealVar("ZoverW_%s_%s_%s" % (dir.GetTitle(),process,variation),"",0.,-10.,10.)
             syslist.append( {'var':var,'histo':zoverw_sh} )
     wbinlist = RooArgList()
-    if connect: ws.makeConnectedBinList("ZoverW_%s" % dir.GetName(),zoverw_hs,syslist,zbinlist,wbinlist)
-    else:       ws.makeBinList("ZoverW_%s" % dir.GetName(),wjet,wbinlist)
+    if connect: ws.makeConnectedBinList("ZoverW_%s" % dir.GetTitle(),zoverw_hs,syslist,zbinlist,wbinlist)
+    else:       ws.makeBinList("ZoverW_%s" % dir.GetTitle(),wjet,wbinlist)
     return zbinlist,wbinlist
 
 def addSignal(dir,ws,variations,signals,isScaled):
@@ -113,24 +114,24 @@ def addSignal(dir,ws,variations,signals,isScaled):
             signal_multi = 80.0 / signal_yield # Normalize so that combine limits are close to 1
             signal_hs.Scale(signal_multi)
             signal_scale[signal] = signal_multi
-        ws.addTemplate('%s_%s' % (signal_hs.GetName(),dir.GetName()),signal_hs)
+        ws.addTemplate('%s_%s' % (signal_hs.GetName(),dir.GetTitle()),signal_hs)
         for variation in variations:
             signal_up = dir.Get("%s_%sUp"   % (signal,variation)); signal_up.Scale(signal_multi)
             signal_dn = dir.Get("%s_%sDown" % (signal,variation)); signal_dn.Scale(signal_multi)
             if not validShape(signal_up,signal_dn): continue
-            ws.addTemplate("%s_%s_%sUp"   % (signal_hs.GetName(),dir.GetName(),variation),signal_up)
-            ws.addTemplate("%s_%s_%sDown" % (signal_hs.GetName(),dir.GetName(),variation),signal_dn)
+            ws.addTemplate("%s_%s_%sUp"   % (signal_hs.GetName(),dir.GetTitle(),variation),signal_up)
+            ws.addTemplate("%s_%s_%sDown" % (signal_hs.GetName(),dir.GetTitle(),variation),signal_dn)
         addStat(dir,ws,signal_hs,name='signal')
     return signal_scale
 
-def getSignalRegion(dir,rfile,ws,signal,isScaled):
+def getSignalRegion(dir,sysfile,ws,signal,isScaled):
     print 'Processing sr'
     dir.cd()
 
     variations = getVariations(dir)
     
     data_obs = dir.Get('data_obs'); data_obs.SetDirectory(0)
-    ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
+    ws.addTemplate('data_obs_%s' % dir.GetTitle(),data_obs)
 
     nbins = data_obs.GetNbinsX()
 
@@ -147,27 +148,28 @@ def getSignalRegion(dir,rfile,ws,signal,isScaled):
 
 def getLLTransfer(dir,ws,zbinlist):
     if not options['doTrans']: return
-    print 'Processing %s Transfer Factors' % dir.GetName()
+    print 'Processing %s Transfer Factors' % dir.GetTitle()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
-    soverc_hs = tfdir.Get("ZJets")
+    soverc_hs = tfdir.Get("DYJets")
     syslist = []
-    for variation in cs_variations:
-        soverc_up = tfdir.Get("ZJets_%sUp" % variation)
-        soverc_dn = tfdir.Get("ZJets_%sDown" % variation)
-        if not validShape(soverc_up,soverc_dn): continue
-        soverc_sh = getFractionalShift(soverc_hs,soverc_up,soverc_dn)
-        var = RooRealVar("SRoverCR_%s_%s" % (dir.GetName(),variation),"",0.,-5.,5.)
-        syslist.append( {'var':var,'histo':soverc_sh} )
-    ws.makeConnectedBinList("SRoverCR_%s" % dir.GetName(),soverc_hs,syslist,zbinlist)
+    # for variation in cs_variations:
+    #     for process in 
+    #     soverc_up = tfdir.Get("ZJets_%sUp" % variation)
+    #     soverc_dn = tfdir.Get("ZJets_%sDown" % variation)
+    #     if not validShape(soverc_up,soverc_dn): continue
+    #     soverc_sh = getFractionalShift(soverc_hs,soverc_up,soverc_dn)
+    #     var = RooRealVar("CRoverSR_%s_%s" % (dir.GetTitle(),variation),"",0.,-5.,5.)
+    #     syslist.append( {'var':var,'histo':soverc_sh} )
+    ws.makeConnectedBinList("CRoverSR_%s" % dir.GetTitle(),soverc_hs,syslist,zbinlist)
 
-def getLLCR(dir,rfile,ws,zbinlist):
-    print 'Processing %s' % dir.GetName()
+def getLLCR(dir,sysfile,ws,zbinlist):
+    print 'Processing %s' % dir.GetTitle()
     dir.cd()
 
     variations = getVariations(dir)
     
     data_obs = dir.Get('data_obs');
-    ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
+    ws.addTemplate('data_obs_%s' % dir.GetTitle(),data_obs)
 
     getLLTransfer(dir,ws,zbinlist)
 
@@ -175,34 +177,34 @@ def getLLCR(dir,rfile,ws,zbinlist):
 
 def getLTransfer(dir,ws,wbinlist):
     if not options['doTrans']: return
-    print 'Processing %s Transfer Factors' % dir.GetName()
+    print 'Processing %s Transfer Factors' % dir.GetTitle()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
     soverc_hs = tfdir.Get("WJets")
     syslist = []
-    for variation in cs_variations:
-        soverc_up = tfdir.Get("WJets_%sUp" % variation)
-        soverc_dn = tfdir.Get("WJets_%sDown" % variation)
-        if not validShape(soverc_up,soverc_dn): continue
-        soverc_sh = getFractionalShift(soverc_hs,soverc_up,soverc_dn)
-        var = RooRealVar("SRoverCR_%s_%s" % (dir.GetName(),variation),"",0.,-5.,5.)
-        syslist.append( {'var':var,'histo':soverc_sh} )
-    ws.makeConnectedBinList("SRoverCR_%s" % dir.GetName(),soverc_hs,syslist,wbinlist)            
+    # for variation in cs_variations:
+    #     soverc_up = tfdir.Get("WJets_%sUp" % variation)
+    #     soverc_dn = tfdir.Get("WJets_%sDown" % variation)
+    #     if not validShape(soverc_up,soverc_dn): continue
+    #     soverc_sh = getFractionalShift(soverc_hs,soverc_up,soverc_dn)
+    #     var = RooRealVar("CRoverSR_%s_%s" % (dir.GetTitle(),variation),"",0.,-5.,5.)
+    #     syslist.append( {'var':var,'histo':soverc_sh} )
+    ws.makeConnectedBinList("CRoverSR_%s" % dir.GetTitle(),soverc_hs,syslist,wbinlist)            
 
-def getLCR(dir,rfile,ws,wbinlist):
-    print 'Processing %s' % dir.GetName()
+def getLCR(dir,sysfile,ws,wbinlist):
+    print 'Processing %s' % dir.GetTitle()
     dir.cd()
 
     variations = getVariations(dir)
     
     data_obs = dir.Get('data_obs'); data_obs.SetDirectory(0)
-    ws.addTemplate('data_obs_%s' % dir.GetName(),data_obs)
+    ws.addTemplate('data_obs_%s' % dir.GetTitle(),data_obs)
 
     getLTransfer(dir,ws,wbinlist)
 
     addMC(dir,ws,variations)
 
-def WriteScaling(signal_scale):
-    with open("signal_scaling.json","w") as f:
+def WriteScaling(signal_scale,output='signal_scaling.json'):
+    with open(output,"w") as f:
         json.dump(signal_scale,f)
 
 def getMetadata(sysfile,output):
@@ -212,34 +214,38 @@ def getMetadata(sysfile,output):
         hs_meta = sysfile.Get(meta)
         hs_meta.Write()
         
-def createWorkspace(input,isScaled=True):
+def createWorkspace(input,isScaled=False,outfname='workspace.root'):
+    sysfile = input
+    if type(sysfile) == str: sysfile = SysFile(sysfile)
     ws = Workspace('w','w')
 
-    sysfile = TFile(input)
-    hs_var = sysfile.Get("variable")
-    outfname = 'workspace.root'
     output = TFile(outfname,'recreate')
-    var = RooRealVar(hs_var.GetTitle(),hs_var.GetXaxis().GetTitle(),hs_var.GetXaxis().GetXmin(),hs_var.GetXaxis().GetXmax())
+    var = sysfile.getRooRealVar()
     ws.setVar(var)
 
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')
+    dir_sr.SetTitle('sr_%s' % sysfile.year)
     zbinlist,wbinlist,signal_scale = getSignalRegion(dir_sr,sysfile,ws,r"Mx\d+_Mv\d+$",isScaled)
 
     #-----Double Muon-----#
     dir_zm = sysfile.GetDirectory('zm')
+    dir_zm.SetTitle('zm_%s' % sysfile.year)
     getLLCR(dir_zm,sysfile,ws,zbinlist)
     
     #-----Double Electron-----#
     dir_ze = sysfile.GetDirectory('ze')
+    dir_ze.SetTitle('ze_%s' % sysfile.year)
     getLLCR(dir_ze,sysfile,ws,zbinlist)
     
     #-----Single Muon-----#
     dir_wm = sysfile.GetDirectory('wm')
+    dir_wm.SetTitle('wm_%s' % sysfile.year)
     getLCR(dir_wm,sysfile,ws,wbinlist)
     
     #-----Single Electron-----#
     dir_we = sysfile.GetDirectory('we')
+    dir_we.SetTitle('we_%s' % sysfile.year)
     getLCR(dir_we,sysfile,ws,wbinlist)
     
     #-----Meta Data-----#
@@ -248,7 +254,8 @@ def createWorkspace(input,isScaled=True):
     output.cd()
     ws.Write()
 
-    WriteScaling(signal_scale)
+    WriteScaling(signal_scale,'Limits/%s/signal_scaling_%s.json' % (sysfile.variable.GetTitle(),sysfile.year))
+        
 
 if __name__ == "__main__":
     fbase = "ChNemPtFrac_2016.sys.root"

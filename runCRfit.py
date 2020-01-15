@@ -9,13 +9,31 @@ import json
 import re
 from ROOT import *
 
+ch_order = ('sr','we','wm','ze','zm')
+
+def channel_order(ch1,ch2):
+    for i,ch in enumerate(ch_order):
+        if ch in ch1: i1 = i
+        if ch in ch2: i2 = i
+    if i1 < i2: return -1
+    elif i1 == i2:
+            y1 = re.findall('\d\d\d\d',ch1)
+            y2 = re.findall('\d\d\d\d',ch2)
+            if any(y1) and any(y2):
+                y1 = int(y1[0]); y2 = int(y2[0])
+                if y1 < y2: return -1
+    return 1
+
 def runFit(args):
     if os.path.isfile('fitDiagnostics_fit_CRonly_result.root') and not args.reset: return
-    combine_cards = ['combineCards.py','sr=../datacard_sr']
-    for cr in ('we','ze','wm','zm'): combine_cards.append('%s=../datacard_%s' % (cr,cr))
-    combine_cards += ['>','datacard']
+    channels = [ card.replace('datacard_','') for card in os.listdir('../') if 'datacard' in card ]
+    channels.sort(channel_order)
+    sr_channel = [ channel for channel in channels if 'sr' in channel ]
+    combine_cards = ['combineCards.py'] + ['%s=../datacard_%s' % (channel,channel) for channel in channels] + ['>','datacard']
     text2workspace = ['text2workspace.py','datacard','--channel-masks']
-    cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--setParameters","mask_sr=1"]
+    cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--setParameters"]
+    cr_only_fit += [','.join(['mask_%s=1' % channel for channel in sr_channel])]
+    cr_only_fit += ["--ignoreCovWarning","--cminDefaultMinimizerStrategy 0"]
     with open('run_cr_only_fit.sh','w') as f:
         f.write("#!/bin/sh\n")
         f.write(' '.join(combine_cards)+'\n')

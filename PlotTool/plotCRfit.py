@@ -21,6 +21,15 @@ crmap = {
     'ze':{'mc':'DYJets','leg':'Z #rightarrow ee'},
     'zm':{'mc':'DYJets','leg':'Z #rightarrow #mu#mu'}
 }
+def loop_iterator(iterator):
+  object = iterator.Next()
+  while object:
+    yield object
+    object = iterator.Next()
+
+def iter_collection(rooAbsCollection):
+  iterator = rooAbsCollection.createIterator()
+  return loop_iterator(iterator)
 def getOtherBkg(cr,tfile):
     bkg = None
     tdir = tfile.Get('shapes_prefit/%s' % cr)
@@ -37,6 +46,7 @@ def plotCR(cr,tfile,info):
     prefit_hs = tfile.Get('shapes_prefit/%s/total_background' % (cr))
     postfit_hs = tfile.Get('shapes_fit_b/%s/total_background' % (cr))
     data_graph = tfile.Get('shapes_prefit/%s/data' % cr)
+    nuisances = tfile.Get('nuisances_prefit')
 
     other_bkg = getOtherBkg(cr,tfile)
 
@@ -81,6 +91,9 @@ def plotCR(cr,tfile,info):
     postfit_ratio = data_hs.Clone('postfit_ratio'); postfit_ratio.Divide(postfit_hs)
 
     prefit_ratio.Draw('pex0'); ratio_style(prefit_ratio,kRed)
+    # prefit_ratio.GetYaxis().SetTitleOffset(0.3)
+    prefit_ratio.GetYaxis().SetTitleSize(0.15)
+    prefit_ratio.GetYaxis().SetLabelSize(0.15)
     postfit_ratio.Draw('pex0same'); ratio_style(postfit_ratio,kBlue)
 
     ###############################
@@ -105,13 +118,17 @@ def plotCR(cr,tfile,info):
     output = '%s/%s' % (outsys,outname)
     c.SaveAs(output)
 def plotCRFit(path):
-    if 'nCR' in path: return
-    cwd = os.getcwd()
-    info = SysInfo(path)
-    os.chdir('%s/cr_fit' % path)
-    tfile = TFile.Open("fitDiagnostics_fit_CRonly_result.root")
-    for cr in crmap: plotCR(cr,tfile,info)
-    os.chdir(cwd)
+  global crmap
+  if 'nCR' in path: return
+  cwd = os.getcwd()
+  info = SysInfo(path)
+  os.chdir('%s/cr_fit' % path)
+  tfile = TFile.Open("fitDiagnostics_fit_CRonly_result.root")
+  crlist = [ crdir.GetName() for crdir in tfile.Get('shapes_prefit').GetListOfKeys() if any( cr in crdir.GetName() for cr in crmap ) ]
+  for cr in crlist:
+    crmap[cr] = crmap[cr.split('_')[0]]
+    plotCR(cr,tfile,info)
+  os.chdir(cwd)
 ##############################################################################
 def getargs():
     def directory(arg):
