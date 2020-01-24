@@ -137,8 +137,8 @@ def collectWorkspaces(path,show=False):
     collectWorkspace(mxdirs,year,show=show)
     os.chdir(cwd)
 ##############################################################################
-def runParallel():
-    args = getargs()
+def runParallel(args=None):
+    if args is None: args = getargs()
     print 'Running Limits'
     if args.verbose: procmap=None
     else:         procmap={}
@@ -149,8 +149,8 @@ def runParallel():
     printProcs(procmap,'Mx Output')
     for path in args.dir: collectWorkspaces(path,show=args.verbose)
 ##############################################################################
-def runSerial():
-    args = getargs()
+def runSerial(args=None):
+    if args is None: args = getargs()
     for path in args.dir:
         print 'Running Limits',path
         if args.verbose: procmap=None
@@ -169,6 +169,7 @@ def getargs():
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',action='store',type=directory,default=None,nargs='+',required=True)
     parser.add_argument("-v","--verbose",help='Show output from combine',action='store_true',default=False)
+    parser.add_argument("-p","--parallel",help="Run all directories in parallel",action='store_true',default=False)
     # parser.add_argument("-r","--reset",help='Run limits event if they have already been done',action='store_true',default=False)
     try: args = parser.parse_args()
     except:
@@ -176,5 +177,8 @@ def getargs():
         exit()
     return args
 ##############################################################################
-if __name__ == "__main__": runSerial()
+if __name__ == "__main__":
+    args = getargs()
+    if not args.parallel: runSerial(args)
+    else: runParallel(args)
 #################################################################################################
