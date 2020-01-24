@@ -2,7 +2,7 @@
 from ROOT import *
 import os
 import sys
-from shutil import rmtree
+from shutil import rmtree,copyfile
 from argparse import ArgumentParser
 from array import array
 from fitting import *
@@ -115,9 +115,11 @@ def modify(dir,args):
     return dir
 #####
 def yearWorkspace(sysfile,args):
+    isScaled = os.path.isfile('signal_scaling.json')
     outfname = 'Limits/%s/workspace_%s.root' % (sysfile.variable.GetTitle(),sysfile.year)
+    if isScaled: copyfile('signal_scaling.json','Limits/%s/signal_scaling.json' % sysfile.variable.GetTitle())
     if not os.path.isfile(outfname) or args.reset:
-        createWorkspace(sysfile,outfname=outfname)
+        createWorkspace(sysfile,outfname=outfname,isScaled=isScaled)
 ####################
 def makeWorkspace():
     if not os.path.isdir('Limits/'): os.mkdir('Limits/')

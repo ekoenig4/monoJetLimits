@@ -99,7 +99,7 @@ def ZWLink(dir,ws,connect):
 def addSignal(dir,ws,variations,signals,isScaled):
     print 'Processing Signal'
     if type(signals) != list: signals = [signals]
-    signal_scale = {}
+    with open('signal_scaling.json') as f: scaling = json.load(f)
     def valid_signal(hs):
         # some signal has negative events, ignore them
         for ibin in range(1,len(hs)):
@@ -111,9 +111,8 @@ def addSignal(dir,ws,variations,signals,isScaled):
         signal_yield = signal_hs.Integral()
         if not valid_signal(signal_hs): print '%s has negative bins' % signal; continue
         if isScaled:
-            signal_multi = 80.0 / signal_yield # Normalize so that combine limits are close to 1
+            signal_multi = scaling[signal] # Normalize so that combine limits are close to 1
             signal_hs.Scale(signal_multi)
-            signal_scale[signal] = signal_multi
         ws.addTemplate('%s_%s' % (signal_hs.GetName(),dir.GetTitle()),signal_hs)
         for variation in variations:
             signal_up = dir.Get("%s_%sUp"   % (signal,variation)); signal_up.Scale(signal_multi)
@@ -122,7 +121,6 @@ def addSignal(dir,ws,variations,signals,isScaled):
             ws.addTemplate("%s_%s_%sUp"   % (signal_hs.GetName(),dir.GetTitle(),variation),signal_up)
             ws.addTemplate("%s_%s_%sDown" % (signal_hs.GetName(),dir.GetTitle(),variation),signal_dn)
         addStat(dir,ws,signal_hs,name='signal')
-    return signal_scale
 
 def getSignalRegion(dir,sysfile,ws,signal,isScaled):
     print 'Processing sr'
@@ -138,13 +136,13 @@ def getSignalRegion(dir,sysfile,ws,signal,isScaled):
     signal_scale = {}
     if signal != None:
         signals = [ key.GetName() for key in dir.GetListOfKeys() if re.search(signal,key.GetName()) ]
-        signal_scale = addSignal(dir,ws,variations,signals,isScaled)
+        addSignal(dir,ws,variations,signals,isScaled)
         
 
     zbinlist,wbinlist = ZWLink(dir,ws,True)
 
     addMC(dir,ws,variations)
-    return zbinlist,wbinlist,signal_scale
+    return zbinlist,wbinlist
 
 def getLLTransfer(dir,ws,zbinlist):
     if not options['doTrans']: return
@@ -226,7 +224,7 @@ def createWorkspace(input,isScaled=False,outfname='workspace.root'):
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')
     dir_sr.SetTitle('sr_%s' % sysfile.year)
-    zbinlist,wbinlist,signal_scale = getSignalRegion(dir_sr,sysfile,ws,r"Mx\d+_Mv\d+$",isScaled)
+    zbinlist,wbinlist = getSignalRegion(dir_sr,sysfile,ws,r"Mx\d+_Mv\d+$",isScaled)
 
     #-----Double Muon-----#
     dir_zm = sysfile.GetDirectory('zm')
@@ -253,9 +251,6 @@ def createWorkspace(input,isScaled=False,outfname='workspace.root'):
 
     output.cd()
     ws.Write()
-
-    WriteScaling(signal_scale,'Limits/%s/signal_scaling_%s.json' % (sysfile.variable.GetTitle(),sysfile.year))
-        
 
 if __name__ == "__main__":
     fbase = "ChNemPtFrac_2016.sys.root"

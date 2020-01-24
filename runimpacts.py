@@ -25,14 +25,15 @@ def runImpacts(signal,scale,mv,impactdir):
     impacts = ['combineTool.py','-M','Impacts']
     card = ['-m',mv,'-d','%s.root' % signal]
 
-    def run(command):
-        print ' '.join(command)
-        proc = Popen(command)
-        proc.wait()
-    run(impacts + card + blind + ['--doInitialFit'])
-    run(impacts + card + blind + ['--allPars','--doFits','--parallel','12'])
-    run(impacts + card + ['--allPars','-o','impacts.json'])
-    run(['plotImpacts.py','-i','impacts.json','-o','impacts'])
+    c1 = ' '.join(impacts + card + blind + ['--doInitialFit'])+'>log'
+    c2 = ' '.join(impacts + card + blind + ['--allPars','--doFits','--parallel 12'])+' >>log'
+    c3 = ' '.join(impacts + card + ['--allPars','-o','impacts.json'])+'>>log'
+    c4 = ' '.join(['plotImpacts.py','-i','impacts.json','-o','impacts'])+'>>log'
+    with open('run_impacts.sh','w') as f:
+        f.write('set -o xtrace\n')
+        f.write('\n'.join([c1,c2,c3,c4]))
+    proc = Popen(['sh','run_impacts.sh'])
+    proc.wait()
 ##############################################################################
 def getText2WS(mxdir,mv,signal):
     print 'Text2Workspace'
@@ -47,9 +48,9 @@ def runDirectory(path,args):
     home = os.getcwd()
     os.chdir(path)
     cwd = os.getcwd()
-    if info.year == 'Run2': scaling = {}
-    else:
-        with open('../signal_scaling_%s.json' % info.year) as f: scaling = json.load(f)
+    scaling = {}
+    if os.path.isfile('../signal_scaling.json'):
+        with open('../signal_scaling.json') as f: scaling = json.load(f)
     scale = 1/float(scaling[args.signal]) if args.signal in scaling else 1
     sysdir = next( sub for sub in cwd.split('/') if '.sys' in sub )
     mx = args.signal.split('_')[0].replace('Mx','')

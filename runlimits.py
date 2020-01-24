@@ -101,9 +101,9 @@ def printProcs(procs,name):
 ##############################################################################
 def collectWorkspace(mxdirs,year,show=False):
     print os.getcwd()
-    if year == 'Run2': scaling = {}
-    else:
-        with open('../signal_scaling_%s.json' % year) as f: scaling = json.load(f)
+    scaling = {}
+    if os.path.isfile('../signal_scaling.json'):
+        with open('../signal_scaling.json') as f: scaling = json.load(f)
     mxjsons = {}
     cwd = os.getcwd()
     for mxdir in mxdirs:
