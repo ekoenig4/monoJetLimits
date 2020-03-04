@@ -79,14 +79,14 @@ def ZWLink(dir,ws,connect):
     wjet = dir.Get("WJets")
     zbinlist = RooArgList()
     ws.makeBinList("ZJets_%s" % dir.GetTitle(),zjet,zbinlist)
-    zwdir = dir.GetDirectory("zwlink"); zwdir.cd()
-    zoverw_hs = zwdir.Get("ZWlink")
+    zwdir = dir.GetDirectory("transfer"); zwdir.cd()
+    zoverw_hs = zwdir.Get("wsr_to_zsr")
     syslist = []
     for variation in zw_variations:
         if variation == 'JES': continue
-        for process in ('Znn','Wln'):
-            zoverw_up = zwdir.Get("ZWlink_%s_%sUp" % (variation,process))
-            zoverw_dn = zwdir.Get("ZWlink_%s_%sDown" % (variation,process))
+        for process in ('wsr','zsr'):
+            zoverw_up = zwdir.Get("wsr_to_zsr_%s_%sUp" % (variation,process))
+            zoverw_dn = zwdir.Get("wsr_to_zsr_%s_%sDown" % (variation,process))
             if not validShape(zoverw_up,zoverw_dn): continue
             zoverw_sh = getFractionalShift(zoverw_hs,zoverw_up,zoverw_dn)
             var = RooRealVar("ZoverW_%s_%s_%s" % (dir.GetTitle(),process,variation),"",0.,-10.,10.)
@@ -148,7 +148,7 @@ def getLLTransfer(dir,ws,zbinlist):
     if not options['doTrans']: return
     print 'Processing %s Transfer Factors' % dir.GetTitle()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
-    soverc_hs = tfdir.Get("DYJets")
+    soverc_hs = tfdir.Get("%s_to_sr" % dir.GetName())
     syslist = []
     # for variation in cs_variations:
     #     for process in 
@@ -156,9 +156,9 @@ def getLLTransfer(dir,ws,zbinlist):
     #     soverc_dn = tfdir.Get("ZJets_%sDown" % variation)
     #     if not validShape(soverc_up,soverc_dn): continue
     #     soverc_sh = getFractionalShift(soverc_hs,soverc_up,soverc_dn)
-    #     var = RooRealVar("CRoverSR_%s_%s" % (dir.GetTitle(),variation),"",0.,-5.,5.)
+    #     var = RooRealVar("SRoverCR_%s_%s" % (dir.GetTitle(),variation),"",0.,-10.,10.)
     #     syslist.append( {'var':var,'histo':soverc_sh} )
-    ws.makeConnectedBinList("CRoverSR_%s" % dir.GetTitle(),soverc_hs,syslist,zbinlist)
+    ws.makeConnectedBinList("SRoverCR_%s" % dir.GetTitle(),soverc_hs,syslist,zbinlist)
 
 def getLLCR(dir,sysfile,ws,zbinlist):
     print 'Processing %s' % dir.GetTitle()
@@ -177,16 +177,16 @@ def getLTransfer(dir,ws,wbinlist):
     if not options['doTrans']: return
     print 'Processing %s Transfer Factors' % dir.GetTitle()
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
-    soverc_hs = tfdir.Get("WJets")
+    soverc_hs = tfdir.Get("%s_to_sr" % dir.GetName())
     syslist = []
     # for variation in cs_variations:
     #     soverc_up = tfdir.Get("WJets_%sUp" % variation)
     #     soverc_dn = tfdir.Get("WJets_%sDown" % variation)
     #     if not validShape(soverc_up,soverc_dn): continue
     #     soverc_sh = getFractionalShift(soverc_hs,soverc_up,soverc_dn)
-    #     var = RooRealVar("CRoverSR_%s_%s" % (dir.GetTitle(),variation),"",0.,-5.,5.)
+    #     var = RooRealVar("SRoverCR_%s_%s" % (dir.GetTitle(),variation),"",0.,-10.,10.)
     #     syslist.append( {'var':var,'histo':soverc_sh} )
-    ws.makeConnectedBinList("CRoverSR_%s" % dir.GetTitle(),soverc_hs,syslist,wbinlist)            
+    ws.makeConnectedBinList("SRoverCR_%s" % dir.GetTitle(),soverc_hs,syslist,wbinlist)            
 
 def getLCR(dir,sysfile,ws,wbinlist):
     print 'Processing %s' % dir.GetTitle()
@@ -200,6 +200,36 @@ def getLCR(dir,sysfile,ws,wbinlist):
     getLTransfer(dir,ws,wbinlist)
 
     addMC(dir,ws,variations)
+
+def getGTransfer(dir,ws,zbinlist):
+    if not options['doTrans']: return
+    print 'Processing %s Transfer Factors' % dir.GetTitle()
+    tfdir = dir.GetDirectory("transfer"); tfdir.cd()
+    soverc_hs = tfdir.Get("ga_to_sr")
+    syslist = []
+    for variation in cs_variations:
+        for process in ('ga','sr'):
+            soverc_up = zwdir.Get("ga_to_sr_%s_%sUp" % (variation,process))
+            soverc_dn = zwdir.Get("ga_to_sr_%s_%sDown" % (variation,process))
+            if not validShape(soverc_up,soverc_dn): continue
+            soverc_sh = getFractionalShift(soverc_hs,soverc_up,soverc_dn)
+            var = RooRealVar("SRoverCR_%s_%s_%s" % (dir.GetTitle(),process,variation),"",0.,-10.,10.)
+            syslist.append( {'var':var,'histo':soverc_sh} )
+    ws.makeConnectedBinList("SRoverCR_%s" % dir.GetTitle(),soverc_hs,syslist,zbinlist)
+    
+def getGCR(dir,sysfile,ws,zbinlist):
+    print 'Processing %s' % dir.GetTitle()
+    dir.cd()
+
+    variations = getVariations(dir)
+    
+    data_obs = dir.Get('data_obs');
+    ws.addTemplate('data_obs_%s' % dir.GetTitle(),data_obs)
+
+    getGTransfer(dir,ws,zbinlist)
+
+    addMC(dir,ws,variations)
+    
 
 def WriteScaling(signal_scale,output='signal_scaling.json'):
     with open(output,"w") as f:
@@ -224,7 +254,7 @@ def createWorkspace(input,isScaled=False,outfname='workspace.root'):
     #-----Signal Region-----#
     dir_sr = sysfile.GetDirectory('sr')
     dir_sr.SetTitle('sr_%s' % sysfile.year)
-    zbinlist,wbinlist = getSignalRegion(dir_sr,sysfile,ws,r"Mx\d+_Mv\d+$",isScaled)
+    zbinlist,wbinlist = getSignalRegion(dir_sr,sysfile,ws,r"Axial_Mchi\d+_Mphi\d+$",isScaled)
 
     #-----Double Muon-----#
     dir_zm = sysfile.GetDirectory('zm')

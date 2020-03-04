@@ -8,7 +8,7 @@ scaleTo = 80.0
 
 tfile = TFile.Open(sys.argv[1])
 srdir = tfile.Get('sr')
-pattern = re.compile('^Mx\d+_Mv\d+$')
+pattern = re.compile('^Axial_Mchi\d+_Mphi\d+$')
 signalmap = {key.GetName():srdir.Get(key.GetName()) for key in srdir.GetListOfKeys() if pattern.search(key.GetName()) }
 
 for signal,hs in signalmap.iteritems():
