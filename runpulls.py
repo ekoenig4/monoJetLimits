@@ -9,7 +9,7 @@ import re
 from shutil import copyfile
 
 cmssw_base = os.getenv("CMSSW_BASE")
-outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
+outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
 
 text2workspace = "text2workspace.py ../Mchi_%s/datacard -m %s -o %s"
 combine = "combine -M FitDiagnostics -d %s -t -1"

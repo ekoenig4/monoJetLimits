@@ -10,7 +10,7 @@ from time import time
 import json
 import re
 
-outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
+outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
 ##############################################################################
 def printProcs(procs,name):
     if procs is None: return

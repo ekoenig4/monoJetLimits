@@ -290,6 +290,6 @@ def createWorkspace(input,isScaled=False,outfname='workspace.root'):
 if __name__ == "__main__":
     fbase = "ChNemPtFrac_2016.sys.root"
     cmssw_base = getenv("CMSSW_BASE")
-    fname = "%s/src/HiggsAnalysis/CombinedLimit/ZprimeLimits/Systematics/2016/%s" % (cmssw_base,fbase)
+    fname = "%s/src/HiggsAnalysis/CombinedLimit/Limits/Systematics/2016/%s" % (cmssw_base,fbase)
     createWorkspace(fname)
     
