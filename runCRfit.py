@@ -9,7 +9,7 @@ import json
 import re
 from ROOT import *
 
-ch_order = ('sr','we','wm','ze','zm')
+ch_order = ('sr','we','wm','ze','zm','ga')
 
 def channel_order(ch1,ch2):
     for i,ch in enumerate(ch_order):
@@ -56,7 +56,7 @@ def getargs():
         if os.path.isdir(arg): return arg
         raise ValueError()
     def signal(arg):
-        regex = re.compile(r"Mx\d*_Mv\d*$")
+        regex = re.compile(r"Mchi\d*_Mphi\d*$")
         if regex.match(arg): return arg
         raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')

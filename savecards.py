@@ -13,7 +13,7 @@ def savecard(input,output):
     print input,output
     for item in os.listdir(input):
         if 'datacard' in item or 'workspace' in item: copyfile('%s/%s' % (input,item),'%s/%s' % (output,item))
-        if os.path.isdir('%s/%s' % (input,item)) and ('Mx' in item or 'Mv' in item):
+        if os.path.isdir('%s/%s' % (input,item)) and ('Mchi' in item or 'Mphi' in item):
             if not os.path.isdir('%s/%s' % (output,item)): os.mkdir('%s/%s' % (output,item))
             savecard('%s/%s' % (input,item),'%s/%s' % (output,item))
 

@@ -9,12 +9,12 @@ def checkdir(dir):
         print 'Making %s' % dir
         os.mkdir(dir)
 def include_central(data):
-    mx_pattern = re.compile('Mx\d+'); mv_pattern = re.compile('Mv\d+')
+    mx_pattern = re.compile('Mchi\d+'); mv_pattern = re.compile('Mphi\d+')
     
-    mx_include = [ mx_pattern.findall(signal)[0].replace('Mx','') for signal in central_signal ]
+    mx_include = [ mx_pattern.findall(signal)[0].replace('Mchi','') for signal in central_signal ]
     mv_include = [ ]
     for signal in central_signal:
-        mv = mv_pattern.findall(signal)[0].replace('Mv','')
+        mv = mv_pattern.findall(signal)[0].replace('Mphi','')
         if mv == '10000': continue
         if not mv in mv_include: mv_include.append(mv)
         

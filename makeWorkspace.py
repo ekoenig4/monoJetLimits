@@ -35,14 +35,14 @@ def printProcs(procs,name):
     out = '%s : %.3f%%\n' % (prompt,100.)
     sys.stdout.write(out)
     sys.stdout.flush()
-def makeMvDir(mv,options,procmap=None):
+def makeMphiDir(mv,options,procmap=None):
     if mv == '10000': return
     cwd = os.getcwd()
-    mvdir = 'Mv_%s' % mv
+    mvdir = 'Mphi_%s' % mv
     print '--Create %s Directory' % mvdir
     if not os.path.isdir(mvdir): os.mkdir(mvdir)
     os.chdir(mvdir)
-    text2workspace = ['text2workspace.py','datacard','-m',mv,'-o','%s/workspace_Mv%s.root' % (mvdir,mv)]
+    text2workspace = ['text2workspace.py','datacard','-m',mv,'-o','%s/workspace_Mphi%s.root' % (mvdir,mv)]
     with open('make_workspace.sh','w') as f:
         f.write('#!/bin/sh\n')
         f.write('cd ../\n')
@@ -51,22 +51,22 @@ def makeMvDir(mv,options,procmap=None):
     if procmap is not None: procmap[os.getcwd()] = proc
     else:                   proc.wait()
     os.chdir(cwd)
-def makeMxDir(mx,mvlist,yearlist,options,procmap=None):
+def makeMchiDir(mx,mvlist,yearlist,options,procmap=None):
     cwd = os.getcwd()
     regions = []
     for ch in ('sr','we','wm','ze','zm'):
         if options.nCR and ch != 'sr': continue
         for year in yearlist:
             regions.append('%s_%s' % (ch,year))
-    mxdir = 'Mx_%s' % mx
+    mxdir = 'Mchi_%s' % mx
     print 'Creating %s Directory' % mxdir
     if not os.path.isdir(mxdir): os.mkdir(mxdir)
     os.chdir(mxdir)
     combine_cards = ['combineCards.py']
     for region in regions: combine_cards.append('%s=../datacard_%s' % (region,region))
     combine_cards += ['>','datacard']
-    replace_mx = ['sed','-i',"'s/Mx1/Mx%s/g'" % mx,'datacard']
-    replace_mv = ['sed','-i',"'s/Mv1000/Mv$MASS/g'",'datacard']
+    replace_mx = ['sed','-i',"'s/Mchi1/Mchi%s/g'" % mx,'datacard']
+    replace_mv = ['sed','-i',"'s/Mphi1000/Mphi$MASS/g'",'datacard']
     with open('make_datacard.sh','w') as f:
         f.write('#!/bin/sh\n')
         f.write(' '.join(combine_cards)+'\n')
@@ -74,8 +74,8 @@ def makeMxDir(mx,mvlist,yearlist,options,procmap=None):
         f.write(' '.join(replace_mv)+'\n')
     proc = Popen(['sh','make_datacard.sh'],stdout=PIPE,stderr=STDOUT); proc.wait()
     procmap = {}
-    for mv in mvlist: makeMvDir(mv,options,procmap)
-    printProcs(procmap,"Mv Directories")
+    for mv in mvlist: makeMphiDir(mv,options,procmap)
+    printProcs(procmap,"Mphi Directories")
     os.chdir(cwd)
 #####
 def getargs():
@@ -135,7 +135,7 @@ def makeWorkspace():
         os.chdir(sysdir)
         createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year,args)
         
-        for mx,mvlist in sysfile.getMxlist().items(): makeMxDir(mx,mvlist,[sysfile.year],args)
+        for mx,mvlist in sysfile.getMchilist().items(): makeMchiDir(mx,mvlist,[sysfile.year],args)
     else:
         yearlist = ['2016','2017','2018']
         args.input = args.input.replace('2016','Run2').replace('2017','Run2').replace('2018','Run2')
@@ -149,7 +149,7 @@ def makeWorkspace():
         os.chdir(sysdir)
         for sysfile in sysfiles: createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year,args)
 
-        mxlists = [ sysfile.getMxlist() for sysfile in sysfiles ]
+        mxlists = [ sysfile.getMchilist() for sysfile in sysfiles ]
         mxmap = {}
         mxvalues = []
         mvvalues = []
@@ -164,7 +164,7 @@ def makeWorkspace():
             for mv in mvvalues:
                 if any( mv not in mxlist[mx] for mxlist in mxlists ): continue
                 mxmap[mx].append(mv)
-        for mx,mvlist in mxmap.iteritems(): makeMxDir(mx,mvlist,yearlist,args)
+        for mx,mvlist in mxmap.iteritems(): makeMchiDir(mx,mvlist,yearlist,args)
 ####################
 if __name__ == "__main__": makeWorkspace()
     

@@ -58,7 +58,7 @@ def runImpacts(path,mx,mv,procmap=None):
     os.chdir('impacts')
     blind = ['-t','-1','--expectSignal','1']
     impacts = ['combineTool.py','-M','Impacts']
-    card = ['-m',mv,'-d','Mx%s_Mv%s.root' % (mx,mv)]
+    card = ['-m',mv,'-d','Mchi%s_Mphi%s.root' % (mx,mv)]
 
     c1 = ' '.join(impacts + card + blind + ['--doInitialFit'])+'>>log'
     c2 = ' '.join(impacts + card + blind + ['--allPars','--doFits','--parallel 12'])+' >>log'
@@ -80,7 +80,7 @@ def getText2WS(path,mx,mv,procmap=None):
     cwd = os.getcwd()
     os.chdir(path)
     if not os.path.isdir('impacts'): os.mkdir('impacts')
-    command = ['text2workspace.py','Mx_%s/datacard' % mx,'-m',mv,'-o','impacts/Mx%s_Mv%s.root' % (mx,mv)]
+    command = ['text2workspace.py','Mchi_%s/datacard' % mx,'-m',mv,'-o','impacts/Mchi%s_Mphi%s.root' % (mx,mv)]
     if procmap is None:
         print os.getcwd()
         proc = Popen(command); proc.wait()
@@ -93,7 +93,7 @@ def runParallel(args=None):
     if args is None: args = getargs()
     args.dir = [ path for path in args.dir if not ('nSYS' in path and 'nSTAT' in path) ]
     print 'Running Impacts'
-    mx,mv = args.signal.replace('Mx',"").replace("Mv","").split('_')
+    mx,mv = args.signal.replace('Mchi',"").replace("Mphi","").split('_')
     procmap = {}
     for path in args.dir: getText2WS(path,mx,mv,procmap)
     printProcs(procmap,'Text2Workspace')
@@ -105,7 +105,7 @@ def runSerial(args=None):
     if args is None: args = getargs()
     args.dir = [ path for path in args.dir if not ('nSYS' in path and 'nSTAT' in path) ]
     print 'Running Impacts'
-    mx,mv = args.signal.strip('Mx').strip('Mv').split('_')
+    mx,mv = args.signal.strip('Mchi').strip('Mphi').split('_')
     for path in args.dir:
         getText2WS(path,mx,mv)
         runImpacts(path,mx,mv)
@@ -123,9 +123,9 @@ def runDirectory(path,args):
         with open('../signal_scaling.json') as f: scaling = json.load(f)
     scale = 1/float(scaling[args.signal]) if args.signal in scaling else 1
     sysdir = next( sub for sub in cwd.split('/') if '.sys' in sub )
-    mx = args.signal.split('_')[0].replace('Mx','')
-    mxdir = 'Mx_%s' % mx
-    mv = args.signal.split('_')[1].replace('Mv','')
+    mx = args.signal.split('_')[0].replace('Mchi','')
+    mxdir = 'Mchi_%s' % mx
+    mv = args.signal.split('_')[1].replace('Mphi','')
     impactdir = 'impacts'
     if not os.path.isdir(impactdir): os.mkdir(impactdir)
     else:                            os.system('rm impacts/*')
@@ -140,12 +140,12 @@ def getargs():
         if os.path.isdir(arg): return arg
         raise ValueError()
     def signal(arg):
-        regex = re.compile(r"Mx\d*_Mv\d*$")
+        regex = re.compile(r"Mchi\d*_Mphi\d*$")
         if regex.match(arg): return arg
         raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
-    parser.add_argument("-s","--signal",help='Specify the signal (Mxd_Mvd) sample to get impact for',action='store',type=signal,default="Mx1_Mv1000")
+    parser.add_argument("-s","--signal",help='Specify the signal (Mchid_Mphid) sample to get impact for',action='store',type=signal,default="Mchi1_Mphi1000")
     parser.add_argument("-p","--parallel",help="Run all directories in parallel",action='store_true',default=False)
     
     try: args = parser.parse_args()

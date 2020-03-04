@@ -16,11 +16,11 @@ class cPopen(Popen):
         else:              super(cPopen,self).__init__(args,stdout=stdout,stderr=STDOUT)
     def duration(self): return time() - self.start
 ##############################################################################
-def runMvdir(mx,mvdir,procmap=None):
-    mv = mvdir.replace('Mv_','').replace('/','')
+def runMphidir(mx,mvdir,procmap=None):
+    mv = mvdir.replace('Mphi_','').replace('/','')
     cwd = os.getcwd()
     os.chdir(mvdir)
-    combine = ['combine','-M','AsymptoticLimits','-n','Mx%sMv%s' % (mx,mv),'-m',mv,'workspace_Mv%s.root' % mv]
+    combine = ['combine','-M','AsymptoticLimits','-n','Mchi%sMphi%s' % (mx,mv),'-m',mv,'workspace_Mphi%s.root' % mv]
     if procmap is None:
         print os.getcwd()
         proc = cPopen(combine); proc.wait()
@@ -29,31 +29,31 @@ def runMvdir(mx,mvdir,procmap=None):
         procmap[os.getcwd()] = proc
     os.chdir(cwd)
 ##############################################################################
-def runMxdir(mxdir,procmap=None):
-    mx = mxdir.replace('Mx_','').replace('/','')
+def runMchidir(mxdir,procmap=None):
+    mx = mxdir.replace('Mchi_','').replace('/','')
     cwd = os.getcwd()
     os.chdir(mxdir)
-    mvdirs = [ dir for dir in os.listdir('.') if re.search(r'Mv_\d+$',dir) ]
-    for mvdir in sorted(mvdirs): runMvdir(mx,mvdir,procmap)
+    mvdirs = [ dir for dir in os.listdir('.') if re.search(r'Mphi_\d+$',dir) ]
+    for mvdir in sorted(mvdirs): runMphidir(mx,mvdir,procmap)
     os.chdir(cwd)
 ##############################################################################
 def runLimits(path,procmap=None):
     cwd = os.getcwd()
     os.chdir(path)
-    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
-    for mxdir in sorted(mxdirs): runMxdir(mxdir,procmap)
+    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mchi_\d+$',dir) ]
+    for mxdir in sorted(mxdirs): runMchidir(mxdir,procmap)
     os.chdir(cwd)
 ##############################################################################
-def collectMxdir(mxdir,procmap=None):
-    mx = mxdir.replace('Mx_','').replace('/','')
+def collectMchidir(mxdir,procmap=None):
+    mx = mxdir.replace('Mchi_','').replace('/','')
     cwd = os.getcwd()
     os.chdir(mxdir)
-    output = 'zprimeMx%s.json' % mx
+    output = 'zprimeMchi%s.json' % mx
     args = ['combineTool.py','-M','CollectLimits']
-    mvdirs = [ dir for dir in os.listdir('.') if re.search(r'Mv_\d+$',dir) ]
-    combine_output = '%s/higgsCombineMx%sMv%s.AsymptoticLimits.mH%s.root'
+    mvdirs = [ dir for dir in os.listdir('.') if re.search(r'Mphi_\d+$',dir) ]
+    combine_output = '%s/higgsCombineMchi%sMphi%s.AsymptoticLimits.mH%s.root'
     for mvdir in mvdirs:
-        mv = mvdir.replace('Mv_','').replace('/','')
+        mv = mvdir.replace('Mphi_','').replace('/','')
         args.append( combine_output % (mvdir,mx,mv,mv) )
     args += ['-o',output]
     if procmap is None:
@@ -67,8 +67,8 @@ def collectMxdir(mxdir,procmap=None):
 def collectLimits(path,procmap=None):
     cwd = os.getcwd()
     os.chdir(path)
-    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
-    for mxdir in sorted(mxdirs): collectMxdir(mxdir,procmap)
+    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mchi_\d+$',dir) ]
+    for mxdir in sorted(mxdirs): collectMchidir(mxdir,procmap)
     os.chdir(cwd)
 ##############################################################################
 def printProcs(procs,name):
@@ -107,8 +107,8 @@ def collectWorkspace(mxdirs,year,show=False):
     mxjsons = {}
     cwd = os.getcwd()
     for mxdir in mxdirs:
-        mx = mxdir.replace('Mx_','').replace('/','')
-        with open('Mx_%s/zprimeMx%s.json' % (mx,mx)) as f: mxjsons[mx] = json.load(f)
+        mx = mxdir.replace('Mchi_','').replace('/','')
+        with open('Mchi_%s/zprimeMchi%s.json' % (mx,mx)) as f: mxjsons[mx] = json.load(f)
     #####
     ws = {}
     for mx,mxjson in mxjsons.iteritems():
@@ -117,7 +117,7 @@ def collectWorkspace(mxdirs,year,show=False):
             mv_ws = {}
             lim = mxjson[mv]
             mv = str(int(float(mv)))
-            key = 'Mx%s_Mv%s' % (mx,mv)
+            key = 'Mchi%s_Mphi%s' % (mx,mv)
             scale = scaling[key] if key in scaling else 1
             mv_ws['scale'] = scale
             mv_ws['limits'] = lim
@@ -132,7 +132,7 @@ def collectWorkspaces(path,show=False):
     year = re.findall('\d\d\d\d',path)
     if not any(year): year = 'Run2'
     else:             year = year[0]
-    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mx_\d+$',dir) ]
+    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mchi_\d+$',dir) ]
     print 'Collecting %s' % path
     collectWorkspace(mxdirs,year,show=show)
     os.chdir(cwd)
@@ -143,10 +143,10 @@ def runParallel(args=None):
     if args.verbose: procmap=None
     else:         procmap={}
     for path in args.dir: runLimits(path,procmap)
-    printProcs(procmap,'Mx Limits')
+    printProcs(procmap,'Mchi Limits')
     print 'Collecting Limits'
     for path in args.dir: collectLimits(path,procmap)
-    printProcs(procmap,'Mx Output')
+    printProcs(procmap,'Mchi Output')
     for path in args.dir: collectWorkspaces(path,show=args.verbose)
 ##############################################################################
 def runSerial(args=None):
@@ -156,10 +156,10 @@ def runSerial(args=None):
         if args.verbose: procmap=None
         else:         procmap={}
         runLimits(path,procmap)
-        printProcs(procmap,'Mx Limits')
+        printProcs(procmap,'Mchi Limits')
         print 'Collecting Limits'
         collectLimits(path,procmap)
-        printProcs(procmap,'Mx Output')
+        printProcs(procmap,'Mchi Output')
         collectWorkspaces(path,show=args.verbose)
 ##############################################################################
 def getargs():

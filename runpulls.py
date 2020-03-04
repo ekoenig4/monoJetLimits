@@ -11,14 +11,14 @@ from shutil import copyfile
 cmssw_base = os.getenv("CMSSW_BASE")
 outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 
-text2workspace = "text2workspace.py ../Mx_%s/datacard -m %s -o %s"
+text2workspace = "text2workspace.py ../Mchi_%s/datacard -m %s -o %s"
 combine = "combine -M FitDiagnostics -d %s -t -1"
 diffNuisances = "python %s/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root -g test.root --abs --all" % cmssw_base
 
 def getargs():
     parser = ArgumentParser()
     parser.add_argument("-d","--dir",help="specify directory to run pulls in",nargs='+',action="store",type=str,required=True)
-    parser.add_argument("-s","--signal",help="specify signal sample to run pulls on",action="store",type=str,default="Mx1_Mv1000")
+    parser.add_argument("-s","--signal",help="specify signal sample to run pulls on",action="store",type=str,default="Mchi1_Mphi1000")
     return parser.parse_args()
 def mvpulls(info):
     outdir = outdir_base % info.year
@@ -44,8 +44,8 @@ def runPulls(path,args):
     if not os.path.isdir("pulls"): os.mkdir("pulls")
     os.chdir("pulls")
     workspace = "%s_sr.root" % args.signal
-    mx = args.signal.split("_")[0].replace("Mx","")
-    mv = args.signal.split("_")[1].replace("Mv","")
+    mx = args.signal.split("_")[0].replace("Mchi","")
+    mv = args.signal.split("_")[1].replace("Mphi","")
 
     run( text2workspace % (mx,mv,workspace) )
     run( combine % workspace )

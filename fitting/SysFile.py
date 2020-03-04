@@ -9,7 +9,7 @@ class SysFile(TFile):
         self.variable = self.Get('variable')
     def getRooRealVar(self):
         return RooRealVar(self.variable.GetTitle(),self.variable.GetXaxis().GetTitle(),self.variable.GetXaxis().GetXmin(),self.variable.GetXaxis().GetXmax())
-    def getMxlist(self):
+    def getMchilist(self):
         self.cd('sr')
         regexp = re.compile(r'Axial_Mchi\d+_Mphi\d+$')
         mxlist = {}
