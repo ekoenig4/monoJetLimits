@@ -11,7 +11,7 @@ class SysFile(TFile):
         return RooRealVar(self.variable.GetTitle(),self.variable.GetXaxis().GetTitle(),self.variable.GetXaxis().GetXmin(),self.variable.GetXaxis().GetXmax())
     def getMxlist(self):
         self.cd('sr')
-        regexp = re.compile(r'Mx\d+_Mv\d+$')
+        regexp = re.compile(r'Axial_Mchi\d+_Mphi\d+$')
         mxlist = {}
         def valid_signal(hs):
             # some signal has negative events, ignore them
@@ -21,8 +21,8 @@ class SysFile(TFile):
         for sample in gDirectory.GetListOfKeys():
             if regexp.search(sample.GetName()):
                 if not valid_signal(gDirectory.Get(sample.GetName())): continue
-                mx = sample.GetName().split('_')[0].replace('Mx','')
-                mv = sample.GetName().split('_')[1].replace('Mv','')
+                mx = sample.GetName().split('_')[1].replace('Mchi','')
+                mv = sample.GetName().split('_')[2].replace('Mphi','')
                 if mx not in mxlist: mxlist[mx] = []
                 mxlist[mx].append(mv)
         return mxlist
