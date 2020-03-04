@@ -17,7 +17,7 @@ def iter_collection(rooAbsCollection):
 
 mclist = ['ZJets','WJets','DiBoson','GJets','TTJets','DYJets','QCD']
 
-signal = 'Mx1_Mv1000'
+signal = 'Axial_Mchi1_Mphi1000'
 
 channels = {
   'sr':
@@ -29,25 +29,31 @@ channels = {
   'we':
   {
     'mc':mclist,
-    'transfer':[r'^CRoverSR_we_\S*$'],
+    'transfer':[r'^SRoverCR_we_\S*$'],
     'isCR':True
   },
   'wm':
   {
     'mc':mclist,
-    'transfer':[r'^CRoverSR_wm_\S*$'],
+    'transfer':[r'^SRoverCR_wm_\S*$'],
     'isCR':True
   },
   'ze':
   {
     'mc':mclist,
-    'transfer':[r'^CRoverSR_ze_\S*$'],
+    'transfer':[r'^SRoverCR_ze_\S*$'],
     'isCR':True
   },
   'zm':
   {
     'mc':mclist,
-    'transfer':[r'^CRoverSR_zm_\S*$'],
+    'transfer':[r'^SRoverCR_zm_\S*$'],
+    'isCR':True
+  },
+  'ga':
+  {
+    'mc':mclist,
+    'transfer':[r'^SRoverCR_ga_\S*$'],
     'isCR':True
   }
 }
@@ -77,14 +83,13 @@ def makeCard(wsfname,ch,info,options,ws=None):
     for transfer in transfers:
       if re.search(transfer,name) != None:
         ch_vars[name] = var
-        
   ch_card = Datacard(ch)
   ch_card.setObservation(shape=(wsfname,'w:data_obs_%s' % ch))
   for mc in mclist:
     proc = '%s_%s' % (mc,ch)
     if proc not in ch_hist: continue
     hist = ch_hist[proc]
-    if mc == signal: ch_card.addSignal(mc,shape=(wsfname,'w:%s' % proc))
+    if mc == signal:   ch_card.addSignal(mc,shape=(wsfname,'w:%s' % proc))
     else:              ch_card.addBkg(mc,shape=(wsfname,'w:%s' % proc))
 
     if options.nSYS: continue

@@ -69,11 +69,11 @@ class Datacard:
             #----Shape----#
             def writeShape(process,sys=True):
                 line = 'shapes '
-                line += "{0:<20}".format(process.name)
+                line += "{0:<25}".format(process.name)
                 line += "{0:<10}" .format(self.channel)
                 line += "{0:<25}".format(process.shape[0])
-                line += "{0:<30}".format(process.shape[1])
-                if sys: line += process.shape[1]+'_$SYSTEMATIC'
+                line += "{0:<35}".format(process.shape[1])
+                if sys: line += ' '+process.shape[1]+'_$SYSTEMATIC'
                 return line + '\n'
             if self.data_obs.hasShape():
                 card.write( writeShape(self.data_obs,sys=False) )
@@ -96,10 +96,10 @@ class Datacard:
             rateline = "{0:<35}".format("rate")
             for proc in proclist:
                 process = self.processes[proc]
-                binline += "{0:<20}".format(self.channel)
-                procline += "{0:<20}".format(process.name)
-                indexline += "{0:<20}".format(process.ID)
-                rateline += "{0:<20}".format(process.rate)
+                binline += "{0:<30}".format(self.channel)
+                procline += "{0:<30}".format(process.name)
+                indexline += "{0:<30}".format(process.ID)
+                rateline += "{0:<30}".format(process.rate)
             for line in (binline,procline,indexline,rateline):
                 card.write(line+'\n')
             card.write('-'*self.ndash+'\n')
@@ -110,14 +110,14 @@ class Datacard:
                 line += "{0:<10}".format(self.nuisances[nuis])
                 for proc in proclist:
                     process = self.processes[proc]
-                    if nuis in process.nuisances:line += "{0:<20}".format(process.nuisances[nuis])
-                    else:                        line += "{0:<20}".format('-')
+                    if nuis in process.nuisances:line += "{0:<30}".format(process.nuisances[nuis])
+                    else:                        line += "{0:<30}".format('-')
                 card.write(line+'\n')
             card.write('-'*self.ndash+'\n')
 
             #----Transfer----#
             for transfer in sort_nicely(self.transfers):
-                card.write( '{0:<20}'.format(transfer)+' param 0 1\n')
+                card.write( '{0:<30}'.format(transfer)+' param 0 1\n')
 #################################################################################################
             
 

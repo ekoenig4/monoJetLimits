@@ -113,13 +113,13 @@ def addSignal(dir,ws,variations,signals,isScaled):
         if isScaled:
             signal_multi = scaling[signal] # Normalize so that combine limits are close to 1
             signal_hs.Scale(signal_multi)
-        ws.addTemplate('%s_%s' % (signal_hs.GetName(),dir.GetTitle()),signal_hs)
+        ws.addTemplate('%s_%s' % (signal,dir.GetTitle()),signal_hs)
         for variation in variations:
             signal_up = dir.Get("%s_%sUp"   % (signal,variation)); signal_up.Scale(signal_multi)
             signal_dn = dir.Get("%s_%sDown" % (signal,variation)); signal_dn.Scale(signal_multi)
             if not validShape(signal_up,signal_dn): continue
-            ws.addTemplate("%s_%s_%sUp"   % (signal_hs.GetName(),dir.GetTitle(),variation),signal_up)
-            ws.addTemplate("%s_%s_%sDown" % (signal_hs.GetName(),dir.GetTitle(),variation),signal_dn)
+            ws.addTemplate("%s_%s_%sUp"   % (signal,dir.GetTitle(),variation),signal_up)
+            ws.addTemplate("%s_%s_%sDown" % (signal,dir.GetTitle(),variation),signal_dn)
         addStat(dir,ws,signal_hs,name='signal')
 
 def getSignalRegion(dir,sysfile,ws,signal,isScaled):
@@ -207,10 +207,10 @@ def getGTransfer(dir,ws,zbinlist):
     tfdir = dir.GetDirectory("transfer"); tfdir.cd()
     soverc_hs = tfdir.Get("ga_to_sr")
     syslist = []
-    for variation in cs_variations:
+    for variation in zw_variations:
         for process in ('ga','sr'):
-            soverc_up = zwdir.Get("ga_to_sr_%s_%sUp" % (variation,process))
-            soverc_dn = zwdir.Get("ga_to_sr_%s_%sDown" % (variation,process))
+            soverc_up = tfdir.Get("ga_to_sr_%s_%sUp" % (variation,process))
+            soverc_dn = tfdir.Get("ga_to_sr_%s_%sDown" % (variation,process))
             if not validShape(soverc_up,soverc_dn): continue
             soverc_sh = getFractionalShift(soverc_hs,soverc_up,soverc_dn)
             var = RooRealVar("SRoverCR_%s_%s_%s" % (dir.GetTitle(),process,variation),"",0.,-10.,10.)
@@ -275,6 +275,11 @@ def createWorkspace(input,isScaled=False,outfname='workspace.root'):
     dir_we = sysfile.GetDirectory('we')
     dir_we.SetTitle('we_%s' % sysfile.year)
     getLCR(dir_we,sysfile,ws,wbinlist)
+    
+    #-----Single Photon-----#
+    dir_ga = sysfile.GetDirectory('ga')
+    dir_ga.SetTitle('ga_%s' % sysfile.year)
+    getGCR(dir_ga,sysfile,ws,zbinlist)
     
     #-----Meta Data-----#
     getMetadata(sysfile,output)
