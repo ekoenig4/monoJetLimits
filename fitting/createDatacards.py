@@ -16,6 +16,7 @@ def iter_collection(rooAbsCollection):
   return loop_iterator(iterator)
 
 mclist = ['ZJets','WJets','DiBoson','GJets','TTJets','DYJets','QCD']
+datadriven = ['ZJets','WJets','DYJets','GJets']
 
 signal = 'Axial_Mchi1_Mphi1000'
 
@@ -93,15 +94,32 @@ def makeCard(wsfname,ch,info,options,ws=None):
     else:              ch_card.addBkg(mc,shape=(wsfname,'w:%s' % proc))
 
     if options.nSYS: continue
-    ch_card.addNuisance(mc,'lumi','lnN',1.026)
-    ch_card.addNuisance(mc,'et_trigg','lnN',1.01)
-    ch_card.addNuisance(mc,'bjet_veto','lnN',1.02)
+    if mc not in datadriven: ch_card.addNuisance(mc,'lumi','lnN',1.026)
+    ch_card.addNuisance(mc,'bjet_veto','lnN',1.02 if mc != 'TTJets' else 1.06)
+    if mc == 'TTJets':
+      ch_card.addNuisance(mc,'top_pt_reweight','lnN',1.1)
+      ch_card.addNuisance(mc,'top_norm','lnN',1.1)
+    if 'sr' in ch and mc in mclist:
+      ch_card.addNuisance(mc,'et_trigg','lnN',1.01)
+      if mc == 'DYJets': ch_card.addNuisance(mc,'zll_norm','lnN',1.2)
+      if mc == 'GJets':  ch_card.addNuisance(mc,'gjets_norm','lnN',1.2)
+    if 'we' in ch or 'ze' in ch and mc in mclist:
+      ch_card.addNuisance(mc,'electron_trig','lnN',1.01)
+      ch_card.addNuisance(mc,'electron_reco','lnN',1.01)
+      ch_card.addNuisance(mc,'electron_id','lnN',1.02)
+    if 'wm' in ch or 'zm' in ch and mc in mclist:
+      ch_card.addNuisance(mc,'et_trigg','lnN',1.01)
+      ch_card.addNuisance(mc,'muon_reco','lnN',1.01)
+      ch_card.addNuisance(mc,'muon_id','lnN',1.01)
+    if 'ga' in ch and mc in mclist:
+      ch_card.addNuisance(mc,'photon_trig','lnN',1.01)
+      ch_card.addNuisance(mc,'phton_id','lnN',1.02)
+      if mc == 'QCD': ch_card.addNuisance(mc,'photon_purity','lnN',1.4)
+      
     variations = getVariations(mc,ch,ch_hist)
     for variation in variations:
       if isZWVariation(variation,options.nCR): continue
       if options.nSTAT and re.search('bin\d+_stat',variation): continue
-      if options.nPFU and 'PFU' in variation: continue
-      if options.nJES and 'JES' in variation: continue
       ch_card.addNuisance(mc,variation,'shape',1)
   #####
   # if not options.no_sys:
@@ -109,8 +127,8 @@ def makeCard(wsfname,ch,info,options,ws=None):
   #   ch_card.addNuisance('WJets','WJets_EWK','lnN',1.15)
 
   # Remove possibly uneeded nuisance parameters from certain processes
-  for process in ('WJets','ZJets'):
-    ch_card.removeNuisance(process,'JES')
+  # for process in ('WJets','ZJets'):
+  #   ch_card.removeNuisance(process,'JES')
 
   for transfer in ch_vars:
     if options.nCR or options.nTRAN: continue

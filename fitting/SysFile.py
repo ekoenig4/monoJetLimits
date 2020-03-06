@@ -1,30 +1,16 @@
-from ROOT import TFile,RooRealVar,gDirectory
-import re
+from ROOT import *
+
+gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
 class SysFile(TFile):
-    def __init__(self,fname):
-        TFile.__init__(self,fname)
-        self.year = int(self.Get('year').Integral())
-        self.lumi = int(self.Get('lumi').Integral())
-        self.variable = self.Get('variable')
-    def getRooRealVar(self):
-        return RooRealVar(self.variable.GetTitle(),self.variable.GetXaxis().GetTitle(),self.variable.GetXaxis().GetXmin(),self.variable.GetXaxis().GetXmax())
-    def getMchilist(self):
-        self.cd('sr')
-        regexp = re.compile(r'Axial_Mchi\d+_Mphi\d+$')
-        mxlist = {}
-        def valid_signal(hs):
-            # some signal has negative events, ignore them
-            for ibin in range(1,len(hs)):
-                if hs[ibin] < 0: return False
-            return True
-        for sample in gDirectory.GetListOfKeys():
-            if regexp.search(sample.GetName()):
-                if not valid_signal(gDirectory.Get(sample.GetName())): continue
-                mx = sample.GetName().split('_')[1].replace('Mchi','')
-                mv = sample.GetName().split('_')[2].replace('Mphi','')
-                if mx not in mxlist: mxlist[mx] = []
-                mxlist[mx].append(mv)
-        return mxlist
-if __name__ == "__main__":
-    sysfile = SysFile('Systematics/2016/ChNemPtFrac+0.5_2016.sys.root')
+    def __init__(self,*args,**kwargs):
+        TFile.__init__(self,*args,**kwargs)
+        self.lumi = self.Get("lumi").Integral()
+        self.year = self.Get("year").Integral()
+        self.variable = self.Get("variable")
+        self.var = RooRealVar(self.variable.GetTitle(),self.variable.GetXaxis().GetTitle(),self.variable.GetXaxis().GetXmin(),self.variable.GetXaxis().GetXmax())
+        self.varlist = RooArgList(self.var)
+    def GetDirectory(self,*args,**kwargs):
+        directory = TFile.GetDirectory(self,*args,**kwargs)
+        directory.SetTitle('%s_%i' % (directory.GetName(),self.year))
+        return directory
