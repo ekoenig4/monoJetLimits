@@ -48,12 +48,13 @@ class BinList:
 class ConnectedBinList:
     def __init__(self,procname,sysdir,var,tf_proc,tf_channel):
         self.tf_proc = tf_channel.bkgmap[ tf_proc[procname] ]
-        self.procname = tf_proc[id]
+        self.tfname = tf_proc[id]
+        self.procname = procname
         self.sysdir = sysdir
         self.sysdir.cd()
         self.var = var
 
-        self.bkg_tf = self.sysdir.Get('transfer/%s'%self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+        self.bkg_tf = self.sysdir.Get('transfer/%s'%self.tfname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
         self.addSyst()
         self.binstore = []
         self.formulastore = []
@@ -78,9 +79,9 @@ class ConnectedBinList:
                 formula_binlist.add( syst[RooRealVar] )
                 den += '*(TMath::Power(1+%f,@%i))'%(syst[TH1F].GetBinContent(i),j+2)
             statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),i),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),i),0.,-10.,-10.)
+            den += "*(TMath::Power(1+%f,@%i))"%(self.bkg_tf.GetBinError(i)/bin_ratio,j+3)
             self.statstore.append(statvar)
             formula_binlist.add(statvar)
-            den += "*(TMath::Power(1+%f,@%i))"%(self.bkg_tf.GetBinError(i)/bin_ratio,j+3)
             formula = "%s/(%s)"%(num,den)
             bin_formula = RooFormulaVar(bin_name,bin_label,formula,formula_binlist)
             self.formulastore.append(bin_formula)
@@ -88,14 +89,13 @@ class ConnectedBinList:
         self.p_bkg = RooParametricHist(self.bkg_tf.GetName(),"%s PDF in %s"%(self.procname,self.sysdir.GetTitle()),self.var,self.binlist,self.bkg_tf)
         self.p_bkg_norm = RooAddition("%s_norm"%self.bkg_tf.GetName(),"%s total events in %s"%(self.procname,self.sysdir.GetTitle()),self.binlist)
     def addSyst(self,skip=["Stat","Total"]):
-        self.systs = { syst.GetName().replace(self.procname+'_',"").replace("Up",""):True
+        self.systs = { syst.GetName().replace(self.tfname+'_',"").replace("Up",""):None
                        for syst in self.sysdir.GetDirectory("transfer").GetListOfKeys()
-                       if self.procname in syst.GetName() and 'Up' in syst.GetName() and
+                       if self.tfname in syst.GetName() and 'Up' in syst.GetName() and
                        not any( ignore in syst.GetName() for ignore in skip ) }
-        
         for syst in self.systs.keys():
-            up = self.sysdir.Get("transfer/%s_%sUp"%(self.procname,syst)).Clone("%s_%sUp"%(self.bkg_tf.GetName(),syst))
-            dn = self.sysdir.Get("transfer/%s_%sDown"%(self.procname,syst)).Clone("%s_%sDown"%(self.bkg_tf.GetName(),syst))
+            up = self.sysdir.Get("transfer/%s_%sUp"%(self.tfname,syst)).Clone("%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst))
+            dn = self.sysdir.Get("transfer/%s_%sDown"%(self.tfname,syst)).Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst))
             if not validShape(up,dn): continue
             envelope = getFractionalShift(self.bkg_tf,up,dn)
             systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-10.,-10.)
@@ -123,18 +123,20 @@ class Template:
 
         if 'Up' in self.procname or 'Down' in self.procname: return
         
-        self.nuisances = { nuisance.GetName().replace(self.procname+'_',"").replace("Up",""):True
-                           for nuisance in self.sysdir.GetListOfKeys()
-                           if self.procname in nuisance.GetName() and 'Up' in nuisance.GetName() }
+        self.nuisances = { nuisance.replace(self.procname+'_',"").replace("Up",""):None
+                           for nuisance in self.sysdir.keylist
+                           if re.match('^'+self.procname,nuisance) and 'Up' in nuisance }
+        
         for nuisance in self.nuisances.keys():
             up = self.sysdir.Get("%s_%sUp"%(self.procname,nuisance)).Clone("%s_%s_%sUp"%(self.procname,self.sysdir.GetTitle(),nuisance))
             dn = self.sysdir.Get("%s_%sDown"%(self.procname,nuisance)).Clone("%s_%s_%sDown"%(self.procname,self.sysdir.GetTitle(),nuisance))
             if not validShape(up,dn): continue
-            self.nuisance[nuisance] = {'up':Nuisance(up.GetName(),up,self.varlist),'dn':Nuisance(dn.GetName(),dn,self.varlist)}
+            self.nuisances[nuisance] = {'up':Nuisance(up.GetName(),up,self.varlist),'dn':Nuisance(dn.GetName(),dn,self.varlist)}
     def Export(self,ws):
         ws.Import(self.hist)
         for nuisance in self.nuisances.values():
-            for variation in ('up','dn'): self.nuisance[variation].Export(ws)
+            if not nuisance: continue
+            for variation in ('up','dn'): nuisance[variation].Export(ws)
 class Channel:
     bkglist = ["ZJets","DYJets","WJets","GJets","QCD","DiBoson","TTJets"]
     majormap = {
@@ -144,6 +146,7 @@ class Channel:
         if any(tf_proc) and tf_channel is None: tf_channel = self
         self.sysfile = sysfile
         self.sysdir = sysfile.GetDirectory(sysdir)
+        self.sysdir.keylist = [ key.GetName() for key in self.sysdir.GetListOfKeys() ]
         self.sysdir.cd()
 
         self.data = Template('data_obs',self.sysdir,self.sysfile.varlist)
@@ -187,7 +190,7 @@ class Workspace(RooWorkspace):
         sysfile.ga = Channel(sysfile,'ga',tf_proc={"GJets":"ZJets",id:"ga_to_sr"},tf_channel=sysfile.sr)
         sysfile.ga.Export(self)
 if __name__ == "__main__":
-    sysfile = SysFile("recoil_2017.sys.root")
+    sysfile = SysFile("../Systematics/2017/recoil_2017.sys.root")
     output = TFile("workspace.root","recreate")
     ws = Workspace("w","w")
 

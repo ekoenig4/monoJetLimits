@@ -21,8 +21,9 @@ def sort_nicely( l ):
     return l
 
 class Datacard:
-    def __init__(self,channel):
+    def __init__(self,channel,ws):
         self.channel = channel
+        self.ws = ws
         self.data_obs = None
         self.signals = []
         self.bkgs = []
@@ -32,14 +33,14 @@ class Datacard:
 
         #----Style----#
         self.ndash = 100
-    def setObservation(self,shape=( None,None )):
-        self.data_obs = Process('data_obs',shape=shape)
-    def addSignal(self,proc,shape=( None,None )):
-        signal = Process(proc, -len(self.signals),shape=shape)
+    def setObservation(self,shape=None):
+        self.data_obs = Process('data_obs',shape=(self.ws.fname,shape))
+    def addSignal(self,proc,shape=None):
+        signal = Process(proc, -len(self.signals),shape=(self.ws.fname,shape))
         self.signals.append(proc)
         self.processes[proc] = signal
-    def addBkg(self,proc,shape=( None,None )):
-        bkg = Process(proc, len(self.bkgs)+1,shape=shape)
+    def addBkg(self,proc,shape=None):
+        bkg = Process(proc, len(self.bkgs)+1,shape=(self.ws.fname,shape))
         self.bkgs.append(proc)
         self.processes[proc] = bkg
     def addNuisance(self,proc,nuis,ntype,rate):
