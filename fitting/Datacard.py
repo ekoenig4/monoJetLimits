@@ -1,9 +1,9 @@
 
 class Process:
-    def __init__(self,name,ID=None,shape=( None,None )):
+    def __init__(self,name,ID=None,shape=( None,None ),rate=-1):
         self.name = name
         self.ID = ID
-        self.rate = -1
+        self.rate = rate
         self.shape = shape
         self.nuisances = {}
     def addNuisance(self,name,rate): self.nuisances[name] = rate
@@ -39,8 +39,8 @@ class Datacard:
         signal = Process(proc, -len(self.signals),shape=(self.ws.fname,shape))
         self.signals.append(proc)
         self.processes[proc] = signal
-    def addBkg(self,proc,shape=None):
-        bkg = Process(proc, len(self.bkgs)+1,shape=(self.ws.fname,shape))
+    def addBkg(self,proc,shape=None,rate=-1):
+        bkg = Process(proc, len(self.bkgs)+1,shape=(self.ws.fname,shape),rate=rate)
         self.bkgs.append(proc)
         self.processes[proc] = bkg
     def addNuisance(self,proc,nuis,ntype,rate):
