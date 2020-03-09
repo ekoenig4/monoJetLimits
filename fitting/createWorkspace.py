@@ -29,6 +29,7 @@ class BinList:
         self.sysdir.cd()
         self.var = var
         self.bkg_obs = self.sysdir.Get(self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+        self.max_yield = self.bkg_obs.GetMaximum() * 2
         self.binstore = []
         self.binlist = RooArgList()
         for i in irange(1,self.bkg_obs.GetNbinsX()):
@@ -36,16 +37,16 @@ class BinList:
             bin_label = "%s Yield in %s, bin %i" % (self.procname,self.sysdir.GetTitle(),i)
             bin_yield = self.bkg_obs.GetBinContent(i)
             if setConst: nbin = RooRealVar(bin_name,bin_label,bin_yield)
-            else:        nbin = RooRealVar(bin_name,bin_label,bin_yield,0,2000.0)
+            else:        nbin = RooRealVar(bin_name,bin_label,bin_yield,0,self.max_yield)
             self.binstore.append(nbin)
             self.binlist.add(nbin)
         self.p_bkg = RooParametricHist(self.bkg_obs.GetName(),"%s PDF in %s"%(self.procname,self.sysdir.GetTitle()),self.var,self.binlist,self.bkg_obs)
         self.p_bkg_norm = RooAddition("%s_norm"%self.bkg_obs.GetName(),"%s total events in %s"%(self.procname,self.sysdir.GetTitle()),self.binlist)
     def Export(self,ws):
-        ws.Import(self.p_bkg)
+        ws.Import(self.p_bkg,RooFit.RecycleConflictNodes())
         ws.Import(self.p_bkg_norm,RooFit.RecycleConflictNodes())
         
-class ConnectedBinList:
+class ConnectedBinList(BinList):
     def __init__(self,procname,sysdir,var,tf_proc,tf_channel):
         self.tf_proc = tf_channel.bkgmap[ tf_proc[procname] ]
         self.tfname = tf_proc[id]
@@ -74,14 +75,16 @@ class ConnectedBinList:
             formula_binlist.add(nbin)
             num = "@0" # sr yield
             den = "@1" # sr/cr yield
-            j = -1
-            for j,syst in enumerate(self.systs.values()):
-                formula_binlist.add( syst[RooRealVar] )
-                den += '*(TMath::Power(1+%f,@%i))'%(syst[TH1F].GetBinContent(i),j+2)
-            statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),i),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),i),0.,-10.,-10.)
-            den += "*(TMath::Power(1+%f,@%i))"%(self.bkg_tf.GetBinError(i)/bin_ratio,j+3)
-            self.statstore.append(statvar)
-            formula_binlist.add(statvar)
+            
+            # j = -1
+            # for j,syst in enumerate(self.systs.values()):
+            #     formula_binlist.add( syst[RooRealVar] )
+            #     den += '*(TMath::Power(1+%f,@%i))'%(syst[TH1F].GetBinContent(i),j+2)
+            # statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),i),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),i),0.,-10.,-10.)
+            # den += "*(TMath::Power(1+%f,@%i))"%(self.bkg_tf.GetBinError(i)/bin_ratio,j+3)
+            # self.statstore.append(statvar)
+            # formula_binlist.add(statvar)
+            
             formula = "%s/(%s)"%(num,den)
             bin_formula = RooFormulaVar(bin_name,bin_label,formula,formula_binlist)
             self.formulastore.append(bin_formula)
@@ -100,9 +103,6 @@ class ConnectedBinList:
             envelope = getFractionalShift(self.bkg_tf,up,dn)
             systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-10.,-10.)
             self.systs[syst] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
-    def Export(self,ws):
-        ws.Import(self.p_bkg)
-        ws.Import(self.p_bkg_norm,RooFit.RecycleConflictNodes())
 class Nuisance:
     def __init__(self,procname,obs,varlist):
         self.procname = procname
@@ -133,6 +133,7 @@ class Template:
             if not validShape(up,dn): continue
             self.nuisances[nuisance] = {'up':Nuisance(up.GetName(),up,self.varlist),'dn':Nuisance(dn.GetName(),dn,self.varlist)}
     def Export(self,ws):
+        if not validHisto(self.obs): return
         ws.Import(self.hist)
         for nuisance in self.nuisances.values():
             if not nuisance: continue
@@ -189,8 +190,27 @@ class Workspace(RooWorkspace):
     def GammaCR(self,sysfile):
         sysfile.ga = Channel(sysfile,'ga',tf_proc={"GJets":"ZJets",id:"ga_to_sr"},tf_channel=sysfile.sr)
         sysfile.ga.Export(self)
+def createWorkspace(sysfile,outfname='workspace.root',isScaled=True):
+    if type(sysfile) is str: sysfile = SysFile(sysfile)
+
+    output = TFile(outfname,"recreate")
+    ws = Workspace("w","w")
+
+    signals = ['Axial_Mchi1_Mphi1000']
+    ws.SignalRegion(sysfile,signals)
+    ws.SingleEleCR(sysfile)
+    ws.SingleMuCR(sysfile)
+    ws.DoubleEleCR(sysfile)
+    ws.DoubleMuCR(sysfile)
+    ws.GammaCR(sysfile)
+
+    output.cd()
+    ws.Write()
+    sysfile.ws = ws
+    return ws
+    
 if __name__ == "__main__":
-    sysfile = SysFile("../Systematics/2017/recoil_2017.sys.root")
+    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/ZprimeLimits/Systematics/2017/recoil_2017.sys.root")
     output = TFile("workspace.root","recreate")
     ws = Workspace("w","w")
 
