@@ -14,6 +14,7 @@ class SysInfo:
         if year is not 'Run2': wsfiles = [TFile.Open('../workspace_%s.root' % year)]
         else: wsfiles = [ TFile.Open('../workspace_%s.root' % y) for y in ('2016','2017','2018') ]
         self.lumi = sum( wsfile.Get('lumi').Integral() for wsfile in wsfiles )
+        self.lumi_label = self.lumi_label = '%s' % float('%.3g' % (self.lumi/1000.)) + " fb^{-1}"
         self.year = str(int(float(wsfiles[0].Get('year').Integral()))) if year is not 'Run2' else 'Run2'
         self.variable = wsfiles[0].Get('variable').GetTitle()
         self.cut = sysdir.split("_")[0].replace(self.variable,'')

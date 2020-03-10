@@ -15,6 +15,9 @@ outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/Expec
 
 mclist = ['ZJets','WJets','DYJets','GJets','TTJets','QCD','EWK']
 
+prefit_color = kOrange+8
+postfit_color = kGreen+2
+
 crmap = {
     'we':{'mc':'WJets','leg':'W #rightarrow e#nu'},
     'wm':{'mc':'WJets','leg':'W #rightarrow #mu#nu'},
@@ -40,7 +43,7 @@ def getOtherBkg(cr,tfile):
         if tmp == None: continue
         if bkg is None: bkg = tmp
         else:           bkg.Add(tmp)
-    bkg.SetFillColor(kGray)
+    bkg.SetFillColor(kOrange-2)
     bkg.SetLineColor(kBlack)
     return bkg
 def plotCR(cr,tfile,info):
@@ -54,59 +57,57 @@ def plotCR(cr,tfile,info):
     c = TCanvas("c", "canvas",800,800);
     gStyle.SetOptStat(0);
     gStyle.SetLegendBorderSize(0);
-    #c.SetLeftMargin(0.15);
-    #c.SetLogy();
-    #c.cd();
-    
-    pad1 = TPad("pad1","pad1",0.01,0.3,0.99,0.99);
-    pad1.Draw(); pad1.cd();
-    pad1.SetLogy();
-    pad1.SetFillColor(0); pad1.SetFrameBorderMode(0); pad1.SetBorderMode(0);
-    pad1.SetBottomMargin(0.);
 
-    prefit_hs.Draw("hist"); fit_style(prefit_hs,kRed); set_bounds(prefit_hs)
-    postfit_hs.Draw("hist same"); fit_style(postfit_hs,kBlue)
+    pad1 = TPad("pad1","pad1",0.,0.33,1.0,1.0)
+    pad1.Draw(); pad1.cd()
+    pad1.SetLogy()
+    pad1.SetBottomMargin(0)
+
+    prefit_hs.Draw("hist"); fit_style(prefit_hs,prefit_color);
+    set_bounds(prefit_hs)
+    postfit_hs.Draw("hist same"); fit_style(postfit_hs,postfit_color)
     other_bkg.Draw("hist same")
     data_graph.Draw("pex0 same"); data_style(data_graph)
+    prefit_hs.Draw("Axis same")
 
     leg = getLegend()
     leg.AddEntry(data_graph,"Data","lp")
-    leg.AddEntry(postfit_hs,"Post-fit (%s)" % crmap[cr]['leg'],'l')
-    leg.AddEntry(prefit_hs,"Pre-fit (%s)" % crmap[cr]['leg'],'l')
+    leg.AddEntry(postfit_hs,"Post-fit (%s)" % crmap[cr]['leg'],'f')
+    leg.AddEntry(prefit_hs,"Pre-fit (%s)" % crmap[cr]['leg'],'f')
     leg.AddEntry(other_bkg,"Other Backgrounds",'f')
     leg.Draw()
 
-    texCMS,texLumi = getCMSText(info.year)
+    texCMS,texLumi = getCMSText(info.lumi_label,info.year)
 
     ##############################
-    c.cd();
-    pad2 = TPad("pad2","pad2",0.01,0.176,0.99,0.3);
-    pad2.Draw(); pad2.cd();
-    pad2.SetFillColor(0); pad2.SetFrameBorderMode(0); pad2.SetBorderMode(0);
-    pad2.SetTopMargin(0);
-    pad2.SetBottomMargin(0.);
+    c.cd()
+    pad2 = TPad("pad2","pad2",0.,0.,1.0,0.33)
+    pad2.Draw(); pad2.cd()
+    pad2.SetTopMargin(0)
+
+    pad3 = TPad("pad3","pad3",0.,0.65,1.,1.)
+    pad3.Draw(); pad3.cd()
+    pad3.SetTopMargin(0); pad3.SetBottomMargin(0)
     
     data_hs = makeHistogram(data_graph,prefit_hs)
 
     prefit_ratio = data_hs.Clone('prefit_ratio'); prefit_ratio.Divide(prefit_hs)
     postfit_ratio = data_hs.Clone('postfit_ratio'); postfit_ratio.Divide(postfit_hs)
 
-    prefit_ratio.Draw('pex0'); ratio_style(prefit_ratio,kRed)
-    # prefit_ratio.GetYaxis().SetTitleOffset(0.3)
-    prefit_ratio.GetYaxis().SetTitleSize(0.15)
-    prefit_ratio.GetYaxis().SetLabelSize(0.15)
-    postfit_ratio.Draw('pex0same'); ratio_style(postfit_ratio,kBlue)
+    prefit_ratio.Draw('pe'); ratio_style(prefit_ratio,prefit_color)
+    postfit_ratio.Draw('pesame'); ratio_style(postfit_ratio,postfit_color)
 
     ###############################
-    c.cd()
-    pad3 = TPad("pad3","pad3",0.01,0.01,0.99,0.175)
-    pad3.Draw(); pad3.cd();
-    pad3.SetFillColor(0); pad3.SetFrameBorderMode(0); pad3.SetBorderMode(0);
-    pad3.SetTopMargin(0);
-    pad3.SetBottomMargin(0.35);
+    pad2.cd()
+    pad4 = TPad("pad4","pad4",0.,0.,1.,0.65)
+    pad4.Draw(); pad4.cd()
+    pad4.SetTopMargin(0);
+    pad4.SetBottomMargin(0.5)
     
     sigma_pull = SigmaPull(data_hs,postfit_hs)
-    sigma_pull.Draw('hist'); pull_style(sigma_pull,kBlue)
+    sigma_pull.Draw('hist'); pull_style(sigma_pull,postfit_color)
+    xname = sigma_pull.GetXaxis().GetTitle().replace("(","[").replace(")","]")
+    sigma_pull.GetXaxis().SetTitle( xname )
 
     ##############################
 
