@@ -105,7 +105,7 @@ def runSerial(args=None):
     if args is None: args = getargs()
     args.dir = [ path for path in args.dir if not ('nSYS' in path and 'nSTAT' in path) ]
     print 'Running Impacts'
-    mx,mv = args.signal.strip('Mchi').strip('Mphi').split('_')
+    mx,mv = args.signal.replace('Mchi','').replace('Mphi','').split('_')
     for path in args.dir:
         getText2WS(path,mx,mv)
         runImpacts(path,mx,mv)

@@ -44,7 +44,7 @@ def set_bounds(hs):
     ymin = min( hs[ibin] for ibin in range(1,hs.GetNbinsX()+1) if hs[ibin] != 0)
     ymax = max( hs[ibin] for ibin in range(1,hs.GetNbinsX()+1) if hs[ibin] != 0)
 
-    hs.SetMinimum(0.05)
+    hs.SetMinimum(0.01)
     hs.SetMaximum(ymax*(10**2.5))
 def ratio_style(ratio,color,rymin=0.65,rymax=1.35,name='Data/MC'):
     gPad.SetGridy();

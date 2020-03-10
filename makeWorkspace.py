@@ -54,7 +54,7 @@ def makeMphiDir(mv,options,procmap=None):
 def makeMchiDir(mx,mvlist,yearlist,options,procmap=None):
     cwd = os.getcwd()
     regions = []
-    for ch in ('sr','we','wm','ze','zm'):
+    for ch in ('sr','we','wm','ze','zm','ga'):
         if options.nCR and ch != 'sr': continue
         for year in yearlist:
             regions.append('%s_%s' % (ch,year))
@@ -127,44 +127,45 @@ def makeWorkspace():
 
     if not args.run2:
         sysfile = SysFile(os.path.abspath(args.input))
-        if not os.path.isdir('Limits/%s' % sysfile.variable.GetTitle()): os.mkdir('Limits/%s' % sysfile.variable.GetTitle())
-        yearWorkspace(sysfile,args)
-        os.chdir('Limits/%s' % sysfile.variable.GetTitle())
-        sysdir = modify(sysfile.GetName().split('/')[-1].replace('.root',''),args)
+        sysdir = 'Limits/%s' % sysfile.variable.GetTitle()
+        if not os.path.isdir(sysdir): os.mkdir(sysdir)
+        ws = yearWorkspace(sysfile,args)
+        sysdir = '%s/%s' % (sysdir,sysfile.GetName().split('/')[-1].replace(".root",""))
         if not os.path.isdir(sysdir): os.mkdir(sysdir)
         os.chdir(sysdir)
-        createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year,args)
+        createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year)
         
-        for mx,mvlist in sysfile.getMchilist().items(): makeMchiDir(mx,mvlist,[sysfile.year],args)
-    else:
-        yearlist = ['2016','2017','2018']
-        args.input = args.input.replace('2016','Run2').replace('2017','Run2').replace('2018','Run2')
-        sysfiles = [ SysFile(os.path.abspath(args.input.replace('Run2',year))) for year in yearlist ]
-        sysfile = sysfiles[0]
-        if not os.path.isdir('Limits/%s' % sysfile.variable.GetTitle()): os.mkdir('Limits/%s' % sysfile.variable.GetTitle())
-        for sysfile in sysfiles: yearWorkspace(sysfile,args)
-        os.chdir('Limits/%s' % sysfile.variable.GetTitle())
-        sysdir = modify(sysfiles[0].GetName().split('/')[-1].replace('.root','').replace('2016','Run2'),args)
-        if not os.path.isdir(sysdir): os.mkdir(sysdir)
-        os.chdir(sysdir)
-        for sysfile in sysfiles: createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year,args)
+        for mx,mvlist in sysfile.getSignalList().items(): makeMchiDir(mx,mvlist,[sysfile.year],args)
+    # else:
+    #     yearlist = ['2016','2017','2018']
+    #     args.input = args.input.replace('2016','Run2').replace('2017','Run2').replace('2018','Run2')
+    #     sysfiles = [ SysFile(os.path.abspath(args.input.replace('Run2',year))) for year in yearlist ]
+    #     sysfile = sysfiles[0]
+    #     if not os.path.isdir('Limits/%s' % sysfile.variable.GetTitle()): os.mkdir('Limits/%s' % sysfile.variable.GetTitle())
+    #     for sysfile in sysfiles: yearWorkspace(sysfile,args)
+    #     os.chdir('Limits/%s' % sysfile.variable.GetTitle())
+    #     sysdir = modify(sysfiles[0].GetName().split('/')[-1].replace('.root','').replace('2016','Run2'),args)
+    #     if not os.path.isdir(sysdir): os.mkdir(sysdir)
+    #     os.chdir(sysdir)
+    #     for sysfile in sysfiles: createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year,args)
 
-        mxlists = [ sysfile.getMchilist() for sysfile in sysfiles ]
-        mxmap = {}
-        mxvalues = []
-        mvvalues = []
-        for mxlist in mxlists:
-            for mx,mvlist in mxlist.iteritems():
-                if mx not in mxvalues: mxvalues.append(mx)
-                for mv in mvlist:
-                    if mv not in mvvalues: mvvalues.append(mv)
-        for mx in mxvalues:
-            if any( mx not in mxlist for mxlist in mxlists ): continue
-            mxmap[mx] = []
-            for mv in mvvalues:
-                if any( mv not in mxlist[mx] for mxlist in mxlists ): continue
-                mxmap[mx].append(mv)
-        for mx,mvlist in mxmap.iteritems(): makeMchiDir(mx,mvlist,yearlist,args)
+    #     mxlists = [ sysfile.getMchilist() for sysfile in sysfiles ]
+    #     mxmap = {}
+    #     mxvalues = []
+    #     mvvalues = []
+    #     for mxlist in mxlists:
+    #         for mx,mvlist in mxlist.iteritems():
+    #             if mx not in mxvalues: mxvalues.append(mx)
+    #             for mv in mvlist:
+    #                 if mv not in mvvalues: mvvalues.append(mv)
+    #     for mx in mxvalues:
+    #         if any( mx not in mxlist for mxlist in mxlists ): continue
+    #         mxmap[mx] = []
+    #         for mv in mvvalues:
+    #             if any( mv not in mxlist[mx] for mxlist in mxlists ): continue
+    #             mxmap[mx].append(mv)
+    #     for mx,mvlist in mxmap.iteritems(): makeMchiDir(mx,mvlist,yearlist,args)
+    return ws
 ####################
 if __name__ == "__main__": makeWorkspace()
     

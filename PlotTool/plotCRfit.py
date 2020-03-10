@@ -19,7 +19,8 @@ crmap = {
     'we':{'mc':'WJets','leg':'W #rightarrow e#nu'},
     'wm':{'mc':'WJets','leg':'W #rightarrow #mu#nu'},
     'ze':{'mc':'DYJets','leg':'Z #rightarrow ee'},
-    'zm':{'mc':'DYJets','leg':'Z #rightarrow #mu#mu'}
+    'zm':{'mc':'DYJets','leg':'Z #rightarrow #mu#mu'},
+    'ga':{'mc':'GJets','leg':'#gamma + jets'}
 }
 def loop_iterator(iterator):
   object = iterator.Next()
