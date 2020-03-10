@@ -37,7 +37,7 @@ class BinList:
             bin_label = "%s Yield in %s, bin %i" % (self.procname,self.sysdir.GetTitle(),i)
             bin_yield = self.bkg_obs.GetBinContent(i)
             if setConst: nbin = RooRealVar(bin_name,bin_label,bin_yield)
-            else:        nbin = RooRealVar(bin_name,bin_label,bin_yield,0,self.max_yield)
+            else:        nbin = RooRealVar(bin_name,bin_label,bin_yield,0.,self.max_yield)
             self.binstore.append(nbin)
             self.binlist.add(nbin)
         self.p_bkg = RooParametricHist(self.bkg_obs.GetName(),"%s PDF in %s"%(self.procname,self.sysdir.GetTitle()),self.var,self.binlist,self.bkg_obs)
@@ -76,14 +76,14 @@ class ConnectedBinList(BinList):
             num = "@0" # sr yield
             den = "@1" # sr/cr yield
             
-            # j = -1
-            # for j,syst in enumerate(self.systs.values()):
-            #     formula_binlist.add( syst[RooRealVar] )
-            #     den += '*(TMath::Power(1+%f,@%i))'%(syst[TH1F].GetBinContent(i),j+2)
-            # statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),i),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),i),0.,-10.,-10.)
-            # den += "*(TMath::Power(1+%f,@%i))"%(self.bkg_tf.GetBinError(i)/bin_ratio,j+3)
-            # self.statstore.append(statvar)
-            # formula_binlist.add(statvar)
+            j = -1
+            for j,syst in enumerate(self.systs.values()):
+                formula_binlist.add( syst[RooRealVar] )
+                den += '*(TMath::Power(1+%f,@%i))'%(syst[TH1F].GetBinContent(i),j+2)
+            statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),i),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),i),0.,-5.,5.)
+            den += "*(TMath::Power(1+%f,@%i))"%(self.bkg_tf.GetBinError(i)/bin_ratio,j+3)
+            self.statstore.append(statvar)
+            formula_binlist.add(statvar)
             
             formula = "%s/(%s)"%(num,den)
             bin_formula = RooFormulaVar(bin_name,bin_label,formula,formula_binlist)
@@ -101,7 +101,7 @@ class ConnectedBinList(BinList):
             dn = self.sysdir.Get("transfer/%s_%sDown"%(self.tfname,syst)).Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst))
             if not validShape(up,dn): continue
             envelope = getFractionalShift(self.bkg_tf,up,dn)
-            systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-10.,-10.)
+            systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-5.,5.)
             self.systs[syst] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
 class Nuisance:
     def __init__(self,procname,obs,varlist):
@@ -205,6 +205,10 @@ def createWorkspace(sysfile,outfname='workspace.root',isScaled=True):
     ws.GammaCR(sysfile)
 
     output.cd()
+    metadata = ['lumi','year','variable']
+    for meta in metadata:
+        hs_meta = sysfile.Get(meta)
+        hs_meta.Write()
     ws.Write()
     sysfile.ws = ws
     return ws
@@ -221,6 +225,7 @@ if __name__ == "__main__":
     ws.DoubleEleCR(sysfile)
     ws.DoubleMuCR(sysfile)
     ws.GammaCR(sysfile)
+    ws.MetaData(sysfile)
 
     output.cd()
     ws.Write()
