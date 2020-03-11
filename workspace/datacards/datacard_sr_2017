@@ -3,7 +3,7 @@ jmax * number of processes minus 1
 kmax * number of nuisance parameters
 ----------------------------------------------------------------------------------------------------
 shapes data_obs                 sr_2017   ../workspace_2017.root   w:data_obs_sr_2017                 
-shapes Axial_Mchi1_Mphi1000     sr_2017   ../workspace_2017.root   w:Axial_Mchi1_Mphi1000_sr_2017      w:Axial_Mchi1_Mphi1000_sr_2017_$SYSTEMATIC
+shapes axial                    sr_2017   ../workspace_2017.root   w:Axial_Mchi1_Mphi1000_sr_2017      w:Axial_Mchi1_Mphi1000_sr_2017_$SYSTEMATIC
 shapes ZJets                    sr_2017   ../workspace_2017.root   w:ZJets_sr_2017                     w:ZJets_sr_2017_$SYSTEMATIC
 shapes WJets                    sr_2017   ../workspace_2017.root   w:WJets_sr_2017                     w:WJets_sr_2017_$SYSTEMATIC
 shapes DYJets                   sr_2017   ../workspace_2017.root   w:DYJets_sr_2017                    w:DYJets_sr_2017_$SYSTEMATIC
@@ -16,20 +16,18 @@ bin             sr_2017
 observation     -1
 ----------------------------------------------------------------------------------------------------
 bin                                sr_2017                       sr_2017                       sr_2017                       sr_2017                       sr_2017                       sr_2017                       sr_2017                       sr_2017                       
-process                            Axial_Mchi1_Mphi1000          ZJets                         WJets                         DYJets                        GJets                         DiBoson                       TTJets                        QCD                           
+process                            axial                         ZJets                         WJets                         DYJets                        GJets                         DiBoson                       TTJets                        QCD                           
 process                            0                             1                             2                             3                             4                             5                             6                             7                             
 rate                               -1                            1                             1                             -1                            -1                            -1                            -1                            -1                            
 ----------------------------------------------------------------------------------------------------
+CMS_eff2017_btag         lnN       -                             -                             -                             -                             -                             1.02                          1.06                          1.02                          
+CMS_scale2017_j          lnN       -                             -                             -                             -                             -                             1.04                          1.04                          1.04                          
 JER                      shape     -                             -                             -                             1                             1                             1                             1                             1                             
-JES                      shape     1                             -                             -                             1                             1                             1                             1                             1                             
-bjet_veto                lnN       1.02                          1.02                          1.02                          1.02                          1.02                          1.02                          1.06                          1.02                          
-diboson_norm             lnN       -                             -                             -                             -                             -                             1.2                           -                             -                             
-gjets_norm               lnN       -                             -                             -                             -                             1.2                           -                             -                             -                             
-lumi                     lnN       1.026                         -                             -                             -                             -                             1.026                         1.026                         1.026                         
-met_trig                 lnN       1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          
-top_norm                 lnN       -                             -                             -                             -                             -                             -                             1.1                           -                             
-top_pt_reweight          lnN       -                             -                             -                             -                             -                             -                             1.1                           -                             
-zll_norm                 lnN       -                             -                             -                             1.2                           -                             -                             -                             -                             
+JES                      shape     -                             -                             -                             1                             1                             1                             1                             1                             
+QCD_NormSignal           lnN       -                             -                             -                             -                             -                             -                             -                             1.75                          
+lumi_13TeV_2017          lnN       -                             -                             -                             -                             -                             1.025                         1.025                         1.025                         
+top_Norm13TeV            lnN       -                             -                             -                             -                             -                             -                             1.1                           -                             
+top_Reweight13TeV        lnN       -                             -                             -                             -                             -                             -                             1.1                           -                             
 ----------------------------------------------------------------------------------------------------
 WJets_sr_2017_bin1_Runc        param 0 1
 WJets_sr_2017_bin2_Runc        param 0 1

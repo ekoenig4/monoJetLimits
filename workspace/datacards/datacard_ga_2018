@@ -1,0 +1,63 @@
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------
+shapes data_obs                 ga_2018   ../workspace_2018.root   w:data_obs_ga_2018                 
+shapes ZJets                    ga_2018   ../workspace_2018.root   w:ZJets_ga_2018                     w:ZJets_ga_2018_$SYSTEMATIC
+shapes WJets                    ga_2018   ../workspace_2018.root   w:WJets_ga_2018                     w:WJets_ga_2018_$SYSTEMATIC
+shapes DYJets                   ga_2018   ../workspace_2018.root   w:DYJets_ga_2018                    w:DYJets_ga_2018_$SYSTEMATIC
+shapes GJets                    ga_2018   ../workspace_2018.root   w:GJets_ga_2018                     w:GJets_ga_2018_$SYSTEMATIC
+shapes DiBoson                  ga_2018   ../workspace_2018.root   w:DiBoson_ga_2018                   w:DiBoson_ga_2018_$SYSTEMATIC
+shapes TTJets                   ga_2018   ../workspace_2018.root   w:TTJets_ga_2018                    w:TTJets_ga_2018_$SYSTEMATIC
+shapes QCD                      ga_2018   ../workspace_2018.root   w:QCD_ga_2018                       w:QCD_ga_2018_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------
+bin             ga_2018
+observation     -1
+----------------------------------------------------------------------------------------------------
+bin                                ga_2018                       ga_2018                       ga_2018                       ga_2018                       ga_2018                       ga_2018                       ga_2018                       
+process                            ZJets                         WJets                         DYJets                        GJets                         DiBoson                       TTJets                        QCD                           
+process                            1                             2                             3                             4                             5                             6                             7                             
+rate                               -1                            -1                            -1                            1                             -1                            -1                            -1                            
+----------------------------------------------------------------------------------------------------
+CMS_eff2018_pho          lnN       -                             -                             -                             1.05                          -                             -                             -                             
+CMS_eff2018_photrig      lnN       -                             -                             -                             1.01                          -                             -                             -                             
+JER                      shape     1                             1                             1                             -                             1                             1                             1                             
+JES                      shape     1                             1                             1                             -                             1                             1                             1                             
+QCD_NormPurity           lnN       -                             -                             -                             -                             -                             -                             1.25                          
+----------------------------------------------------------------------------------------------------
+GJets_ga_2018_bin1_Runc        param 0 1
+GJets_ga_2018_bin2_Runc        param 0 1
+GJets_ga_2018_bin3_Runc        param 0 1
+GJets_ga_2018_bin4_Runc        param 0 1
+GJets_ga_2018_bin5_Runc        param 0 1
+GJets_ga_2018_bin6_Runc        param 0 1
+GJets_ga_2018_bin7_Runc        param 0 1
+GJets_ga_2018_bin8_Runc        param 0 1
+GJets_ga_2018_bin9_Runc        param 0 1
+GJets_ga_2018_bin10_Runc       param 0 1
+GJets_ga_2018_bin11_Runc       param 0 1
+GJets_ga_2018_bin12_Runc       param 0 1
+GJets_ga_2018_bin13_Runc       param 0 1
+GJets_ga_2018_bin14_Runc       param 0 1
+GJets_ga_2018_bin15_Runc       param 0 1
+GJets_ga_2018_bin16_Runc       param 0 1
+GJets_ga_2018_bin17_Runc       param 0 1
+GJets_ga_2018_bin18_Runc       param 0 1
+GJets_ga_2018_bin19_Runc       param 0 1
+GJets_ga_2018_bin20_Runc       param 0 1
+GJets_ga_2018_bin21_Runc       param 0 1
+GJets_ga_2018_bin22_Runc       param 0 1
+ga_to_sr_ga_2018_NNLO_EWK_ga   param 0 1
+ga_to_sr_ga_2018_NNLO_EWK_sr   param 0 1
+ga_to_sr_ga_2018_NNLO_Miss_ga  param 0 1
+ga_to_sr_ga_2018_NNLO_Miss_sr  param 0 1
+ga_to_sr_ga_2018_NNLO_Sud_ga   param 0 1
+ga_to_sr_ga_2018_NNLO_Sud_sr   param 0 1
+ga_to_sr_ga_2018_QCD_EWK_Mix_ga param 0 1
+ga_to_sr_ga_2018_QCD_EWK_Mix_sr param 0 1
+ga_to_sr_ga_2018_QCD_Proc_ga   param 0 1
+ga_to_sr_ga_2018_QCD_Proc_sr   param 0 1
+ga_to_sr_ga_2018_QCD_Scale_ga  param 0 1
+ga_to_sr_ga_2018_QCD_Scale_sr  param 0 1
+ga_to_sr_ga_2018_QCD_Shape_ga  param 0 1
+ga_to_sr_ga_2018_QCD_Shape_sr  param 0 1

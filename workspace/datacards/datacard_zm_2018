@@ -1,0 +1,50 @@
+imax * number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------
+shapes data_obs                 zm_2018   ../workspace_2018.root   w:data_obs_zm_2018                 
+shapes WJets                    zm_2018   ../workspace_2018.root   w:WJets_zm_2018                     w:WJets_zm_2018_$SYSTEMATIC
+shapes DYJets                   zm_2018   ../workspace_2018.root   w:DYJets_zm_2018                    w:DYJets_zm_2018_$SYSTEMATIC
+shapes DiBoson                  zm_2018   ../workspace_2018.root   w:DiBoson_zm_2018                   w:DiBoson_zm_2018_$SYSTEMATIC
+shapes TTJets                   zm_2018   ../workspace_2018.root   w:TTJets_zm_2018                    w:TTJets_zm_2018_$SYSTEMATIC
+shapes QCD                      zm_2018   ../workspace_2018.root   w:QCD_zm_2018                       w:QCD_zm_2018_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------
+bin             zm_2018
+observation     -1
+----------------------------------------------------------------------------------------------------
+bin                                zm_2018                       zm_2018                       zm_2018                       zm_2018                       zm_2018                       
+process                            WJets                         DYJets                        DiBoson                       TTJets                        QCD                           
+process                            1                             2                             3                             4                             5                             
+rate                               -1                            1                             -1                            -1                            -1                            
+----------------------------------------------------------------------------------------------------
+CMS_eff2018_btag         lnN       -                             -                             1.02                          1.06                          -                             
+CMS_eff2018_m            lnN       -                             1.02                          1.02                          1.02                          -                             
+CMS_eff2018_m_iso        lnN       -                             1.02                          1.02                          1.02                          -                             
+CMS_eff2018_m_reco       lnN       -                             1.02                          1.02                          1.02                          -                             
+CMS_scale2018_j          lnN       -                             -                             1.04                          1.04                          -                             
+lumi_13TeV_2018          lnN       -                             -                             1.023                         1.023                         -                             
+top_Norm13TeV            lnN       -                             -                             -                             1.1                           -                             
+top_Reweight13TeV        lnN       -                             -                             -                             1.1                           -                             
+----------------------------------------------------------------------------------------------------
+DYJets_zm_2018_bin1_Runc       param 0 1
+DYJets_zm_2018_bin2_Runc       param 0 1
+DYJets_zm_2018_bin3_Runc       param 0 1
+DYJets_zm_2018_bin4_Runc       param 0 1
+DYJets_zm_2018_bin5_Runc       param 0 1
+DYJets_zm_2018_bin6_Runc       param 0 1
+DYJets_zm_2018_bin7_Runc       param 0 1
+DYJets_zm_2018_bin8_Runc       param 0 1
+DYJets_zm_2018_bin9_Runc       param 0 1
+DYJets_zm_2018_bin10_Runc      param 0 1
+DYJets_zm_2018_bin11_Runc      param 0 1
+DYJets_zm_2018_bin12_Runc      param 0 1
+DYJets_zm_2018_bin13_Runc      param 0 1
+DYJets_zm_2018_bin14_Runc      param 0 1
+DYJets_zm_2018_bin15_Runc      param 0 1
+DYJets_zm_2018_bin16_Runc      param 0 1
+DYJets_zm_2018_bin17_Runc      param 0 1
+DYJets_zm_2018_bin18_Runc      param 0 1
+DYJets_zm_2018_bin19_Runc      param 0 1
+DYJets_zm_2018_bin20_Runc      param 0 1
+DYJets_zm_2018_bin21_Runc      param 0 1
+DYJets_zm_2018_bin22_Runc      param 0 1
