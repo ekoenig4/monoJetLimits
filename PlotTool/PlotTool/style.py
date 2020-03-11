@@ -59,7 +59,6 @@ def ratio_style(ratio,color,rymin=0.5,rymax=1.5,name='#frac{Data}{Bkg}'):
     ratio.SetLineColor(color)
     ratio.SetLineWidth(1)
     ratio.SetTitle("")
-    ratio.GetYaxis().SetRangeUser(rymin,rymax);
     if type(ratio) == TH1: ratio.SetStats(0);
     
     ratio.GetYaxis().CenterTitle();
@@ -70,6 +69,7 @@ def ratio_style(ratio,color,rymin=0.5,rymax=1.5,name='#frac{Data}{Bkg}'):
     ratio.GetYaxis().SetTitleFont(42);
     ratio.GetYaxis().SetTitleOffset(0.2);
     ratio.GetYaxis().SetNdivisions(208);
+    ratio.GetYaxis().SetRangeUser(rymin,rymax);
     # ratio.GetYaxis().SetTickLength(0.05);
     
     ratio.GetXaxis().SetLabelSize(0.15);
