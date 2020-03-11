@@ -2,48 +2,53 @@ imax * number of bins
 jmax * number of processes minus 1
 kmax * number of nuisance parameters
 ----------------------------------------------------------------------------------------------------
-shapes data_obs            wm_2017   ../workspace_2017.root   w:data_obs_wm_2017            
-shapes ZJets               wm_2017   ../workspace_2017.root   w:ZJets_wm_2017               w:ZJets_wm_2017_$SYSTEMATIC
-shapes WJets               wm_2017   ../workspace_2017.root   w:WJets_wm_2017               w:WJets_wm_2017_$SYSTEMATIC
-shapes DiBoson             wm_2017   ../workspace_2017.root   w:DiBoson_wm_2017             w:DiBoson_wm_2017_$SYSTEMATIC
-shapes GJets               wm_2017   ../workspace_2017.root   w:GJets_wm_2017               w:GJets_wm_2017_$SYSTEMATIC
-shapes TTJets              wm_2017   ../workspace_2017.root   w:TTJets_wm_2017              w:TTJets_wm_2017_$SYSTEMATIC
-shapes DYJets              wm_2017   ../workspace_2017.root   w:DYJets_wm_2017              w:DYJets_wm_2017_$SYSTEMATIC
-shapes QCD                 wm_2017   ../workspace_2017.root   w:QCD_wm_2017                 w:QCD_wm_2017_$SYSTEMATIC
+shapes data_obs                 wm_2017   ../workspace_2017.root   w:data_obs_wm_2017                 
+shapes ZJets                    wm_2017   ../workspace_2017.root   w:ZJets_wm_2017                     w:ZJets_wm_2017_$SYSTEMATIC
+shapes WJets                    wm_2017   ../workspace_2017.root   w:WJets_wm_2017                     w:WJets_wm_2017_$SYSTEMATIC
+shapes DYJets                   wm_2017   ../workspace_2017.root   w:DYJets_wm_2017                    w:DYJets_wm_2017_$SYSTEMATIC
+shapes GJets                    wm_2017   ../workspace_2017.root   w:GJets_wm_2017                     w:GJets_wm_2017_$SYSTEMATIC
+shapes DiBoson                  wm_2017   ../workspace_2017.root   w:DiBoson_wm_2017                   w:DiBoson_wm_2017_$SYSTEMATIC
+shapes TTJets                   wm_2017   ../workspace_2017.root   w:TTJets_wm_2017                    w:TTJets_wm_2017_$SYSTEMATIC
+shapes QCD                      wm_2017   ../workspace_2017.root   w:QCD_wm_2017                       w:QCD_wm_2017_$SYSTEMATIC
 ----------------------------------------------------------------------------------------------------
 bin             wm_2017
 observation     -1
 ----------------------------------------------------------------------------------------------------
-bin                                wm_2017             wm_2017             wm_2017             wm_2017             wm_2017             wm_2017             wm_2017             
-process                            ZJets               WJets               DiBoson             GJets               TTJets              DYJets              QCD                 
-process                            1                   2                   3                   4                   5                   6                   7                   
-rate                               -1                  -1                  -1                  -1                  -1                  -1                  -1                  
+bin                                wm_2017                       wm_2017                       wm_2017                       wm_2017                       wm_2017                       wm_2017                       wm_2017                       
+process                            ZJets                         WJets                         DYJets                        GJets                         DiBoson                       TTJets                        QCD                           
+process                            1                             2                             3                             4                             5                             6                             7                             
+rate                               -1                            1                             -1                            -1                            -1                            -1                            -1                            
 ----------------------------------------------------------------------------------------------------
-JES                      shape     -                   -                   1                   1                   1                   1                   1                   
-PFU_ecal                 shape     1                   1                   1                   1                   1                   1                   1                   
-PSW_fsrCon               shape     1                   1                   1                   -                   1                   1                   1                   
-PSW_isrCon               shape     1                   1                   1                   -                   1                   1                   1                   
-bjet_veto                lnN       1.02                1.02                1.02                1.02                1.02                1.02                1.02                
-et_trigg                 lnN       1.01                1.01                1.01                1.01                1.01                1.01                1.01                
-lumi                     lnN       1.026               1.026               1.026               1.026               1.026               1.026               1.026               
+JER                      shape     1                             -                             1                             1                             1                             1                             1                             
+JES                      shape     1                             -                             1                             1                             1                             1                             1                             
+bjet_veto                lnN       1.02                          1.02                          1.02                          1.02                          1.02                          1.06                          1.02                          
+diboson_norm             lnN       -                             -                             -                             -                             1.2                           -                             -                             
+lumi                     lnN       -                             -                             -                             -                             1.026                         1.026                         1.026                         
+met_trig                 lnN       1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          
+muon_id                  lnN       1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          
+muon_reco                lnN       1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          1.01                          
+top_norm                 lnN       -                             -                             -                             -                             -                             1.1                           -                             
+top_pt_reweight          lnN       -                             -                             -                             -                             -                             1.1                           -                             
 ----------------------------------------------------------------------------------------------------
-CRoverSR_wm_2017_bin1_Runc param 0 1
-CRoverSR_wm_2017_bin2_Runc param 0 1
-CRoverSR_wm_2017_bin3_Runc param 0 1
-CRoverSR_wm_2017_bin4_Runc param 0 1
-CRoverSR_wm_2017_bin5_Runc param 0 1
-CRoverSR_wm_2017_bin6_Runc param 0 1
-CRoverSR_wm_2017_bin7_Runc param 0 1
-CRoverSR_wm_2017_bin8_Runc param 0 1
-CRoverSR_wm_2017_bin9_Runc param 0 1
-CRoverSR_wm_2017_bin10_Runc param 0 1
-CRoverSR_wm_2017_bin11_Runc param 0 1
-CRoverSR_wm_2017_bin12_Runc param 0 1
-CRoverSR_wm_2017_bin13_Runc param 0 1
-CRoverSR_wm_2017_bin14_Runc param 0 1
-CRoverSR_wm_2017_bin15_Runc param 0 1
-CRoverSR_wm_2017_bin16_Runc param 0 1
-CRoverSR_wm_2017_bin17_Runc param 0 1
-CRoverSR_wm_2017_bin18_Runc param 0 1
-CRoverSR_wm_2017_bin19_Runc param 0 1
-CRoverSR_wm_2017_bin20_Runc param 0 1
+WJets_wm_2017_bin1_Runc        param 0 1
+WJets_wm_2017_bin2_Runc        param 0 1
+WJets_wm_2017_bin3_Runc        param 0 1
+WJets_wm_2017_bin4_Runc        param 0 1
+WJets_wm_2017_bin5_Runc        param 0 1
+WJets_wm_2017_bin6_Runc        param 0 1
+WJets_wm_2017_bin7_Runc        param 0 1
+WJets_wm_2017_bin8_Runc        param 0 1
+WJets_wm_2017_bin9_Runc        param 0 1
+WJets_wm_2017_bin10_Runc       param 0 1
+WJets_wm_2017_bin11_Runc       param 0 1
+WJets_wm_2017_bin12_Runc       param 0 1
+WJets_wm_2017_bin13_Runc       param 0 1
+WJets_wm_2017_bin14_Runc       param 0 1
+WJets_wm_2017_bin15_Runc       param 0 1
+WJets_wm_2017_bin16_Runc       param 0 1
+WJets_wm_2017_bin17_Runc       param 0 1
+WJets_wm_2017_bin18_Runc       param 0 1
+WJets_wm_2017_bin19_Runc       param 0 1
+WJets_wm_2017_bin20_Runc       param 0 1
+WJets_wm_2017_bin21_Runc       param 0 1
+WJets_wm_2017_bin22_Runc       param 0 1

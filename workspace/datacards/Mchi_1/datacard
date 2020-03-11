@@ -1,0 +1,237 @@
+Combination of sr_2017=../datacard_sr_2017  we_2017=../datacard_we_2017  wm_2017=../datacard_wm_2017  ze_2017=../datacard_ze_2017  zm_2017=../datacard_zm_2017  ga_2017=../datacard_ga_2017
+imax 6 number of bins
+jmax 7 number of processes minus 1
+kmax 178 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes DYJets                ga_2017               ../../workspace_2017.root w:DYJets_ga_2017 w:DYJets_ga_2017_$SYSTEMATIC
+shapes DiBoson               ga_2017               ../../workspace_2017.root w:DiBoson_ga_2017 w:DiBoson_ga_2017_$SYSTEMATIC
+shapes GJets                 ga_2017               ../../workspace_2017.root w:GJets_ga_2017 w:GJets_ga_2017_$SYSTEMATIC
+shapes QCD                   ga_2017               ../../workspace_2017.root w:QCD_ga_2017 w:QCD_ga_2017_$SYSTEMATIC
+shapes TTJets                ga_2017               ../../workspace_2017.root w:TTJets_ga_2017 w:TTJets_ga_2017_$SYSTEMATIC
+shapes WJets                 ga_2017               ../../workspace_2017.root w:WJets_ga_2017 w:WJets_ga_2017_$SYSTEMATIC
+shapes ZJets                 ga_2017               ../../workspace_2017.root w:ZJets_ga_2017 w:ZJets_ga_2017_$SYSTEMATIC
+shapes data_obs              ga_2017               ../../workspace_2017.root w:data_obs_ga_2017
+shapes Axial_Mchi1_Mphi$MASS  sr_2017               ../../workspace_2017.root w:Axial_Mchi1_Mphi$MASS_sr_2017 w:Axial_Mchi1_Mphi$MASS_sr_2017_$SYSTEMATIC
+shapes DYJets                sr_2017               ../../workspace_2017.root w:DYJets_sr_2017 w:DYJets_sr_2017_$SYSTEMATIC
+shapes DiBoson               sr_2017               ../../workspace_2017.root w:DiBoson_sr_2017 w:DiBoson_sr_2017_$SYSTEMATIC
+shapes GJets                 sr_2017               ../../workspace_2017.root w:GJets_sr_2017 w:GJets_sr_2017_$SYSTEMATIC
+shapes QCD                   sr_2017               ../../workspace_2017.root w:QCD_sr_2017 w:QCD_sr_2017_$SYSTEMATIC
+shapes TTJets                sr_2017               ../../workspace_2017.root w:TTJets_sr_2017 w:TTJets_sr_2017_$SYSTEMATIC
+shapes WJets                 sr_2017               ../../workspace_2017.root w:WJets_sr_2017 w:WJets_sr_2017_$SYSTEMATIC
+shapes ZJets                 sr_2017               ../../workspace_2017.root w:ZJets_sr_2017 w:ZJets_sr_2017_$SYSTEMATIC
+shapes data_obs              sr_2017               ../../workspace_2017.root w:data_obs_sr_2017
+shapes DYJets                we_2017               ../../workspace_2017.root w:DYJets_we_2017 w:DYJets_we_2017_$SYSTEMATIC
+shapes DiBoson               we_2017               ../../workspace_2017.root w:DiBoson_we_2017 w:DiBoson_we_2017_$SYSTEMATIC
+shapes GJets                 we_2017               ../../workspace_2017.root w:GJets_we_2017 w:GJets_we_2017_$SYSTEMATIC
+shapes QCD                   we_2017               ../../workspace_2017.root w:QCD_we_2017 w:QCD_we_2017_$SYSTEMATIC
+shapes TTJets                we_2017               ../../workspace_2017.root w:TTJets_we_2017 w:TTJets_we_2017_$SYSTEMATIC
+shapes WJets                 we_2017               ../../workspace_2017.root w:WJets_we_2017 w:WJets_we_2017_$SYSTEMATIC
+shapes ZJets                 we_2017               ../../workspace_2017.root w:ZJets_we_2017 w:ZJets_we_2017_$SYSTEMATIC
+shapes data_obs              we_2017               ../../workspace_2017.root w:data_obs_we_2017
+shapes DYJets                wm_2017               ../../workspace_2017.root w:DYJets_wm_2017 w:DYJets_wm_2017_$SYSTEMATIC
+shapes DiBoson               wm_2017               ../../workspace_2017.root w:DiBoson_wm_2017 w:DiBoson_wm_2017_$SYSTEMATIC
+shapes GJets                 wm_2017               ../../workspace_2017.root w:GJets_wm_2017 w:GJets_wm_2017_$SYSTEMATIC
+shapes QCD                   wm_2017               ../../workspace_2017.root w:QCD_wm_2017 w:QCD_wm_2017_$SYSTEMATIC
+shapes TTJets                wm_2017               ../../workspace_2017.root w:TTJets_wm_2017 w:TTJets_wm_2017_$SYSTEMATIC
+shapes WJets                 wm_2017               ../../workspace_2017.root w:WJets_wm_2017 w:WJets_wm_2017_$SYSTEMATIC
+shapes ZJets                 wm_2017               ../../workspace_2017.root w:ZJets_wm_2017 w:ZJets_wm_2017_$SYSTEMATIC
+shapes data_obs              wm_2017               ../../workspace_2017.root w:data_obs_wm_2017
+shapes DYJets                ze_2017               ../../workspace_2017.root w:DYJets_ze_2017 w:DYJets_ze_2017_$SYSTEMATIC
+shapes DiBoson               ze_2017               ../../workspace_2017.root w:DiBoson_ze_2017 w:DiBoson_ze_2017_$SYSTEMATIC
+shapes QCD                   ze_2017               ../../workspace_2017.root w:QCD_ze_2017 w:QCD_ze_2017_$SYSTEMATIC
+shapes TTJets                ze_2017               ../../workspace_2017.root w:TTJets_ze_2017 w:TTJets_ze_2017_$SYSTEMATIC
+shapes WJets                 ze_2017               ../../workspace_2017.root w:WJets_ze_2017 w:WJets_ze_2017_$SYSTEMATIC
+shapes data_obs              ze_2017               ../../workspace_2017.root w:data_obs_ze_2017
+shapes DYJets                zm_2017               ../../workspace_2017.root w:DYJets_zm_2017 w:DYJets_zm_2017_$SYSTEMATIC
+shapes DiBoson               zm_2017               ../../workspace_2017.root w:DiBoson_zm_2017 w:DiBoson_zm_2017_$SYSTEMATIC
+shapes QCD                   zm_2017               ../../workspace_2017.root w:QCD_zm_2017 w:QCD_zm_2017_$SYSTEMATIC
+shapes TTJets                zm_2017               ../../workspace_2017.root w:TTJets_zm_2017 w:TTJets_zm_2017_$SYSTEMATIC
+shapes WJets                 zm_2017               ../../workspace_2017.root w:WJets_zm_2017 w:WJets_zm_2017_$SYSTEMATIC
+shapes data_obs              zm_2017               ../../workspace_2017.root w:data_obs_zm_2017
+----------------------------------------------------------------------------------------------------------------------------------
+bin          sr_2017  we_2017  wm_2017  ze_2017  zm_2017  ga_2017
+observation  -1       -1       -1       -1       -1       -1     
+----------------------------------------------------------------------------------------------------------------------------------
+bin                                sr_2017               sr_2017               sr_2017               sr_2017               sr_2017               sr_2017               sr_2017               sr_2017               we_2017               we_2017               we_2017               we_2017               we_2017               we_2017               we_2017               wm_2017               wm_2017               wm_2017               wm_2017               wm_2017               wm_2017               wm_2017               ze_2017               ze_2017               ze_2017               ze_2017               ze_2017               zm_2017               zm_2017               zm_2017               zm_2017               zm_2017               ga_2017               ga_2017               ga_2017               ga_2017               ga_2017               ga_2017               ga_2017             
+process                            Axial_Mchi1_Mphi$MASS  GJets                 DiBoson               TTJets                QCD                   WJets                 DYJets                ZJets                 GJets                 DiBoson               QCD                   TTJets                WJets                 DYJets                ZJets                 GJets                 DiBoson               QCD                   TTJets                WJets                 DYJets                ZJets                 DiBoson               WJets                 DYJets                TTJets                QCD                   DiBoson               WJets                 DYJets                TTJets                QCD                   GJets                 DiBoson               QCD                   TTJets                WJets                 DYJets                ZJets               
+process                            0                     1                     2                     3                     4                     5                     6                     7                     1                     2                     4                     3                     5                     6                     7                     1                     2                     4                     3                     5                     6                     7                     2                     5                     6                     3                     4                     2                     5                     6                     3                     4                     1                     2                     4                     3                     5                     6                     7                   
+rate                               -1                    -1                    -1                    -1                    -1                    1                     -1                    1                     -1                    -1                    -1                    -1                    1                     -1                    -1                    -1                    -1                    -1                    -1                    1                     -1                    -1                    -1                    -1                    1                     -1                    -1                    -1                    -1                    1                     -1                    -1                    1                     -1                    -1                    -1                    -1                    -1                    -1                  
+----------------------------------------------------------------------------------------------------------------------------------
+JER                     shape      -                     1.0                   1.0                   1.0                   1.0                   -                     1.0                   -                     -                     -                     -                     -                     -                     -                     -                     1.0                   1.0                   1.0                   1.0                   -                     1.0                   1.0                   1.0                   1.0                   -                     1.0                   -                     -                     -                     -                     -                     -                     -                     1.0                   1.0                   1.0                   1.0                   1.0                   1.0                 
+JES                     shape      1.0                   1.0                   1.0                   1.0                   1.0                   -                     1.0                   -                     -                     -                     -                     -                     -                     -                     -                     1.0                   1.0                   1.0                   1.0                   -                     1.0                   1.0                   1.0                   1.0                   -                     1.0                   -                     -                     -                     -                     -                     -                     -                     1.0                   1.0                   1.0                   1.0                   1.0                   1.0                 
+bjet_veto               lnN        1.02                  1.02                  1.02                  1.06                  1.02                  1.02                  1.02                  1.02                  1.02                  1.02                  1.02                  1.06                  1.02                  1.02                  1.02                  1.02                  1.02                  1.02                  1.06                  1.02                  1.02                  1.02                  1.02                  1.02                  1.02                  1.06                  1.02                  1.02                  1.02                  1.02                  1.06                  1.02                  1.02                  1.02                  1.02                  1.06                  1.02                  1.02                  1.02                
+diboson_norm            lnN        -                     -                     1.2                   -                     -                     -                     -                     -                     -                     1.2                   -                     -                     -                     -                     -                     -                     1.2                   -                     -                     -                     -                     -                     1.2                   -                     -                     -                     -                     1.2                   -                     -                     -                     -                     -                     1.2                   -                     -                     -                     -                     -                   
+ele_id                  lnN        -                     -                     -                     -                     -                     -                     -                     -                     1.02                  1.02                  1.02                  1.02                  1.02                  1.02                  1.02                  -                     -                     -                     -                     -                     -                     -                     1.02                  1.02                  1.02                  1.02                  1.02                  -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                   
+ele_reco                lnN        -                     -                     -                     -                     -                     -                     -                     -                     1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  -                     -                     -                     -                     -                     -                     -                     1.01                  1.01                  1.01                  1.01                  1.01                  -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                   
+ele_trig                lnN        -                     -                     -                     -                     -                     -                     -                     -                     1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  -                     -                     -                     -                     -                     -                     -                     1.01                  1.01                  1.01                  1.01                  1.01                  -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                   
+gjets_norm              lnN        -                     1.2                   -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                   
+lumi                    lnN        1.026                 -                     1.026                 1.026                 1.026                 -                     -                     -                     -                     1.026                 1.026                 1.026                 -                     -                     -                     -                     1.026                 1.026                 1.026                 -                     -                     -                     1.026                 -                     -                     1.026                 1.026                 1.026                 -                     -                     1.026                 1.026                 -                     1.026                 1.026                 1.026                 -                     -                     -                   
+met_trig                lnN        1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  -                     -                     -                     -                     -                     -                     -                     1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                   
+muon_id                 lnN        -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                   
+muon_reco               lnN        -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                   
+pho_id                  lnN        -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     1.02                  1.02                  1.02                  1.02                  1.02                  1.02                  1.02                
+pho_purity              lnN        -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     1.4                   -                     -                     -                     -                   
+pho_trig                lnN        -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     1.01                  1.01                  1.01                  1.01                  1.01                  1.01                  1.01                
+top_norm                lnN        -                     -                     -                     1.1                   -                     -                     -                     -                     -                     -                     -                     1.1                   -                     -                     -                     -                     -                     -                     1.1                   -                     -                     -                     -                     -                     -                     1.1                   -                     -                     -                     -                     1.1                   -                     -                     -                     -                     1.1                   -                     -                     -                   
+top_pt_reweight         lnN        -                     -                     -                     1.1                   -                     -                     -                     -                     -                     -                     -                     1.1                   -                     -                     -                     -                     -                     -                     1.1                   -                     -                     -                     -                     -                     -                     1.1                   -                     -                     -                     -                     1.1                   -                     -                     -                     -                     1.1                   -                     -                     -                   
+zll_norm                lnN        -                     -                     -                     -                     -                     -                     1.2                   -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                     -                   
+ga_to_sr_ga_2017_NNLO_Miss_sr  param  0 1
+WJets_wm_2017_bin8_Runc  param  0 1
+DYJets_ze_2017_bin16_Runc  param  0 1
+WJets_sr_2017_bin1_Runc  param  0 1
+wsr_to_zsr_sr_2017_QCD_EWK_Mix_zsr  param  0 1
+GJets_ga_2017_bin7_Runc  param  0 1
+DYJets_zm_2017_bin5_Runc  param  0 1
+WJets_we_2017_bin7_Runc  param  0 1
+DYJets_ze_2017_bin14_Runc  param  0 1
+DYJets_ze_2017_bin20_Runc  param  0 1
+ga_to_sr_ga_2017_NNLO_EWK_ga  param  0 1
+DYJets_zm_2017_bin19_Runc  param  0 1
+ga_to_sr_ga_2017_QCD_Shape_ga  param  0 1
+WJets_wm_2017_bin9_Runc  param  0 1
+WJets_we_2017_bin15_Runc  param  0 1
+DYJets_ze_2017_bin3_Runc  param  0 1
+GJets_ga_2017_bin11_Runc  param  0 1
+WJets_wm_2017_bin11_Runc  param  0 1
+GJets_ga_2017_bin15_Runc  param  0 1
+DYJets_ze_2017_bin13_Runc  param  0 1
+GJets_ga_2017_bin1_Runc  param  0 1
+wsr_to_zsr_sr_2017_NNLO_EWK_wsr  param  0 1
+WJets_sr_2017_bin22_Runc  param  0 1
+DYJets_ze_2017_bin2_Runc  param  0 1
+WJets_we_2017_bin1_Runc  param  0 1
+WJets_sr_2017_bin16_Runc  param  0 1
+WJets_wm_2017_bin21_Runc  param  0 1
+WJets_wm_2017_bin1_Runc  param  0 1
+wsr_to_zsr_sr_2017_NNLO_Miss_zsr  param  0 1
+DYJets_ze_2017_bin10_Runc  param  0 1
+WJets_sr_2017_bin18_Runc  param  0 1
+GJets_ga_2017_bin9_Runc  param  0 1
+WJets_sr_2017_bin3_Runc  param  0 1
+wsr_to_zsr_sr_2017_QCD_Proc_zsr  param  0 1
+GJets_ga_2017_bin13_Runc  param  0 1
+WJets_sr_2017_bin20_Runc  param  0 1
+WJets_wm_2017_bin15_Runc  param  0 1
+DYJets_zm_2017_bin13_Runc  param  0 1
+WJets_sr_2017_bin14_Runc  param  0 1
+wsr_to_zsr_sr_2017_NNLO_EWK_zsr  param  0 1
+ga_to_sr_ga_2017_QCD_EWK_Mix_sr  param  0 1
+WJets_we_2017_bin9_Runc  param  0 1
+WJets_wm_2017_bin4_Runc  param  0 1
+DYJets_zm_2017_bin20_Runc  param  0 1
+DYJets_zm_2017_bin4_Runc  param  0 1
+WJets_wm_2017_bin17_Runc  param  0 1
+GJets_ga_2017_bin20_Runc  param  0 1
+WJets_we_2017_bin13_Runc  param  0 1
+DYJets_ze_2017_bin11_Runc  param  0 1
+DYJets_zm_2017_bin8_Runc  param  0 1
+WJets_wm_2017_bin19_Runc  param  0 1
+GJets_ga_2017_bin12_Runc  param  0 1
+WJets_sr_2017_bin12_Runc  param  0 1
+WJets_we_2017_bin6_Runc  param  0 1
+WJets_we_2017_bin14_Runc  param  0 1
+WJets_wm_2017_bin6_Runc  param  0 1
+DYJets_zm_2017_bin1_Runc  param  0 1
+DYJets_ze_2017_bin4_Runc  param  0 1
+WJets_we_2017_bin11_Runc  param  0 1
+GJets_ga_2017_bin10_Runc  param  0 1
+DYJets_zm_2017_bin14_Runc  param  0 1
+WJets_we_2017_bin19_Runc  param  0 1
+DYJets_ze_2017_bin1_Runc  param  0 1
+WJets_wm_2017_bin10_Runc  param  0 1
+DYJets_zm_2017_bin6_Runc  param  0 1
+WJets_wm_2017_bin13_Runc  param  0 1
+DYJets_ze_2017_bin18_Runc  param  0 1
+WJets_we_2017_bin22_Runc  param  0 1
+wsr_to_zsr_sr_2017_NNLO_Sud_wsr  param  0 1
+ga_to_sr_ga_2017_NNLO_Miss_ga  param  0 1
+ga_to_sr_ga_2017_NNLO_Sud_ga  param  0 1
+DYJets_zm_2017_bin3_Runc  param  0 1
+GJets_ga_2017_bin18_Runc  param  0 1
+GJets_ga_2017_bin3_Runc  param  0 1
+DYJets_zm_2017_bin10_Runc  param  0 1
+WJets_wm_2017_bin20_Runc  param  0 1
+WJets_sr_2017_bin6_Runc  param  0 1
+DYJets_ze_2017_bin8_Runc  param  0 1
+DYJets_ze_2017_bin19_Runc  param  0 1
+WJets_wm_2017_bin18_Runc  param  0 1
+WJets_sr_2017_bin10_Runc  param  0 1
+WJets_we_2017_bin16_Runc  param  0 1
+WJets_wm_2017_bin12_Runc  param  0 1
+ga_to_sr_ga_2017_QCD_Shape_sr  param  0 1
+DYJets_zm_2017_bin7_Runc  param  0 1
+GJets_ga_2017_bin17_Runc  param  0 1
+DYJets_ze_2017_bin5_Runc  param  0 1
+WJets_sr_2017_bin5_Runc  param  0 1
+ga_to_sr_ga_2017_QCD_Scale_ga  param  0 1
+WJets_we_2017_bin10_Runc  param  0 1
+ga_to_sr_ga_2017_NNLO_Sud_sr  param  0 1
+DYJets_zm_2017_bin16_Runc  param  0 1
+ga_to_sr_ga_2017_QCD_EWK_Mix_ga  param  0 1
+DYJets_ze_2017_bin17_Runc  param  0 1
+GJets_ga_2017_bin6_Runc  param  0 1
+GJets_ga_2017_bin16_Runc  param  0 1
+wsr_to_zsr_sr_2017_QCD_Shape_zsr  param  0 1
+WJets_we_2017_bin8_Runc  param  0 1
+wsr_to_zsr_sr_2017_QCD_Scale_zsr  param  0 1
+DYJets_zm_2017_bin11_Runc  param  0 1
+wsr_to_zsr_sr_2017_QCD_Shape_wsr  param  0 1
+ga_to_sr_ga_2017_QCD_Proc_sr  param  0 1
+DYJets_ze_2017_bin15_Runc  param  0 1
+WJets_we_2017_bin4_Runc  param  0 1
+GJets_ga_2017_bin4_Runc  param  0 1
+ga_to_sr_ga_2017_NNLO_EWK_sr  param  0 1
+WJets_sr_2017_bin9_Runc  param  0 1
+GJets_ga_2017_bin19_Runc  param  0 1
+DYJets_ze_2017_bin21_Runc  param  0 1
+WJets_wm_2017_bin3_Runc  param  0 1
+WJets_sr_2017_bin11_Runc  param  0 1
+DYJets_ze_2017_bin7_Runc  param  0 1
+WJets_we_2017_bin18_Runc  param  0 1
+WJets_we_2017_bin2_Runc  param  0 1
+GJets_ga_2017_bin14_Runc  param  0 1
+WJets_wm_2017_bin22_Runc  param  0 1
+DYJets_zm_2017_bin21_Runc  param  0 1
+GJets_ga_2017_bin2_Runc  param  0 1
+ga_to_sr_ga_2017_QCD_Proc_ga  param  0 1
+DYJets_zm_2017_bin17_Runc  param  0 1
+DYJets_zm_2017_bin15_Runc  param  0 1
+DYJets_ze_2017_bin9_Runc  param  0 1
+WJets_sr_2017_bin8_Runc  param  0 1
+WJets_sr_2017_bin19_Runc  param  0 1
+wsr_to_zsr_sr_2017_NNLO_Sud_zsr  param  0 1
+GJets_ga_2017_bin21_Runc  param  0 1
+DYJets_ze_2017_bin6_Runc  param  0 1
+WJets_sr_2017_bin7_Runc  param  0 1
+DYJets_ze_2017_bin12_Runc  param  0 1
+WJets_we_2017_bin3_Runc  param  0 1
+GJets_ga_2017_bin5_Runc  param  0 1
+WJets_sr_2017_bin17_Runc  param  0 1
+wsr_to_zsr_sr_2017_NNLO_Miss_wsr  param  0 1
+WJets_wm_2017_bin7_Runc  param  0 1
+WJets_wm_2017_bin14_Runc  param  0 1
+wsr_to_zsr_sr_2017_QCD_EWK_Mix_wsr  param  0 1
+WJets_sr_2017_bin15_Runc  param  0 1
+DYJets_zm_2017_bin22_Runc  param  0 1
+WJets_sr_2017_bin21_Runc  param  0 1
+WJets_we_2017_bin20_Runc  param  0 1
+DYJets_ze_2017_bin22_Runc  param  0 1
+ga_to_sr_ga_2017_QCD_Scale_sr  param  0 1
+WJets_we_2017_bin5_Runc  param  0 1
+WJets_sr_2017_bin13_Runc  param  0 1
+WJets_sr_2017_bin4_Runc  param  0 1
+GJets_ga_2017_bin8_Runc  param  0 1
+WJets_wm_2017_bin5_Runc  param  0 1
+DYJets_zm_2017_bin12_Runc  param  0 1
+DYJets_zm_2017_bin18_Runc  param  0 1
+WJets_wm_2017_bin16_Runc  param  0 1
+wsr_to_zsr_sr_2017_QCD_Scale_wsr  param  0 1
+WJets_wm_2017_bin2_Runc  param  0 1
+GJets_ga_2017_bin22_Runc  param  0 1
+WJets_we_2017_bin17_Runc  param  0 1
+DYJets_zm_2017_bin2_Runc  param  0 1
+WJets_we_2017_bin21_Runc  param  0 1
+wsr_to_zsr_sr_2017_QCD_Proc_wsr  param  0 1
+DYJets_zm_2017_bin9_Runc  param  0 1
+WJets_we_2017_bin12_Runc  param  0 1
+WJets_sr_2017_bin2_Runc  param  0 1
