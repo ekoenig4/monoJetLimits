@@ -2,8 +2,13 @@
 
 from ROOT import *
 from Datacard import Datacard
+from lnNlist import lnNlist
 import re
 import os
+
+datadriven=['ZJets','WJets','DYJets','GJets']
+signal = ['Axial_Mchi1_Mphi1000']
+signalmap = {re.compile(r"Axial_Mchi\d+_Mphi\d+"):"axial"}
 
 def loop_iterator(iterator):
   object = iterator.Next()
@@ -26,51 +31,29 @@ def getVars(ws,ch,tf):
   return [ var.GetName() for var in iter_collection(wsvars) if ch in var.GetName() and any(re.match('^'+t,var.GetName()) for t in tf) ]
 def getVariations(ch,proc): return [ hist.replace("%s_%s_"%(proc,ch.channel),"").replace("Up","") for hist in ch.hists if re.match('^'+proc,hist) and 'Up' in hist ]
 
-def Add_lnN(card,proc,isSignal,datadriven):
-  if proc not in datadriven: card.addNuisance(proc,'lumi','lnN',1.026)
-  card.addNuisance(proc,'bjet_veto','lnN',1.06 if proc is 'TTJets' else 1.02)
-  if proc is 'TTJets':
-    card.addNuisance(proc,'top_pt_reweight','lnN',1.1)
-    card.addNuisance(proc,'top_norm','lnN',1.1)
-  if proc is 'DiBoson':
-    card.addNuisance(proc,'diboson_norm','lnN',1.2)
-
-  if 'sr' in card.channel:
-    card.addNuisance(proc,'met_trig','lnN',1.01)
-    if proc is 'DYJets':
-      card.addNuisance(proc,'zll_norm','lnN',1.2)
-    if proc is 'GJets':
-      card.addNuisance(proc,'gjets_norm','lnN',1.2)
-  
-  if any( ch in card.channel for ch in ('we','ze') ):
-    card.addNuisance(proc,'ele_trig','lnN',1.01)
-    card.addNuisance(proc,'ele_reco','lnN',1.01)
-    card.addNuisance(proc,'ele_id','lnN',1.02)
-
-  if any( ch in card.channel for ch in ('wm','wm') ):
-    card.addNuisance(proc,'met_trig','lnN',1.01)
-    card.addNuisance(proc,'muon_reco','lnN',1.01)
-    card.addNuisance(proc,'muon_id','lnN',1.01)
-
-  if 'ga' in card.channel:
-    card.addNuisance(proc,'pho_trig','lnN',1.01)
-    card.addNuisance(proc,'pho_id','lnN',1.02)
-    if proc is 'QCD':
-      card.addNuisance(proc,'pho_purity','lnN',1.4)
+def Add_lnN(card,proc,isSignal):
+  region,year = card.channel.split("_")
+  for lnN in lnNlist:
+    name,value = lnN.get(proc,region,year)
+    if name is None: continue
+    card.addNuisance(proc,name,'lnN',value)
 def Add_Shape(card,proc,nuisances):
   variations = getVariations(card,proc)
   for nuisance in nuisances:
     if nuisance in variations:
       card.addNuisance(proc,nuisance,'shape',1)
-def AddProc(card,proc,isSignal,nuisances=["JES","JER"],datadriven=['ZJets','WJets','DYJets','GJets']):
+def AddProc(card,proc,isSignal,nuisances=["JES","JER"],):
   procname = "%s_%s" % (proc,card.channel)
   if not any( procname in hists for hists in (card.hists,card.pdfs) ): return
-  if isSignal: card.addSignal(proc,shape="w:%s" % procname)
+  if isSignal:
+    for pattern,alt in signalmap.iteritems():
+      if pattern.match(proc): proc = alt
+    card.addSignal(proc,shape="w:%s" % procname)
   else:
     rate = 1 if procname in card.pdfs else -1
     card.addBkg(proc,shape="w:%s" % procname,rate=rate)
   
-  Add_lnN(card,proc,isSignal,datadriven)
+  Add_lnN(card,proc,isSignal)
   Add_Shape(card,proc,nuisances)
 def AddTF(card,tf):
   for tf in card.vars:
@@ -88,7 +71,6 @@ def MakeCard(ws,ch,tf=None,signal=[]):
   AddTF(ch_card,tf)
   ch_card.write()
 
-signal = ['Axial_Mchi1_Mphi1000']
 def createDatacards(wsfname,year,signal=signal):
   input = TFile(wsfname)
   ws = input.Get("w")
