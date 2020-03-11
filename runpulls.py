@@ -10,11 +10,20 @@ from shutil import copyfile
 
 cmssw_base = os.getenv("CMSSW_BASE")
 outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
+ch_order = ('sr','we','wm','ze','zm','ga')
 
-text2workspace = "text2workspace.py ../Mchi_%s/datacard -m %s -o %s"
-combine = "combine -M FitDiagnostics -d %s -t -1"
-diffNuisances = "python %s/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root -g test.root --abs --all" % cmssw_base
-
+def channel_order(ch1,ch2):
+    for i,ch in enumerate(ch_order):
+        if ch in ch1: i1 = i
+        if ch in ch2: i2 = i
+    if i1 < i2: return -1
+    elif i1 == i2:
+            y1 = re.findall('\d\d\d\d',ch1)
+            y2 = re.findall('\d\d\d\d',ch2)
+            if any(y1) and any(y2):
+                y1 = int(y1[0]); y2 = int(y2[0])
+                if y1 < y2: return -1
+    return 1
 def getargs():
     parser = ArgumentParser()
     parser.add_argument("-d","--dir",help="specify directory to run pulls in",nargs='+',action="store",type=str,required=True)
@@ -47,9 +56,22 @@ def runPulls(path,args):
     mx = args.signal.split("_")[0].replace("Mchi","")
     mv = args.signal.split("_")[1].replace("Mphi","")
 
-    run( text2workspace % (mx,mv,workspace) )
-    run( combine % workspace )
-    run( diffNuisances )
+
+    #--- Combine Cards and Mask SR ---#
+    channels = [ card.replace('datacard_','') for card in os.listdir('../') if 'datacard' in card ]
+    channels.sort(channel_order)
+    sr_channel = [ channel for channel in channels if 'sr' in channel ]
+    combine_cards = ['combineCards.py'] + ['%s=../datacard_%s' % (channel,channel) for channel in channels] + ['>','datacard']
+    text2workspace = ['text2workspace.py','datacard','--channel-masks','-m',mv,'-o',workspace]
+    sr_mask = [','.join(['mask_%s=1' % channel for channel in sr_channel])]
+    
+    combine = ("combine -M FitDiagnostics -d %s -t -1 " % workspace) + ' '.join(sr_mask)
+    diffNuisances = "python %s/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root -g test.root --abs" % cmssw_base
+    
+    with open('run_pulls.sh','w') as f:
+        f.write('set -o xtrace\n')
+        f.write('\n'.join([combine_cards,text2workspace,combine,diffNuisances]))
+    run("sh run_pulls.sh")
     export()
     os.chdir(cwd)
     mvpulls(info)

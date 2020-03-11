@@ -11,6 +11,20 @@ import json
 import re
 
 outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
+
+ch_order = ('sr','we','wm','ze','zm','ga')
+def channel_order(ch1,ch2):
+    for i,ch in enumerate(ch_order):
+        if ch in ch1: i1 = i
+        if ch in ch2: i2 = i
+    if i1 < i2: return -1
+    elif i1 == i2:
+            y1 = re.findall('\d\d\d\d',ch1)
+            y2 = re.findall('\d\d\d\d',ch2)
+            if any(y1) and any(y2):
+                y1 = int(y1[0]); y2 = int(y2[0])
+                if y1 < y2: return -1
+    return 1
 ##############################################################################
 def printProcs(procs,name):
     if procs is None: return
@@ -52,21 +66,41 @@ def mvimpacts(path):
     copyfile('impacts/impacts.pdf',output)
     os.chdir(cwd)
 ##############################################################################
-def runImpacts(path,mx,mv,procmap=None):
+def runImpacts(path,mx,mv,procmap=None,strength=0.0):
     cwd = os.getcwd()
     os.chdir(path)
+    if not os.path.isdir('impacts'): os.mkdir('impacts')
     os.chdir('impacts')
-    blind = ['-t','-1','--expectSignal','1']
-    impacts = ['combineTool.py','-M','Impacts']
-    card = ['-m',mv,'-d','Mchi%s_Mphi%s.root' % (mx,mv)]
 
-    c1 = ' '.join(impacts + card + blind + ['--doInitialFit'])+'>>log'
-    c2 = ' '.join(impacts + card + blind + ['--allPars','--doFits','--parallel 12'])+' >>log'
-    c3 = ' '.join(impacts + card + ['--allPars','-o','impacts.json'])+'>>log'
-    c4 = ' '.join(['plotImpacts.py','-i','impacts.json','-o','impacts'])+'>>log'
+    #--- Combine Cards and Mask SR ---#
+    channels = [ card.replace('datacard_','') for card in os.listdir('../') if 'datacard' in card ]
+    channels.sort(channel_order)
+    sr_channel = [ channel for channel in channels ]
+    combine_cards = ['combineCards.py'] + ['%s=../datacard_%s' % (channel,channel) for channel in channels] + ['>','datacard']
+    text2workspace = ['text2workspace.py','datacard','-m',mv,'-o','Mchi%s_Mphi%s.root' % (mx,mv)]
+
+    workspace = ["-d",'Mchi%s_Mphi%s.root' % (mx,mv),"-m",mv]
+    common_opts = ["-t -1 --expectSignal=%.1f --parallel=24 --rMin=-1 --autoRange 5 --squareDistPoiStep"%strength]
+    impacts = ["combineTool.py","-M","Impacts"]
+    initial_fit = ["--doInitialFit","--robustFit 1"]
+    do_fit = ["--robustFit 1","--doFits"]
+    output = ["-o","impacts.json"]
+    plot = ["plotImpacts.py","-i","impacts.json","-o","impacts"]
+    log = [">>log"]
+
+    tag = "task_Mchi%s_Mphi%s" % (mx,mv)
+    condor = ["--job-mode","condor","--task-name",tag]
+    condor_wait = ["condor_wait","%s*.log"%tag,"|","exit $?"]
+
+    combine_1 = impacts + workspace + initial_fit + common_opts + log
+    combine_2 = impacts + workspace + do_fit + common_opts + log 
+    combine_3 = impacts + workspace + output + common_opts + log
+    #--- Combine Impact Commands ---#
     with open('run_impacts.sh','w') as f:
+        f.write('set -e\n')
         f.write('set -o xtrace\n')
-        f.write('\n'.join([c1,c2,c3,c4]))
+        for command in (combine_cards,text2workspace,combine_1,combine_2,combine_3,plot):
+            f.write(' '.join(command)+'\n')
     command = ['sh','run_impacts.sh']
     if procmap is None:
         print os.getcwd()
@@ -76,28 +110,13 @@ def runImpacts(path,mx,mv,procmap=None):
         procmap[os.getcwd()] = proc
     os.chdir(cwd)
 ##############################################################################
-def getText2WS(path,mx,mv,procmap=None):
-    cwd = os.getcwd()
-    os.chdir(path)
-    if not os.path.isdir('impacts'): os.mkdir('impacts')
-    command = ['text2workspace.py','Mchi_%s/datacard' % mx,'-m',mv,'-o','impacts/Mchi%s_Mphi%s.root' % (mx,mv)]
-    if procmap is None:
-        print os.getcwd()
-        proc = Popen(command); proc.wait()
-    else:
-        proc = Popen(command,stdout=PIPE,stderr=STDOUT)
-        procmap[os.getcwd()] = proc
-    os.chdir(cwd)
-##############################################################################
 def runParallel(args=None):
     if args is None: args = getargs()
     args.dir = [ path for path in args.dir if not ('nSYS' in path and 'nSTAT' in path) ]
     print 'Running Impacts'
     mx,mv = args.signal.replace('Mchi',"").replace("Mphi","").split('_')
     procmap = {}
-    for path in args.dir: getText2WS(path,mx,mv,procmap)
-    printProcs(procmap,'Text2Workspace')
-    for path in args.dir: runImpacts(path,mx,mv,procmap)
+    for path in args.dir: runImpacts(path,mx,mv,procmap,strength=args.signal)
     printProcs(procmap,'Impacts')
     for path in args.dir: mvimpacts(path)
 ##############################################################################
@@ -107,45 +126,16 @@ def runSerial(args=None):
     print 'Running Impacts'
     mx,mv = args.signal.replace('Mchi','').replace('Mphi','').split('_')
     for path in args.dir:
-        getText2WS(path,mx,mv)
-        runImpacts(path,mx,mv)
+        # runImpacts(path,mx,mv)
         mvimpacts(path)
-##############################################################################
-def runDirectory(path,args):
-    print path
-    if 'nSYS' in path and 'nSTAT' in path: return
-    info = SysInfo(path)
-    home = os.getcwd()
-    os.chdir(path)
-    cwd = os.getcwd()
-    scaling = {}
-    if os.path.isfile('../signal_scaling.json'):
-        with open('../signal_scaling.json') as f: scaling = json.load(f)
-    scale = 1/float(scaling[args.signal]) if args.signal in scaling else 1
-    sysdir = next( sub for sub in cwd.split('/') if '.sys' in sub )
-    mx = args.signal.split('_')[0].replace('Mchi','')
-    mxdir = 'Mchi_%s' % mx
-    mv = args.signal.split('_')[1].replace('Mphi','')
-    impactdir = 'impacts'
-    if not os.path.isdir(impactdir): os.mkdir(impactdir)
-    else:                            os.system('rm impacts/*')
-    impactdir = os.path.abspath(impactdir)
-    getText2WS(mxdir,mv,args.signal)
-    runImpacts(args.signal,scale,mv,impactdir)
-    mvimpacts(info)
-    os.chdir(home)
 ##############################################################################
 def getargs():
     def directory(arg):
         if os.path.isdir(arg): return arg
         raise ValueError()
-    def signal(arg):
-        regex = re.compile(r"Mchi\d*_Mphi\d*$")
-        if regex.match(arg): return arg
-        raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
-    parser.add_argument("-s","--signal",help='Specify the signal (Mchid_Mphid) sample to get impact for',action='store',type=signal,default="Mchi1_Mphi1000")
+    parser.add_argument("-s","--signal",help='Specify the signal strength',action='store',type=float,default=0.0)
     parser.add_argument("-p","--parallel",help="Run all directories in parallel",action='store_true',default=False)
     
     try: args = parser.parse_args()

@@ -31,9 +31,8 @@ def runFit(args):
     sr_channel = [ channel for channel in channels if 'sr' in channel ]
     combine_cards = ['combineCards.py'] + ['%s=../datacard_%s' % (channel,channel) for channel in channels] + ['>','datacard']
     text2workspace = ['text2workspace.py','datacard','--channel-masks']
-    cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--setParameters"]
-    cr_only_fit += [','.join(['mask_%s=1' % channel for channel in sr_channel])]
-    cr_only_fit += ["--ignoreCovWarning","--cminDefaultMinimizerStrategy 0"]
+    cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--robustFit 1"]
+    cr_only_fit += ["--setParameters",','.join(['mask_%s=1' % channel for channel in sr_channel])]
     with open('run_cr_only_fit.sh','w') as f:
         f.write("#!/bin/sh\n")
         f.write(' '.join(combine_cards)+'\n')
