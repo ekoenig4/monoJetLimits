@@ -89,30 +89,15 @@ def getargs():
         raise ValueError()
     
     parser = ArgumentParser(description='Make workspace for generating limits based on input systematics file')
-    parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",action="store",type=sysfile,default=None,required=True)
+    parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",nargs="+",type=sysfile,default=None,required=True)
     parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
-    parser.add_argument('--no-cr',dest='nCR',help="Include CR datacards in datacard",action='store_true',default=False)
-    parser.add_argument('--no-sys',dest='nSYS',help="Remove systematics from datacards",action='store_true',default=False)
-    parser.add_argument('--no-stat',dest='nSTAT',help="Remove statistical uncertainty from datacards",action='store_true',default=False)
-    parser.add_argument('--no-tran',dest='nTRAN',help="Remove Transfer factors from datacards",action='store_true',default=False)
-    parser.add_argument('--no-pfu',dest='nPFU',help="Remove PF uncertainty from datacards",action='store_true',default=False)
-    parser.add_argument('--no-jes',dest='nJES',help='Remove JES uncertainty from datacards',action='store_true',default=False)
-    parser.add_argument('--run2',help='Create run2 limit cards',action='store_true',default=False)
+    parser.add_argument('--combined',help='Create combined limit cards',action='store_true',default=False)
     try: args = parser.parse_args()
     except ValueError as err:
         print err
         parser.print_help()
         exit()
     return args
-#####
-def modify(dir,args):
-    n_pattern = re.compile('^n[A-Z]+$')
-    w_pattern = re.compile('^w[A-Z]+$')
-    modlist = sorted([ var for var in vars(args) if (n_pattern.search(var) or w_pattern.search(var)) and vars(args)[var] ])
-    if any(modlist):
-        modsuffix = '_'+(''.join(modlist))
-        return dir.replace('.sys','%s.sys' % modsuffix)
-    return dir
 #####
 def yearWorkspace(sysfile,args):
     isScaled = os.path.isfile('signal_scaling.json')
@@ -121,51 +106,43 @@ def yearWorkspace(sysfile,args):
     if not os.path.isfile(outfname) or args.reset:
         createWorkspace(sysfile,outfname=outfname,isScaled=isScaled)
 ####################
-def makeWorkspace():
+def makeWorkspace(input,args):
+    print "Making Workspace for",input
+    cwd = os.getcwd()
+    sysfile = SysFile(os.path.abspath(input))
+    sysdir = 'Limits/%s' % sysfile.variable.GetTitle()
+    if not os.path.isdir(sysdir): os.mkdir(sysdir)
+    ws = yearWorkspace(sysfile,args)
+    sysdir = '%s/%s' % (sysdir,sysfile.GetName().split('/')[-1].replace(".root",""))
+    sysfile.sysdir = sysdir
+    if not os.path.isdir(sysdir): os.mkdir(sysdir)
+    os.chdir(sysdir)
+    createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year)
+    for mx,mvlist in sysfile.getSignalList().items(): makeMchiDir(mx,mvlist,[sysfile.year],args)
+    os.chdir(cwd)
+    return sysfile
+####################
+def combineWorkspace(sysfiles,args):
+    print "Making Combined Workspace"
+    cwd = os.getcwd()
+    sysdir = sysfiles[0].sysdir.replace("%s.sys"%sysfiles[0].year,"Run2.sys")
+    if not os.path.isdir(sysdir): os.mkdir(sysdir)
+    for sysfile in sysfiles:
+        for datacard in os.listdir(sysfile.sysdir):
+            if "datacard" in datacard:
+                print "Copying %s/%s" %(sysfile.sysdir,datacard)
+                copyfile("%s/%s"%(sysfile.sysdir,datacard),"%s/%s"%(sysdir,datacard))
+    os.chdir(sysdir)
+    signalist = sysfile.getSignalList()
+    for mx,mvlist in signalist.items(): makeMchiDir(mx,mvlist,[ sysfile.year for sysfile in sysfiles ],args)
+    os.chdir(cwd)
+####################
+def main():
     if not os.path.isdir('Limits/'): os.mkdir('Limits/')
     args = getargs()
 
-    if not args.run2:
-        sysfile = SysFile(os.path.abspath(args.input))
-        sysdir = 'Limits/%s' % sysfile.variable.GetTitle()
-        if not os.path.isdir(sysdir): os.mkdir(sysdir)
-        ws = yearWorkspace(sysfile,args)
-        sysdir = '%s/%s' % (sysdir,sysfile.GetName().split('/')[-1].replace(".root",""))
-        if not os.path.isdir(sysdir): os.mkdir(sysdir)
-        os.chdir(sysdir)
-        createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year)
-        
-        for mx,mvlist in sysfile.getSignalList().items(): makeMchiDir(mx,mvlist,[sysfile.year],args)
-    # else:
-    #     yearlist = ['2016','2017','2018']
-    #     args.input = args.input.replace('2016','Run2').replace('2017','Run2').replace('2018','Run2')
-    #     sysfiles = [ SysFile(os.path.abspath(args.input.replace('Run2',year))) for year in yearlist ]
-    #     sysfile = sysfiles[0]
-    #     if not os.path.isdir('Limits/%s' % sysfile.variable.GetTitle()): os.mkdir('Limits/%s' % sysfile.variable.GetTitle())
-    #     for sysfile in sysfiles: yearWorkspace(sysfile,args)
-    #     os.chdir('Limits/%s' % sysfile.variable.GetTitle())
-    #     sysdir = modify(sysfiles[0].GetName().split('/')[-1].replace('.root','').replace('2016','Run2'),args)
-    #     if not os.path.isdir(sysdir): os.mkdir(sysdir)
-    #     os.chdir(sysdir)
-    #     for sysfile in sysfiles: createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year,args)
-
-    #     mxlists = [ sysfile.getMchilist() for sysfile in sysfiles ]
-    #     mxmap = {}
-    #     mxvalues = []
-    #     mvvalues = []
-    #     for mxlist in mxlists:
-    #         for mx,mvlist in mxlist.iteritems():
-    #             if mx not in mxvalues: mxvalues.append(mx)
-    #             for mv in mvlist:
-    #                 if mv not in mvvalues: mvvalues.append(mv)
-    #     for mx in mxvalues:
-    #         if any( mx not in mxlist for mxlist in mxlists ): continue
-    #         mxmap[mx] = []
-    #         for mv in mvvalues:
-    #             if any( mv not in mxlist[mx] for mxlist in mxlists ): continue
-    #             mxmap[mx].append(mv)
-    #     for mx,mvlist in mxmap.iteritems(): makeMchiDir(mx,mvlist,yearlist,args)
-    return ws
+    sysfiles = [ makeWorkspace(input,args) for input in args.input ]
+    if args.combined: combineWorkspace(sysfiles,args)
 ####################
-if __name__ == "__main__": makeWorkspace()
+if __name__ == "__main__": main()
     
