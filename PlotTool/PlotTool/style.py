@@ -45,6 +45,9 @@ def fit_style(hs,color):
     hs.SetLineWidth(2)
     hs.SetFillStyle(0)
     hs.SetFillColor(0)
+def other_style(hs,color,outline=kBlack):
+    hs.SetFillColor(color)
+    hs.SetLineColor(outline)
 def set_bounds(hs):
     ymin = min( hs[ibin] for ibin in range(1,hs.GetNbinsX()+1) if hs[ibin] != 0)
     ymax = max( hs[ibin] for ibin in range(1,hs.GetNbinsX()+1) if hs[ibin] != 0)
