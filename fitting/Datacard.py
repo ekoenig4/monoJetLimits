@@ -26,6 +26,7 @@ class Datacard:
         self.ws = ws
         self.data_obs = None
         self.signals = []
+        self.models = []
         self.bkgs = []
         self.processes = {}
         self.nuisances = {}
@@ -39,6 +40,11 @@ class Datacard:
         signal = Process(proc, -len(self.signals),shape=(self.ws.fname,shape))
         self.signals.append(proc)
         self.processes[proc] = signal
+    def addModel(self,proc,shape=None,rate=1):
+        model = Process(proc,len(self.bkgs)+1,shape=(self.ws.fname,shape),rate=rate)
+        self.bkgs.append(proc)
+        self.models.append(proc)
+        self.processes[proc] = model
     def addBkg(self,proc,shape=None,rate=-1):
         bkg = Process(proc, len(self.bkgs)+1,shape=(self.ws.fname,shape),rate=rate)
         self.bkgs.append(proc)
@@ -79,10 +85,13 @@ class Datacard:
                 if sys: line += ' w:'+shape+'_$SYSTEMATIC'
                 return line + '\n'
             if wildcard:
-                card.write(writeShape())
+                for model in self.models:
+                    model = self.processes[model]
+                    card.write( writeShape(model.name,self.channel,shape=model.shape[1]) )
                 for signal in self.signals:
                     signal = self.processes[signal]
                     card.write( writeShape(signal.name,shape=signal.shape[1].replace(self.channel,"$CHANNEL")) )
+                card.write(writeShape())
             else:
                 if self.data_obs.hasShape():
                     card.write( writeShape(self.data_obs,sys=False) )

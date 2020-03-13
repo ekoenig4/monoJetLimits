@@ -42,23 +42,28 @@ def Add_Shape(card,proc,nuisances):
   for nuisance in nuisances:
     if nuisance in variations:
       card.addNuisance(proc,nuisance,'shape',1)
-def AddProc(card,proc,isSignal,nuisances=["JES","JER"],):
+def AddProc(card,proc,isSignal,nuisances=["JES","JER"],useModel=True):
   procname = "%s_%s" % (proc,card.channel)
   if not any( procname in hists for hists in (card.hists,card.pdfs) ): return
+  hasModel = any( proc in pdf for pdf in card.pdfs )
   if isSignal:
     for pattern,alt in signalmap.iteritems():
       if pattern.match(proc): proc = alt
     card.addSignal(proc,shape=procname)
+  elif useModel and hasModel:
+    procname = "%s_model_%s" % (proc,card.channel)
+    card.addModel(proc,shape=procname,rate=1)
+    proc = "%s_model" % proc
   else:
-    rate = 1 if procname in card.pdfs else -1
-    card.addBkg(proc,shape=procname,rate=rate)
+    card.addBkg(proc,shape=procname)
   
   Add_lnN(card,proc,isSignal)
   Add_Shape(card,proc,nuisances)
-def AddTF(card,tf):
+def AddTF(card,tf,useModel):
+  if not useModel: return
   for tf in card.vars:
     card.addTransfer(tf)
-def MakeCard(ws,ch,tf=None,signal=[]):
+def MakeCard(ws,ch,tf=None,signal=[],useModel=True):
   print "Writing datacard_%s" % ch
   proclist = signal + ['ZJets','WJets','DYJets','GJets','DiBoson','TTJets','QCD']
   ch_card = Datacard(ch,ws)
@@ -67,8 +72,8 @@ def MakeCard(ws,ch,tf=None,signal=[]):
   ch_card.pdfs = getPDFs(ws,ch)
 
   ch_card.setObservation(shape='data_obs_%s'%ch)
-  for proc in proclist: AddProc(ch_card,proc,proc in signal)
-  AddTF(ch_card,tf)
+  for proc in proclist: AddProc(ch_card,proc,proc in signal,useModel=useModel)
+  AddTF(ch_card,tf,useModel)
   ch_card.write()
 
 def createDatacards(wsfname,year,signal=signal):
@@ -76,15 +81,15 @@ def createDatacards(wsfname,year,signal=signal):
   ws = input.Get("w")
   ws.fname = input.GetName()
 
-  MakeCard(ws,"sr_%s"%year,("WJets","wsr_to_zsr"),signal)
-  MakeCard(ws,"we_%s"%year,("WJets","we_to_sr"))
-  MakeCard(ws,"wm_%s"%year,("WJets","wm_to_sr"))
-  MakeCard(ws,"ze_%s"%year,("DYJets","ze_to_sr"))
-  MakeCard(ws,"zm_%s"%year,("DYJets","zm_to_sr"))
-  MakeCard(ws,"ga_%s"%year,("GJets","ga_to_sr"))
+  MakeCard(ws,"sr_%s"%year,("WJets_model","wsr_to_zsr"),signal)
+  MakeCard(ws,"we_%s"%year,("WJets_model","we_to_sr"))
+  MakeCard(ws,"wm_%s"%year,("WJets_model","wm_to_sr"))
+  MakeCard(ws,"ze_%s"%year,("DYJets_model","ze_to_sr"))
+  MakeCard(ws,"zm_%s"%year,("DYJets_model","zm_to_sr"))
+  MakeCard(ws,"ga_%s"%year,("GJets_model","ga_to_sr"))
   return [ "datacard_%s_%s" % (ch,year) for ch in ("sr","we","wm","ze","zm","ga")]
 if __name__ == "__main__":
   input = TFile("workspace.root")
   ws = input.Get("w")
   ws.fname = input.GetName()
-  MakeCard(ws,'sr_2017',('WJets','wsr_to_zsr'),['Axial_Mchi1_Mphi1000'])
+  MakeCard(ws,'sr_2017',('WJets_model','wsr_to_zsr'),['Axial_Mchi1_Mphi1000'])
