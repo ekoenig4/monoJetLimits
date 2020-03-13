@@ -55,7 +55,6 @@ def makeMchiDir(mx,mvlist,yearlist,options,procmap=None):
     cwd = os.getcwd()
     regions = []
     for ch in ('sr','we','wm','ze','zm','ga'):
-        if options.nCR and ch != 'sr': continue
         for year in yearlist:
             regions.append('%s_%s' % (ch,year))
     mxdir = 'Mchi_%s' % mx
