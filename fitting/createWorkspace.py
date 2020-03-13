@@ -23,7 +23,7 @@ def getFractionalShift(norm,up,dn):
     return sh
 
 class BinList:
-    def __init__(self,procname,sysdir,var,setConst=False):
+    def __init__(self,procname,sysdir,var,setConst=True):
         self.procname = procname
         self.sysdir = sysdir
         self.sysdir.cd()
@@ -47,7 +47,9 @@ class BinList:
         ws.Import(self.p_bkg_norm,RooFit.RecycleConflictNodes())
         
 class ConnectedBinList(BinList):
-    def __init__(self,procname,sysdir,var,tf_proc,tf_channel):
+    def power_syst(syst,norm,i): return "(TMath::Power(1+%f/%f,@%i))" % (syst,norm,i)
+    def linear_syst(syst,norm,i): return "(1 + (%f * @%i) / %f)" % (syst,i,norm)
+    def __init__(self,procname,sysdir,var,tf_proc,tf_channel,syst_function=linear_syst):
         self.tf_proc = tf_channel.bkgmap[ tf_proc[procname] ]
         self.tfname = tf_proc[id]
         self.procname = procname
@@ -79,9 +81,9 @@ class ConnectedBinList(BinList):
             j = -1
             for j,syst in enumerate(self.systs.values()):
                 formula_binlist.add( syst[RooRealVar] )
-                den += '*(TMath::Power(1+%f,@%i))'%(syst[TH1F].GetBinContent(i),j+2)
+                den += "*" + syst_function(syst[TH1F].GetBinContent(i),bin_ratio,j+2)
             statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),i),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),i),0.,-5.,5.)
-            den += "*(TMath::Power(1+%f,@%i))"%(self.bkg_tf.GetBinError(i)/bin_ratio,j+3)
+            den += "*" + syst_function(self.bkg_tf.GetBinError(i),bin_ratio,j+3)
             self.statstore.append(statvar)
             formula_binlist.add(statvar)
             
