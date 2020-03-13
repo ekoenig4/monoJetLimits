@@ -48,10 +48,10 @@ def AddProc(card,proc,isSignal,nuisances=["JES","JER"],):
   if isSignal:
     for pattern,alt in signalmap.iteritems():
       if pattern.match(proc): proc = alt
-    card.addSignal(proc,shape="w:%s" % procname)
+    card.addSignal(proc,shape=procname)
   else:
     rate = 1 if procname in card.pdfs else -1
-    card.addBkg(proc,shape="w:%s" % procname,rate=rate)
+    card.addBkg(proc,shape=procname,rate=rate)
   
   Add_lnN(card,proc,isSignal)
   Add_Shape(card,proc,nuisances)
@@ -66,7 +66,7 @@ def MakeCard(ws,ch,tf=None,signal=[]):
   ch_card.vars = getVars(ws,ch,tf)
   ch_card.pdfs = getPDFs(ws,ch)
 
-  ch_card.setObservation(shape='w:data_obs_%s'%ch)
+  ch_card.setObservation(shape='data_obs_%s'%ch)
   for proc in proclist: AddProc(ch_card,proc,proc in signal)
   AddTF(ch_card,tf)
   ch_card.write()
