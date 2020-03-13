@@ -26,19 +26,25 @@ def channel_order(ch1,ch2):
 
 def runFit(args):
     if os.path.isfile('fitDiagnostics_fit_CRonly_result.root') and not args.reset: return
+    verbose = ["-v",str(args.verbose)]
     channels = [ card.replace('datacard_','') for card in os.listdir('../') if 'datacard' in card ]
     channels.sort(channel_order)
     sr_channel = [ channel for channel in channels if 'sr' in channel ]
     combine_cards = ['combineCards.py'] + ['%s=../datacard_%s' % (channel,channel) for channel in channels] + ['>','datacard']
-    text2workspace = ['text2workspace.py','datacard','--channel-masks']
-    cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--robustFit 1"]
+    text2workspace = ['text2workspace.py','datacard','--channel-masks','-m 1000']
+    cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-m","1000","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--robustFit 1"]
     cr_only_fit += ["--setParameters",','.join(['mask_%s=1' % channel for channel in sr_channel])]
+    cr_only_fit += ["--ignoreCovWarning","--cminDefaultMinimizerStrategy 0"] + verbose
+    diffNuisances = ["python","%s/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py"%os.getenv("CMSSW_BASE"),"fitDiagnostics_fit_CRonly_result.root","-g","diffNuisances_result.root"]
     with open('run_cr_only_fit.sh','w') as f:
         f.write("#!/bin/sh\n")
+        f.write("set -e\n")
+        f.write('set -o xtrace\n')
         f.write(' '.join(combine_cards)+'\n')
         f.write(' '.join(text2workspace)+'\n')
         f.write(' '.join(cr_only_fit)+'\n')
-    proc = Popen(['sh','run_cr_only_fit.sh']); proc.wait()
+        f.write(' '.join(diffNuisances)+'\n')
+    proc = Popen(['sh','run_cr_only_fit.sh','|','tee log']); proc.wait()
 ##############################################################################
 def runDirectory(path,args):
     print path
@@ -61,6 +67,7 @@ def getargs():
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
     parser.add_argument("-r","--reset",help='Rerun combine fit diagnositics',action='store_true',default=False)
+    parser.add_argument("-v","--verbose",help="Specify combine verbose level",type=int,default=0)
     try: args = parser.parse_args()
     except:
         parser.print_help()

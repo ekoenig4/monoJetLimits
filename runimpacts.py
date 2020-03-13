@@ -60,19 +60,21 @@ def mvimpacts(path):
     os.chdir(path)
     outdir = outdir_base % info.year
     outname = 'impacts_%s.pdf' % info.sysdir
-    output = '%s/%s/%s/%s' % (outdir,info.variable,info.sysdir,outname)
+    output = '%s/%s/%s/' % (outdir,info.variable,info.sysdir)
     if not os.path.isfile('impacts/impacts.pdf'): return
-    print 'Moving impacts/impacts.pdf to %s' % output
-    copyfile('impacts/impacts.pdf',output)
+    print 'Moving impacts/impacts.pdf to %s/%s' % (output,outname)
+    if not os.path.isdir(output): os.makedirs(output)
+    copyfile('impacts/impacts.pdf',"%s/%s" % (output,outname))
     os.chdir(cwd)
 ##############################################################################
-def runImpacts(path,mx,mv,procmap=None,strength=0.0):
+def runImpacts(path,mx,mv,procmap=None,strength=0.0,verbose=0):
     cwd = os.getcwd()
     os.chdir(path)
     if not os.path.isdir('impacts'): os.mkdir('impacts')
     os.chdir('impacts')
 
     #--- Combine Cards and Mask SR ---#
+    verbose = ["-v",str(verbose)]
     channels = [ card.replace('datacard_','') for card in os.listdir('../') if 'datacard' in card ]
     channels.sort(channel_order)
     sr_channel = [ channel for channel in channels ]
@@ -80,7 +82,7 @@ def runImpacts(path,mx,mv,procmap=None,strength=0.0):
     text2workspace = ['text2workspace.py','datacard','-m',mv,'-o','Mchi%s_Mphi%s.root' % (mx,mv)]
 
     workspace = ["-d",'Mchi%s_Mphi%s.root' % (mx,mv),"-m",mv]
-    common_opts = ["-t -1 --expectSignal=%.1f --parallel=24 --rMin=-1 --autoRange 5 --squareDistPoiStep"%strength]
+    common_opts = ["-t -1 --expectSignal=%.1f --parallel=24 --rMin=-1 --autoRange 5 --squareDistPoiStep --cminDefaultMinimizerStrategy 0"%strength]+verbose
     impacts = ["combineTool.py","-M","Impacts"]
     initial_fit = ["--doInitialFit","--robustFit 1"]
     do_fit = ["--robustFit 1","--doFits"]
@@ -114,9 +116,9 @@ def runParallel(args=None):
     if args is None: args = getargs()
     args.dir = [ path for path in args.dir if not ('nSYS' in path and 'nSTAT' in path) ]
     print 'Running Impacts'
-    mx,mv = args.signal.replace('Mchi',"").replace("Mphi","").split('_')
+    mx,mv = "1","1000"
     procmap = {}
-    for path in args.dir: runImpacts(path,mx,mv,procmap,strength=args.signal)
+    for path in args.dir: runImpacts(path,mx,mv,procmap,verbose=args.verbose)
     printProcs(procmap,'Impacts')
     for path in args.dir: mvimpacts(path)
 ##############################################################################
@@ -124,9 +126,9 @@ def runSerial(args=None):
     if args is None: args = getargs()
     args.dir = [ path for path in args.dir if not ('nSYS' in path and 'nSTAT' in path) ]
     print 'Running Impacts'
-    mx,mv = args.signal.replace('Mchi','').replace('Mphi','').split('_')
+    mx,mv = "1","1000"
     for path in args.dir:
-        # runImpacts(path,mx,mv)
+        runImpacts(path,mx,mv,verbose=args.verbose)
         mvimpacts(path)
 ##############################################################################
 def getargs():
@@ -137,6 +139,7 @@ def getargs():
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
     parser.add_argument("-s","--signal",help='Specify the signal strength',action='store',type=float,default=0.0)
     parser.add_argument("-p","--parallel",help="Run all directories in parallel",action='store_true',default=False)
+    parser.add_argument("-v","--verbose",help="Specify combine verbose level",type=int,default=0)
     
     try: args = parser.parse_args()
     except:
