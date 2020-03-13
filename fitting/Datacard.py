@@ -58,7 +58,7 @@ class Datacard:
             if nuis in process.nuisances: return
         self.nuisances.pop(nuis)
 
-    def write(self,fname=None):
+    def write(self,fname=None,wildcard=True,autostat=False):
         if fname == None: fname = 'datacard_%s' % self.channel
         with open(fname,'w') as card:
             #----Header----#
@@ -68,20 +68,28 @@ class Datacard:
             card.write('-'*self.ndash+'\n')
 
             #----Shape----#
-            def writeShape(process,sys=True):
+            def writeShape(process="*",channel="*",fname=self.ws.fname,shape="$PROCESS_$CHANNEL",sys=True):
+                if type(process) is Process:
+                    return writeShape(process.name,self.channel,fname=process.shape[0],shape=process.shape[1],sys=sys)
                 line = 'shapes '
-                line += "{0:<25}".format(process.name)
-                line += "{0:<10}" .format(self.channel)
-                line += "{0:<25}".format(process.shape[0])
-                line += "{0:<35}".format(process.shape[1])
-                if sys: line += ' '+process.shape[1]+'_$SYSTEMATIC'
+                line += "{0:<25}".format(process)
+                line += "{0:<10}" .format(channel)
+                line += "{0:<25}".format(fname)
+                line += "{0:<35}".format("w:"+shape)
+                if sys: line += ' w:'+shape+'_$SYSTEMATIC'
                 return line + '\n'
-            if self.data_obs.hasShape():
-                card.write( writeShape(self.data_obs,sys=False) )
-            for proc in self.signals + self.bkgs:
-                process = self.processes[proc]
-                if process.hasShape():
-                    card.write( writeShape(process) )
+            if wildcard:
+                card.write(writeShape())
+                for signal in self.signals:
+                    signal = self.processes[signal]
+                    card.write( writeShape(signal.name,shape=signal.shape[1].replace(self.channel,"$CHANNEL")) )
+            else:
+                if self.data_obs.hasShape():
+                    card.write( writeShape(self.data_obs,sys=False) )
+                    for proc in self.signals + self.bkgs:
+                        process = self.processes[proc]
+                        if process.hasShape():
+                            card.write( writeShape(process) )
             card.write('-'*self.ndash+'\n')
 
             #----Observation----#
@@ -116,6 +124,7 @@ class Datacard:
                 card.write(line+'\n')
             card.write('-'*self.ndash+'\n')
 
+            if autostat: card.write("%s autoMCStats 0\n" % self.channel)
             #----Transfer----#
             for transfer in sort_nicely(self.transfers):
                 card.write( '{0:<30}'.format(transfer)+' param 0 1\n')
