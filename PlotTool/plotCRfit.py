@@ -95,7 +95,7 @@ def plotCR(cr,fitfile,info):
   outname = 'fit_CRonly_%s_%s.png' % (cr,info.sysdir)
   outvar = '%s/%s/' % (outdir,info.variable)
   if not os.path.isdir(outvar): os.mkdir(outvar)
-  outsys = '%s/test_%s' % (outvar,info.sysdir)
+  outsys = '%s/%s' % (outvar,info.sysdir)
   if not os.path.isdir(outsys): os.mkdir(outsys)
   output = '%s/%s' % (outsys,outname)
   c.SaveAs(output)
