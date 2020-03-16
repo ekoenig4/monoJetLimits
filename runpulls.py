@@ -28,7 +28,12 @@ def getargs():
     parser = ArgumentParser()
     parser.add_argument("-d","--dir",help="specify directory to run pulls in",nargs='+',action="store",type=str,required=True)
     parser.add_argument("-s","--signal",help="specify signal sample to run pulls on",action="store",type=str,default="Mchi1_Mphi1000")
-    return parser.parse_args()
+    parser.add_argument("-g",help="specify output root file name",type=str,default="diffNuisances_result.root")
+
+    known,unknown = parser.parse_known_args()
+
+    known.diff = unknown
+    return known
 def mvpulls(info):
     outdir = outdir_base % info.year
     outname = 'pulls_%s.pdf' % info.sysdir
@@ -36,9 +41,54 @@ def mvpulls(info):
     if not os.path.isfile('pulls/pulls.pdf'): return
     print 'Moving pulls/pulls.pdf to %s' % output
     copyfile('pulls/pulls.pdf',output)
-def export():
-    from ROOT import TFile
-    TFile.Open("test.root").Get("nuisances").Print("pulls.pdf")
+def export(info,args,npull=15):
+    from ROOT import TFile,gROOT,gStyle,TPad,TCanvas
+    from math import ceil
+    gROOT.SetStyle("Plain")
+    gStyle.SetOptFit(1)
+    gStyle.SetOptStat(0)
+    gROOT.SetBatch(1)
+    
+    outdir = outdir_base % info.year
+    outvar = '%s/%s/' % (outdir,info.variable)
+    if not os.path.isdir(outvar): os.mkdir(outvar)
+    outsys = '%s/%s' % (outvar,info.sysdir)
+    if not os.path.isdir(outsys): os.mkdir(outsys)
+    
+    outname = 'pulls_%s.pdf' % info.variable
+    output = '%s/%s' % (outsys,outname)
+    pulls = TFile.Open(args.g)
+    canvas = pulls.Get("nuisances")
+    objlist = canvas.GetListOfPrimitives()
+    prefit = objlist.At(0).Clone()
+    fit_bg = objlist.At(2).Clone()
+    fit_bs = objlist.At(3).Clone()
+    legend = objlist.At(6).Clone()
+
+    legend.SetX1(0.76)
+    legend.SetX2(0.99)
+
+    npages = int(ceil(float(prefit.GetNbinsX())/npull))
+    for page in range(npages):
+        canvas = TCanvas()
+        canvas.SetBottomMargin(0.15)
+        canvas.SetRightMargin(0.25)
+        canvas.SetGridx()
+        canvas.Draw()
+        xlo = page * npull + 1
+        xhi = page * npull + npull + 1
+        if xhi > prefit.GetNbinsX(): xhi = prefit.GetNbinsX() + 1
+        prefit.GetXaxis().SetRange(xlo,xhi)
+
+        prefit.Draw("E2")
+        prefit.Draw("histsame")
+        fit_bg.Draw("EPsame")
+        fit_bs.Draw("EPsame")
+        legend.Draw()
+
+        if page == 0: canvas.SaveAs(output+"(")
+        elif page+1 == npages: canvas.SaveAs(output+")")
+        else: canvas.SaveAs(output)
 def run(command):
     print command
     Popen(command.split()).wait()
@@ -50,29 +100,21 @@ def runPulls(path,args):
     os.chdir(path)
     cwd = os.getcwd()
     sysdir = next( sub for sub in cwd.split('/') if '.sys' in sub )
-    if not os.path.isdir("pulls"): os.mkdir("pulls")
-    os.chdir("pulls")
-    workspace = "%s_sr.root" % args.signal
-    mx = args.signal.split("_")[0].replace("Mchi","")
-    mv = args.signal.split("_")[1].replace("Mphi","")
+    if not os.path.isdir("cr_fit"):
+        print "Please first run:\n\t ./runCRfit.py -d %s" % path
+        os.chdir(home)
+        return
 
-
+    os.chdir('cr_fit')
     #--- Combine Cards and Mask SR ---#
-    channels = [ card.replace('datacard_','') for card in os.listdir('../') if 'datacard' in card ]
-    channels.sort(channel_order)
-    sr_channel = [ channel for channel in channels if 'sr' in channel ]
-    combine_cards = ['combineCards.py'] + ['%s=../datacard_%s' % (channel,channel) for channel in channels] + ['>','datacard']
-    text2workspace = ['text2workspace.py','datacard','--channel-masks','-m',mv,'-o',workspace]
-    sr_mask = [','.join(['mask_%s=1' % channel for channel in sr_channel])]
+    diffNuisances = ["python","%s/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py"%os.getenv("CMSSW_BASE"),"fitDiagnostics_fit_CRonly_result.root","-g",args.g]
+    diffNuisances += args.diff
     
-    combine = ("combine -M FitDiagnostics -d %s -t -1 " % workspace) + ' '.join(sr_mask)
-    diffNuisances = "python %s/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root -g test.root --abs" % cmssw_base
-    
-    with open('run_pulls.sh','w') as f:
-        f.write('set -o xtrace\n')
-        f.write('\n'.join([combine_cards,text2workspace,combine,diffNuisances]))
-    run("sh run_pulls.sh")
-    export()
+    # with open('run_pulls.sh','w') as f:
+    #     f.write('set -o xtrace\n')
+    #     f.write(' '.join(diffNuisances)+'\n')
+    # run("sh run_pulls.sh")
+    export(info,args)
     os.chdir(cwd)
     mvpulls(info)
     os.chdir(home)

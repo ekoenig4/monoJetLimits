@@ -35,7 +35,6 @@ def runFit(args):
     cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-m","1000","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--robustFit 1"]
     cr_only_fit += ["--setParameters",','.join(['mask_%s=1' % channel for channel in sr_channel])]
     cr_only_fit += ["--ignoreCovWarning","--cminDefaultMinimizerStrategy 0"] + verbose
-    diffNuisances = ["python","%s/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py"%os.getenv("CMSSW_BASE"),"fitDiagnostics_fit_CRonly_result.root","-g","diffNuisances_result.root"]
     with open('run_cr_only_fit.sh','w') as f:
         f.write("#!/bin/sh\n")
         f.write("set -e\n")
@@ -43,7 +42,6 @@ def runFit(args):
         f.write(' '.join(combine_cards)+'\n')
         f.write(' '.join(text2workspace)+'\n')
         f.write(' '.join(cr_only_fit)+'\n')
-        f.write(' '.join(diffNuisances)+'\n')
     proc = Popen(['sh','run_cr_only_fit.sh','|','tee log']); proc.wait()
 ##############################################################################
 def runDirectory(path,args):
