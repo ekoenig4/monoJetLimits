@@ -34,15 +34,15 @@ def getVariations(ch,proc): return [ hist.replace("%s_%s_"%(proc,ch.channel),"")
 def Add_lnN(card,proc,isSignal):
   region,year = card.channel.split("_")
   for lnN in lnNlist:
-    name,value = lnN.get(proc,region,year)
+    name,value = lnN.get(proc.replace("_model",""),region,year)
     if name is None: continue
-    card.addNuisance(proc,name,'lnN',value)
+    card.addNuisance(proc.replace("_model",""),name,'lnN',value)
 def Add_Shape(card,proc,nuisances):
   variations = getVariations(card,proc)
   for nuisance in nuisances:
     if nuisance in variations:
       card.addNuisance(proc,nuisance,'shape',1)
-def AddProc(card,proc,isSignal,nuisances=["JES","JER"],useModel=True):
+def AddProc(card,proc,isSignal,nuisances=[],useModel=True):
   procname = "%s_%s" % (proc,card.channel)
   if not any( procname in hists for hists in (card.hists,card.pdfs) ): return
   hasModel = any( proc in pdf for pdf in card.pdfs )
