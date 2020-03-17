@@ -65,6 +65,8 @@ def export(info,args,npull=15):
     fit_bs = objlist.At(3).Clone()
     legend = objlist.At(6).Clone()
 
+    prefit.GetYaxis().SetRangeUser(-4,4)
+
     legend.SetX1(0.76)
     legend.SetX2(0.99)
 
@@ -76,8 +78,8 @@ def export(info,args,npull=15):
         canvas.SetGridx()
         canvas.Draw()
         xlo = page * npull + 1
-        xhi = page * npull + npull + 1
-        if xhi > prefit.GetNbinsX(): xhi = prefit.GetNbinsX() + 1
+        xhi = page * npull + npull
+        if xhi > prefit.GetNbinsX(): xhi = prefit.GetNbinsX()
         prefit.GetXaxis().SetRange(xlo,xhi)
 
         prefit.Draw("E2")
