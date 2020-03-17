@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from ROOT import *
 from SysFile import *
+from theory_sys import getTFShift
 import os
 import re
 import json
@@ -58,8 +59,10 @@ class ConnectedBinList(BinList):
         "NNLO_Sud":False,
         "NNLO_Miss":False,
         "NNLO_EWK":True,
-        "QCD_EWK_Mix":True
+        "QCD_EWK_Mix":True,
+        "PDF":True
     }
+    
     def power_syst(syst,norm,i): return "(TMath::Power(1+%f/%f,@%i))" % (syst,norm,i)
     def linear_syst(syst,norm,i): return "(1 + (%f * @%i) / %f)" % (syst,i,norm)
     def __init__(self,template,sysdir,var,tf_proc,tf_channel,syst_function=linear_syst):
@@ -72,12 +75,16 @@ class ConnectedBinList(BinList):
         self.var = var
 
         # self.bkg_tf = self.sysdir.Get('transfer/%s'%self.tfname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
-        # template / tf_proc
         self.obs = self.template.obs.Clone("%s_%s_obs"%(self.procname,self.sysdir.GetTitle()))
         self.nuisances = self.template.nuisances
         
-        self.bkg_tf = self.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
-        self.bkg_tf.Divide(self.tf_proc.obs)
+        # template / tf_proc
+        # self.bkg_tf = self.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+        # self.bkg_tf.Divide(self.tf_proc.obs)
+
+        # tf_proc / template
+        self.bkg_tf = self.tf_proc.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+        self.bkg_tf.Divide(self.obs)
         
         self.addSystFromTemplate()
         self.binstore = []
@@ -97,8 +104,8 @@ class ConnectedBinList(BinList):
             
             formula_binlist.add(tfbin)
             formula_binlist.add(nbin)
-            num = "@0" # sr yield
-            den = "@1" # cr/sr yield
+            num = "@0" # tf_proc yield
+            den = "@1" # template/tf_proc yield
             
             j = -1
             for j,syst in enumerate(self.systs.values()):
@@ -109,7 +116,7 @@ class ConnectedBinList(BinList):
             self.statstore.append(statvar)
             formula_binlist.add(statvar)
             
-            formula = "%s*(%s)"%(num,den)
+            formula = "%s/(%s)"%(num,den)
             bin_formula = RooFormulaVar(bin_name,bin_label,formula,formula_binlist)
             self.formulastore.append(bin_formula)
             self.binlist.add(bin_formula)
@@ -127,20 +134,37 @@ class ConnectedBinList(BinList):
             envelope = getFractionalShift(self.bkg_tf,up,dn)
             systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-5.,5.)
             self.systs[syst] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
-    def addSystFromTemplate(self):
+    def addSystFromTemplate(self,fromSys=True):
         self.systs = {}
         if self.tfname not in self.apply_theory: return
-        for nuisance in self.template.nuisances:
+        for nuisance in self.theory_correlation:
             if nuisance not in self.theory_correlation: continue
-            self.addSyst(nuisance,correlated=self.theory_correlation[nuisance])
+            if not fromSys: self.addSyst(nuisance,correlated=self.theory_correlation[nuisance])
+            else: self.addFromSys(nuisance,correlated=self.theory_correlation[nuisance])
+    def addSysShape(self,up,dn):
+        if not validShape(up,dn): return
+        envelope = getFractionalShift(self.bkg_tf,up,dn)
+        systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-5.,5.)
+        self.systs[envelope.GetName()] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
+    def addFromSys(self,syst,correlated=True):
+        # sys directory in the form -> tf_proc / template
+        if correlated:
+            scaleUp,scaleDn = getTFShift(self.tfname,syst)
+            up = self.bkg_tf.Clone("%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst))
+            dn = self.bkg_tf.Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst))
+            up.Multiply(scaleUp); dn.Multiply(scaleDn)
+            self.addSysShape(up,dn)
+        else:
+            for part in self.tfname.split("_to_"):
+                syst_part = syst+'_'+part
+                scaleUp,scaleDn = getTFShift(self.tfname,syst_part)
+                up = self.bkg_tf.Clone("%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst_part))
+                dn = self.bkg_tf.Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst_part))
+                up.Multiply(scaleUp); dn.Multiply(scaleDn)
+                self.addSysShape(up,dn)
     def addSyst(self,syst,correlated=True):
         # template / tf_proc
 
-        def addShape(up,dn):
-            if not validShape(up,dn): return
-            envelope = getFractionalShift(self.bkg_tf,up,dn)
-            systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-5.,5.)
-            self.systs[envelope.GetName()] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
             
         num_syst = self.template.nuisances[syst]
         den_syst = self.tf_proc.nuisances[syst]
@@ -149,20 +173,20 @@ class ConnectedBinList(BinList):
             dn = num_syst['dn'].obs.Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst))
             up.Divide(den_syst['up'].obs)
             dn.Divide(den_syst['dn'].obs)
-            addShape(up,dn)
+            self.addSysShape(up,dn)
         else:
             numvar,denvar = self.tfname.split("_to_")
             numup = num_syst['up'].obs.Clone("%s_%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst,numvar))
             numdn = num_syst['dn'].obs.Clone("%s_%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst,numvar))
             numup.Divide(self.tf_proc.obs)
             numdn.Divide(self.tf_proc.obs)
-            addShape(numup,numdn)
+            self.addSysShape(numup,numdn)
             
             denup = self.obs.Clone("%s_%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst,denvar))
             dendn = self.obs.Clone("%s_%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst,denvar))
             denup.Divide(den_syst['up'].obs)
             dendn.Divide(den_syst['dn'].obs)
-            addShape(denup,dendn)
+            self.addSysShape(denup,dendn)
 class Nuisance:
     def __init__(self,procname,obs,varlist):
         self.procname = procname
