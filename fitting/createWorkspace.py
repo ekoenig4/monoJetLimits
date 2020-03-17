@@ -55,14 +55,14 @@ class ConnectedBinList(BinList):
         "QCD_Scale":True,
         "QCD_Shape":True,
         "QCD_Proc":True,
-        "NNLO_Sud":True,
+        "NNLO_Sud":False,
         "NNLO_Miss":False,
-        "NNLO_EWK":False,
+        "NNLO_EWK":True,
         "QCD_EWK_Mix":True
     }
     def power_syst(syst,norm,i): return "(TMath::Power(1+%f/%f,@%i))" % (syst,norm,i)
     def linear_syst(syst,norm,i): return "(1 + (%f * @%i) / %f)" % (syst,i,norm)
-    def __init__(self,template,sysdir,var,tf_proc,tf_channel,syst_function=power_syst):
+    def __init__(self,template,sysdir,var,tf_proc,tf_channel,syst_function=linear_syst):
         self.tf_proc = tf_channel.bkgmap[ tf_proc[template.procname] + '_model' ]
         self.tfname = tf_proc[id]
         self.template = template
@@ -140,7 +140,7 @@ class ConnectedBinList(BinList):
             if not validShape(up,dn): return
             envelope = getFractionalShift(self.bkg_tf,up,dn)
             systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-5.,5.)
-            self.systs[syst] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
+            self.systs[envelope.GetName()] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
             
         num_syst = self.template.nuisances[syst]
         den_syst = self.tf_proc.nuisances[syst]
