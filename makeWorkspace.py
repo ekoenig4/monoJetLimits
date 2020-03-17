@@ -103,7 +103,7 @@ def yearWorkspace(sysfile,args):
     outfname = 'Limits/%s/workspace_%s.root' % (sysfile.variable.GetTitle(),sysfile.year)
     if isScaled: copyfile('signal_scaling.json','Limits/%s/signal_scaling.json' % sysfile.variable.GetTitle())
     if not os.path.isfile(outfname) or args.reset:
-        createWorkspace(sysfile,outfname=outfname,isScaled=isScaled)
+        return createWorkspace(sysfile,outfname=outfname,isScaled=isScaled)
 ####################
 def makeWorkspace(input,args):
     print "Making Workspace for",input
@@ -112,6 +112,7 @@ def makeWorkspace(input,args):
     sysdir = 'Limits/%s' % sysfile.variable.GetTitle()
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
     ws = yearWorkspace(sysfile,args)
+    sysfile.ws = ws
     sysdir = '%s/%s' % (sysdir,sysfile.GetName().split('/')[-1].replace(".root",""))
     sysfile.sysdir = sysdir
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
@@ -142,6 +143,7 @@ def main():
 
     sysfiles = [ makeWorkspace(input,args) for input in args.input ]
     if args.combined: combineWorkspace(sysfiles,args)
+    return sysfiles
 ####################
-if __name__ == "__main__": main()
+if __name__ == "__main__": a=main()
     
