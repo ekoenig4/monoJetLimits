@@ -6,3 +6,4 @@ cards
 *.root
 nohup.out
 !workspace/*.root
+!fitting/theory_sys/*.root
