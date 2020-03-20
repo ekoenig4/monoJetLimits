@@ -112,10 +112,10 @@ def runPulls(path,args):
     diffNuisances = ["python","%s/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py"%os.getenv("CMSSW_BASE"),"fitDiagnostics_fit_CRonly_result.root","-g",args.g]
     diffNuisances += args.diff
     
-    # with open('run_pulls.sh','w') as f:
-    #     f.write('set -o xtrace\n')
-    #     f.write(' '.join(diffNuisances)+'\n')
-    # run("sh run_pulls.sh")
+    with open('run_pulls.sh','w') as f:
+        f.write('set -o xtrace\n')
+        f.write(' '.join(diffNuisances)+'\n')
+    run("sh run_pulls.sh")
     export(info,args)
     os.chdir(cwd)
     mvpulls(info)
