@@ -111,7 +111,7 @@ class ConnectedBinList(BinList):
             for j,syst in enumerate(self.systs.values()):
                 formula_binlist.add( syst[RooRealVar] )
                 den += "*" + syst_function(syst[TH1F].GetBinContent(i),bin_ratio,j+2)
-            statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-5.,5.)
+            statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-10.,10.)
             den += "*" + syst_function(self.bkg_tf.GetBinError(i),bin_ratio,j+3)
             self.statstore.append(statvar)
             formula_binlist.add(statvar)
@@ -128,11 +128,11 @@ class ConnectedBinList(BinList):
                        if self.tfname in syst.GetName() and 'Up' in syst.GetName() and
                        not any( ignore in syst.GetName() for ignore in skip ) }
         for syst in self.systs.keys():
-            up = self.sysdir.Get("transfer/%s_%sUp"%(self.tfname,syst)).Clone("%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst))
-            dn = self.sysdir.Get("transfer/%s_%sDown"%(self.tfname,syst)).Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst))
+            up = self.sysdir.Get("transfer/%s_%sUp"%(self.tfname,syst)).Clone("%s_%sUp"%(self.tfname,syst))
+            dn = self.sysdir.Get("transfer/%s_%sDown"%(self.tfname,syst)).Clone("%s_%sDown"%(self.tfname,syst))
             if not validShape(up,dn): continue
             envelope = getFractionalShift(self.bkg_tf,up,dn)
-            systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-5.,5.)
+            systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-10.,10.)
             self.systs[syst] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
     def addSystFromTemplate(self,fromSys=True):
         self.systs = {}
@@ -144,22 +144,22 @@ class ConnectedBinList(BinList):
     def addSysShape(self,up,dn):
         if not validShape(up,dn): return
         envelope = getFractionalShift(self.bkg_tf,up,dn)
-        systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-5.,5.)
+        systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-10.,10.)
         self.systs[envelope.GetName()] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
     def addFromSys(self,syst,correlated=True):
         # sys directory in the form -> tf_proc / template
         if correlated:
             scaleUp,scaleDn = getTFShift(self.tfname,syst)
-            up = self.bkg_tf.Clone("%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst))
-            dn = self.bkg_tf.Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst))
+            up = self.bkg_tf.Clone("%s_%sUp"%(self.tfname,syst))
+            dn = self.bkg_tf.Clone("%s_%sDown"%(self.tfname,syst))
             up.Multiply(scaleUp); dn.Multiply(scaleDn)
             self.addSysShape(up,dn)
         else:
             for part in self.tfname.split("_to_"):
                 syst_part = syst+'_'+part
                 scaleUp,scaleDn = getTFShift(self.tfname,syst_part)
-                up = self.bkg_tf.Clone("%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst_part))
-                dn = self.bkg_tf.Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst_part))
+                up = self.bkg_tf.Clone("%s_%sUp"%(self.tfname,syst_part))
+                dn = self.bkg_tf.Clone("%s_%sDown"%(self.tfname,syst_part))
                 up.Multiply(scaleUp); dn.Multiply(scaleDn)
                 self.addSysShape(up,dn)
     def addSyst(self,syst,correlated=True):
@@ -169,21 +169,21 @@ class ConnectedBinList(BinList):
         num_syst = self.template.nuisances[syst]
         den_syst = self.tf_proc.nuisances[syst]
         if correlated:
-            up = num_syst['up'].obs.Clone("%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst))
-            dn = num_syst['dn'].obs.Clone("%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst))
+            up = num_syst['up'].obs.Clone("%s_%sUp"%(self.tfname,syst))
+            dn = num_syst['dn'].obs.Clone("%s_%sDown"%(self.tfname,syst))
             up.Divide(den_syst['up'].obs)
             dn.Divide(den_syst['dn'].obs)
             self.addSysShape(up,dn)
         else:
             numvar,denvar = self.tfname.split("_to_")
-            numup = num_syst['up'].obs.Clone("%s_%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst,numvar))
-            numdn = num_syst['dn'].obs.Clone("%s_%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst,numvar))
+            numup = num_syst['up'].obs.Clone("%s_%s_%sUp"%(self.tfname,syst,numvar))
+            numdn = num_syst['dn'].obs.Clone("%s_%s_%sDown"%(self.tfname,syst,numvar))
             numup.Divide(self.tf_proc.obs)
             numdn.Divide(self.tf_proc.obs)
             self.addSysShape(numup,numdn)
             
-            denup = self.obs.Clone("%s_%s_%s_%sUp"%(self.tfname,self.sysdir.GetTitle(),syst,denvar))
-            dendn = self.obs.Clone("%s_%s_%s_%sDown"%(self.tfname,self.sysdir.GetTitle(),syst,denvar))
+            denup = self.obs.Clone("%s_%s_%sUp"%(self.tfname,syst,denvar))
+            dendn = self.obs.Clone("%s_%s_%sDown"%(self.tfname,syst,denvar))
             denup.Divide(den_syst['up'].obs)
             dendn.Divide(den_syst['dn'].obs)
             self.addSysShape(denup,dendn)
