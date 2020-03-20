@@ -300,7 +300,7 @@ def createWorkspace(sysfile,outfname='workspace.root',isScaled=True):
     return ws
     
 if __name__ == "__main__":
-    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/ZprimeLimits/Systematics/2017/recoil_2017.sys.root")
+    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Systematics/2017/recoil_2017.sys.root")
     output = TFile("workspace.root","recreate")
     ws = Workspace("w","w")
 
