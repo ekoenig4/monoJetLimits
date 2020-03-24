@@ -4,6 +4,9 @@ import re
 
 gROOT.SetBatch(1)
 
+var = 'recoil'
+# var = 'met_monojet_2017'
+
 def iterset(rooset):
     iter = rooset.createIterator()
     object = iter.Next()
@@ -33,23 +36,30 @@ def plotVar(pdf,var,nuisance):
         wildcard = nuisance.GetName().replace(wildcard,'bin\d+')
         nuisances = [ nuisance for nuisance in iterset(pdf.getVariables())
                       if re.match(wildcard,nuisance.GetName())]
-    print name
+        nuisances.sort(key=lambda r:r.GetName())
     for nuisance in nuisances:
         nuisance.setVal(0)
         nuisance.Print()
-    print
     
     nominal = pdf.createHistogram(name,var)
+    evalNo = pdf.getValV()
 
-    for nuisance in nuisances: nuisance.setVal(1)
+    for nuisance in nuisances:
+        nuisance.setVal(1)
     shiftUp = pdf.createHistogram(name+"shiftUp",var)
-
-    for nuisance in nuisances: nuisance.setVal(-1)
-    shiftDn = pdf.createHistogram(name+"shiftDn",var)
+    evalUp = pdf.getValV()/evalNo
     
+    for nuisance in nuisances:
+        nuisance.setVal(-1)
+    shiftDn = pdf.createHistogram(name+"shiftDn",var)
+    evalDn = pdf.getValV()/evalNo
+
+    print "--Integral: %f * (%f/%f)" % (evalNo,evalUp,evalDn)
+    print
     shiftUp.Divide(nominal)
     shiftDn.Divide(nominal)
     nominal.Divide(nominal)
+
     
     shiftUp.SetLineColor(kRed)
     shiftDn.SetLineColor(kBlue)
@@ -67,6 +77,7 @@ def plotVar(pdf,var,nuisance):
     shiftDn.Draw("histsame")
     nominal.GetYaxis().SetRangeUser(ymin - diff,ymax + diff)
     canvas.Write()
+    for nuisance in nuisances: nuisance.setVal(0.)
 def plotPDF(pdf,var,output):
     pdf.Print()
     output.cd()
@@ -77,10 +88,8 @@ def plotPDF(pdf,var,output):
 if __name__ == "__main__":
     tfile = TFile(argv[1])
     ws = tfile.Get("w")
-
+    var = ws.var(var)
     output = TFile(argv[2],"recreate")
-    var = ws.var('recoil')
-    # var = ws.var('met_monojet_2017')
     
     bkg_pdfs = ws.allPdfs().selectByName("shapeBkg*")
     bkg_pdfs = selectRooParametricHist(bkg_pdfs)

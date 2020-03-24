@@ -26,30 +26,32 @@ procmap = {
 }
 
 nuisancemap = {
-  "WJets_model_sr_%s_Runc":"monojet_%s_stat_error_wzCR",
-  "wsr_to_zsr_sr_%s_NNLO_Miss_zsr":"nnlomissZ",
-  "wsr_to_zsr_sr_%s_NNLO_Miss_wsr":"nnlomissW",
-  "wsr_to_zsr_sr_%s_NNLO_Sud_zsr":"sudakovZ",
-  "wsr_to_zsr_sr_%s_NNLO_Sud_wsr":"sudakovW",
-  "wsr_to_zsr_sr_%s_NNLO_EWK":"wewk",
-  "wsr_to_zsr_sr_%s_QCD_Proc":"wqcdprocess",
-  "wsr_to_zsr_sr_%s_QCD_Scale":"wqcd",
-  "wsr_to_zsr_sr_%s_QCD_Shape":"wqcdshape",
-  "wsr_to_zsr_sr_%s_PDF":"wpdf",
-  "WJets_model_we_%s_Runc":"monojet_%s_stat_error_singleelectronCR",
-  "WJets_model_wm_%s_Runc":"monojet_%s_stat_error_singlemuonCR",
-  "DYJets_model_ze_%s_Runc":"monojet_%s_stat_error_dielectronCR",
-  "DYJets_model_zm_%s_Runc":"monojet_%s_stat_error_dimuonCR",
-  "GJets_model_ga_%s_Runc":"monojet_%s_stat_error_photonCR",
-  "ga_to_sr_ga_%s_NNLO_Miss_sr":"nnlomissZ",
-  "ga_to_sr_ga_%s_NNLO_Miss_ga":"nnlomissG",
-  "ga_to_sr_ga_%s_NNLO_Sud_sr":"sudakovZ",
-  "ga_to_sr_ga_%s_NNLO_Sud_ga":"sudakovG",
-  "ga_to_sr_ga_%s_NNLO_EWK":"ewk",
-  "ga_to_sr_ga_%s_QCD_Proc":"qcdprocess",
-  "ga_to_sr_ga_%s_QCD_Scale":"qcd",
-  "ga_to_sr_ga_%s_QCD_Shape":"qcdshape",
-  "ga_to_sr_ga_%s_PDF":"pdf",
+  "WJets_model_sr_%s_stat":"monojet_%s_stat_error_wzCR",
+  "wsr_to_zsr_NNLO_Miss_zsr":"nnlomissZ",
+  "wsr_to_zsr_NNLO_Miss_wsr":"nnlomissW",
+  "wsr_to_zsr_NNLO_Sud_zsr":"sudakovZ",
+  "wsr_to_zsr_NNLO_Sud_wsr":"sudakovW",
+  "wsr_to_zsr_NNLO_EWK":"wewk",
+  "wsr_to_zsr_QCD_Proc":"wqcdprocess",
+  "wsr_to_zsr_QCD_Scale":"wqcd",
+  "wsr_to_zsr_QCD_Shape":"wqcdshape",
+  "wsr_to_zsr_PDF":"wpdf",
+  "wsr_to_zsr_QCD_EWK_Mix":"wcross",
+  "WJets_model_we_%s_stat":"monojet_%s_stat_error_singleelectronCR",
+  "WJets_model_wm_%s_stat":"monojet_%s_stat_error_singlemuonCR",
+  "DYJets_model_ze_%s_stat":"monojet_%s_stat_error_dielectronCR",
+  "DYJets_model_zm_%s_stat":"monojet_%s_stat_error_dimuonCR",
+  "GJets_model_ga_%s_stat":"monojet_%s_stat_error_photonCR",
+  "ga_to_sr_NNLO_Miss_sr":"nnlomissZ",
+  "ga_to_sr_NNLO_Miss_ga":"nnlomissG",
+  "ga_to_sr_NNLO_Sud_sr":"sudakovZ",
+  "ga_to_sr_NNLO_Sud_ga":"sudakovG",
+  "ga_to_sr_NNLO_EWK":"ewk",
+  "ga_to_sr_QCD_Proc":"qcdprocess",
+  "ga_to_sr_QCD_Scale":"qcd",
+  "ga_to_sr_QCD_Shape":"qcdshape",
+  "ga_to_sr_PDF":"pdf",
+  "ga_to_sr_QCD_EWK_Mix":"cross",
 }
 
 prefit_color = kOrange+8
@@ -129,7 +131,8 @@ def compareProcess(process,uw,bu):
 
   year = re.findall('\d\d\d\d',uw_proc)[0]
   for uw_key,bu_key in nuisancemap.iteritems():
-      uwkey = uw_key % year
+      uwkey = uw_key
+      if '%' in uwkey: uwkey = uw_key % year
       bukey = bu_key
       if '%' in bukey: bukey = bu_key % year
       if uwkey in keylist:
