@@ -62,6 +62,7 @@ def getShift(norm,up,dn,reciprocal=False):
     return sh
 
 class BinList:
+    store = []
     def __init__(self,template,sysdir,var,setConst=False):
         self.template = template
         self.procname = template.procname + '_model'
@@ -71,7 +72,6 @@ class BinList:
         # self.obs = self.sysdir.Get(self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
         self.obs = self.template.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
         self.nuisances = self.template.nuisances
-        self.binstore = []
         self.binlist = RooArgList()
         for i in irange(1,self.obs.GetNbinsX()):
             bin_name = "%s_%s_bin_%i" % (self.procname,self.sysdir.GetTitle(),i-1)
@@ -81,8 +81,8 @@ class BinList:
             else:
                 nbin = RooRealVar(bin_name,bin_label,bin_yield,0.,2*bin_yield)
                 nbin.removeMax()
-            self.binstore.append(nbin)
             self.binlist.add(nbin)
+            self.store.append(nbin)
         self.p_bkg = RooParametricHist(self.obs.GetName(),"%s PDF in %s"%(self.procname,self.sysdir.GetTitle()),self.var,self.binlist,self.obs)
         self.p_bkg_norm = RooAddition("%s_norm"%self.obs.GetName(),"%s total events in %s"%(self.procname,self.sysdir.GetTitle()),self.binlist)
     def Export(self,ws):
@@ -101,13 +101,13 @@ class ConnectedBinList(BinList):
         "QCD_EWK_Mix":True,
         "PDF":True
     }
-    
-    def power_syst(n,nominal,first,second=0): return "(TMath::Power(1+{first}/{nominal},@{n}))".format(**vars())
+    store = []
+    def power_syst(n,nominal,first,second=0): return "(TMath::Power(1+{first},@{n}))".format(**vars())
     def linear_syst(n,nominal,first,second=0):
         if second == 0:
             return "(1 + ({first}*@{n})/{nominal})".format(**vars())
         return "(1 + ({second}*@{n}*@{n}+{first}*@{n})/{nominal})".format(**vars())
-    def __init__(self,template,sysdir,var,tf_proc,tf_channel,syst_function=linear_syst):
+    def __init__(self,template,sysdir,var,tf_proc,tf_channel):
         self.tf_proc = tf_channel.bkgmap[ tf_proc[template.procname] + '_model' ]
         self.tfname = tf_proc[id]
         self.template = template
@@ -128,11 +128,9 @@ class ConnectedBinList(BinList):
         self.bkg_tf_re = self.tf_proc.obs.Clone("%s_%s_re"%(self.procname,self.sysdir.GetTitle()))
         self.bkg_tf_re.Divide(self.obs)
         
-        self.addSystFromTemplate()
-        self.binstore = []
-        self.formulastore = []
-        self.statstore = []
         self.binlist = RooArgList()
+        
+        self.addSystFromTemplate()
         for i in irange(1,self.bkg_tf.GetNbinsX()):
             ibin = i-1
             bin_name = "%s_bin%i" % (self.bkg_tf.GetName(),ibin)
@@ -142,28 +140,37 @@ class ConnectedBinList(BinList):
             formula_binlist = RooArgList()
             tfbin = self.tf_proc.binlist[i-1]
             nbin = RooRealVar("r_"+bin_name,bin_label,bin_ratio)
-            self.binstore.append(nbin)
+            self.store.append(nbin)
             
             formula_binlist.add(tfbin)
             formula_binlist.add(nbin)
             num = "@0" # tf_proc yield
-            den = "@1" # template/tf_proc yield
+            den = "@1" # template/tf_proc yield            
             
             j = -1
             for j,syst in enumerate(self.systs.values()):
-                formula_binlist.add( syst[RooRealVar] )
-                den += "*" + syst_function(j+2,bin_ratio,syst["first"][i],syst["second"][i])
-            statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-4.,4.)
-            den += "*" + syst_function(j+3,bin_ratio,self.bkg_tf.GetBinError(i))
-            self.statstore.append(statvar)
-            formula_binlist.add(statvar)
+                systform = self.getSystFormula(bin_ratio,syst["envelope"][i],syst[RooRealVar],nbin=ibin)
+                formula_binlist.add( systform )
+                den += "*@%i" % (j+2)
+            statvar = RooRealVar("%s_stat_bin%i" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-4.,4.)
+            self.store.append(statvar)
+            statform = self.getSystFormula(bin_ratio,self.bkg_tf.GetBinError(i)/bin_ratio,statvar)
+            formula_binlist.add(statform)
+            den += "*@%i" % (j+3)
             
             formula = "%s * (%s)"%(num,den)
             bin_formula = RooFormulaVar(bin_name,bin_label,formula,formula_binlist)
-            self.formulastore.append(bin_formula)
             self.binlist.add(bin_formula)
+            self.store.append(bin_formula)
         self.p_bkg = RooParametricHist(self.bkg_tf.GetName(),"%s PDF in %s"%(self.procname,self.sysdir.GetTitle()),self.var,self.binlist,self.bkg_tf)
         self.p_bkg_norm = RooAddition("%s_norm"%self.bkg_tf.GetName(),"%s total events in %s"%(self.procname,self.sysdir.GetTitle()),self.binlist)
+    def getSystFormula(self,nominal,systval,systvar,nbin=None,syst_function=power_syst):
+        equation = syst_function(0,nominal,systval)
+        name = "func_"+systvar.GetName()
+        if nbin is not None: name += "_bin%i" % nbin
+        formula = RooFormulaVar(name,"Function "+systvar.GetTitle(),equation,RooArgList(systvar))
+        self.store.append(formula)
+        return formula
     def addSystFromFile(self,skip=["Stat","Total"]):
         self.systs = { syst.GetName().replace(self.tfname+'_',"").replace("Up",""):None
                        for syst in self.sysdir.GetDirectory("transfer").GetListOfKeys()

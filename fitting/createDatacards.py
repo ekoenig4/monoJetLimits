@@ -28,7 +28,8 @@ def getHists(ws,ch):
 def getVars(ws,ch,tf):
   if tf is None: return []
   wsvars = ws.allVars()
-  return [ var.GetName() for var in iter_collection(wsvars) if ch in var.GetName() and any(re.match('^'+t,var.GetName()) for t in tf) ]
+  varlist = [ var.GetName() for var in iter_collection(wsvars) if any(re.match('^'+t,var.GetName()) for t in tf) ]
+  return varlist
 def getVariations(ch,proc): return [ hist.replace("%s_%s_"%(proc,ch.channel),"").replace("Up","") for hist in ch.hists if re.match('^'+proc,hist) and 'Up' in hist ]
 
 def Add_lnN(card,proc,isSignal):
@@ -70,7 +71,7 @@ def MakeCard(ws,ch,tf=None,signal=[],useModel=True):
   ch_card.hists = getHists(ws,ch)
   ch_card.vars = getVars(ws,ch,tf)
   ch_card.pdfs = getPDFs(ws,ch)
-
+  
   ch_card.setObservation(shape='data_obs_%s'%ch)
   for proc in proclist: AddProc(ch_card,proc,proc in signal,useModel=useModel)
   AddTF(ch_card,tf,useModel)
