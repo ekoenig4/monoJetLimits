@@ -12,18 +12,21 @@ def irange(lo,hi): return range(lo,hi+1)
 def validHisto(hs,total=0,threshold=0.2): return hs.Integral() > threshold*total
 def validShape(up,dn): return any( up[ibin] != dn[ibin] for ibin in range(1,up.GetNbinsX()+1) ) and validHisto(up) and validHisto(dn)
 
-def getReciprocal(value):
-    if value == 0: return 0
-    return 1/value
-
+def getReciprocal(histo):
+    reciprocal = histo.Clone( histo.GetName() + "_reciprocal" )
+    reciprocal.Divide(histo);
+    reciprocal.Divide(histo);
+    return reciprocal
 def getFractionalShift(norm,up,dn,reciprocal=False):
     sh = up.Clone( up.GetName().replace('Up','') ); sh.Reset()
+
+    if reciprocal:
+        up = getReciprocal(up)
+        dn = getReciprocal(dn)
     for ibin in irange(1,sh.GetNbinsX()):
         if norm[ibin] != 0:
-            vup = up[ibin] if not reciprocal else getReciprocal(up[ibin])
-            vdn = dn[ibin] if not reciprocal else getReciprocal(dn[ibin])
-            upshift = vup/norm[ibin] - 1.
-            dnshift = vup/norm[ibin] - 1.
+            upshift = up[ibin]/norm[ibin] - 1.
+            dnshift = dn[ibin]/norm[ibin] - 1.
             shiftEnvelope = max( abs(upshift),abs(dnshift) )
         else: shiftEnvelope = 0
         sh[ibin] = shiftEnvelope
@@ -31,12 +34,14 @@ def getFractionalShift(norm,up,dn,reciprocal=False):
 
 def getAverageShift(norm,up,dn,reciprocal=False):
     sh = up.Clone( up.GetName().replace('Up','Avg') ); sh.Reset()
+
+    if reciprocal:
+        up = getReciprocal(up)
+        dn = getReciprocal(dn)
     for ibin in irange(1,sh.GetNbinsX()):
         if norm[ibin] != 0:
-            vup = up[ibin] if not reciprocal else getReciprocal(up[ibin])
-            vdn = dn[ibin] if not reciprocal else getReciprocal(dn[ibin])
-            upshift = vup - norm[ibin]
-            dnshift = vup - norm[ibin]
+            upshift = up[ibin] - norm[ibin]
+            dnshift = dn[ibin] - norm[ibin]
             shiftEnvelope = 0.5 * (upshift + dnshift)
         else: shiftEnvelope = 0
         sh[ibin] = shiftEnvelope
@@ -44,12 +49,13 @@ def getAverageShift(norm,up,dn,reciprocal=False):
 
 def getShift(norm,up,dn,reciprocal=False):
     sh = up.Clone( up.GetName().replace('Up','Shift') ); sh.Reset()
+    if reciprocal:
+        up = getReciprocal(up)
+        dn = getReciprocal(dn)
     for ibin in irange(1,sh.GetNbinsX()):
         if norm[ibin] != 0:
-            vup = up[ibin] if not reciprocal else getReciprocal(up[ibin])
-            vdn = dn[ibin] if not reciprocal else getReciprocal(dn[ibin])
-            upshift = vup - norm[ibin]
-            dnshift = vdn - norm[ibin]
+            upshift = up[ibin] - norm[ibin]
+            dnshift = dn[ibin] - norm[ibin]
             shiftEnvelope = 0.5 * (upshift - dnshift)
         else: shiftEnvelope = 0
         sh[ibin] = shiftEnvelope
@@ -97,7 +103,10 @@ class ConnectedBinList(BinList):
     }
     
     def power_syst(n,nominal,first,second=0): return "(TMath::Power(1+{first}/{nominal},@{n}))".format(**vars())
-    def linear_syst(n,nominal,first,second=0): return "(1 + ({second}*@{n}*@{n}+{first}*@{n})/{nominal}".format(**vars())
+    def linear_syst(n,nominal,first,second=0):
+        if second == 0:
+            return "(1 + ({first}*@{n})/{nominal})".format(**vars())
+        return "(1 + ({second}*@{n}*@{n}+{first}*@{n})/{nominal})".format(**vars())
     def __init__(self,template,sysdir,var,tf_proc,tf_channel,syst_function=linear_syst):
         self.tf_proc = tf_channel.bkgmap[ tf_proc[template.procname] + '_model' ]
         self.tfname = tf_proc[id]
@@ -115,9 +124,9 @@ class ConnectedBinList(BinList):
         self.bkg_tf = self.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
         self.bkg_tf.Divide(self.tf_proc.obs)
 
-        # tf_proc / template
-        # self.bkg_tf = self.tf_proc.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
-        # self.bkg_tf.Divide(self.obs)
+        # tf_proc / template: used to get the uncertainties
+        self.bkg_tf_re = self.tf_proc.obs.Clone("%s_%s_re"%(self.procname,self.sysdir.GetTitle()))
+        self.bkg_tf_re.Divide(self.obs)
         
         self.addSystFromTemplate()
         self.binstore = []
@@ -143,9 +152,9 @@ class ConnectedBinList(BinList):
             j = -1
             for j,syst in enumerate(self.systs.values()):
                 formula_binlist.add( syst[RooRealVar] )
-                den += "*" + syst_function(j+2,bin_ratio,syst["first"][ibin],syst["second"][ibin])
+                den += "*" + syst_function(j+2,bin_ratio,syst["first"][i],syst["second"][i])
             statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-4.,4.)
-            den += "*" + syst_function(self.bkg_tf.GetBinError(i),bin_ratio,j+3)
+            den += "*" + syst_function(j+3,bin_ratio,self.bkg_tf.GetBinError(i))
             self.statstore.append(statvar)
             formula_binlist.add(statvar)
             
@@ -176,25 +185,25 @@ class ConnectedBinList(BinList):
             else: self.addFromSys(nuisance,correlated=self.theory_correlation[nuisance])
     def addSysShape(self,up,dn,reciprocal=True):
         if not validShape(up,dn): return
-        fractional_envelope = getFractionalShift(self.bkg_tf,up,dn,reciprocal)
+        envelope = getFractionalShift(self.bkg_tf,up,dn,reciprocal)
         average_envelope = getAverageShift(self.bkg_tf,up,dn,reciprocal)
         shift_envelope = getShift(self.bkg_tf,up,dn,reciprocal)
         systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-4.,4.)
-        self.systs[envelope.GetName()] = {RooRealVar:systvar,"envelope":fractional_envelope,"first":shift_envelope,"second":average_envelope}
+        self.systs[envelope.GetName()] = {RooRealVar:systvar,"envelope":envelope,"first":shift_envelope,"second":average_envelope}
     def addFromSys(self,syst,correlated=True):
         # sys directory in the form -> tf_proc / template
         if correlated:
             scaleUp,scaleDn = getTFShift(self.tfname,syst)
-            up = self.bkg_tf.Clone("%s_%sUp"%(self.tfname,syst))
-            dn = self.bkg_tf.Clone("%s_%sDown"%(self.tfname,syst))
+            up = self.bkg_tf_re.Clone("%s_%sUp"%(self.tfname,syst))
+            dn = self.bkg_tf_re.Clone("%s_%sDown"%(self.tfname,syst))
             up.Multiply(scaleUp); dn.Multiply(scaleDn)
             self.addSysShape(up,dn)
         else:
             for part in self.tfname.split("_to_"):
                 syst_part = syst+'_'+part
                 scaleUp,scaleDn = getTFShift(self.tfname,syst_part)
-                up = self.bkg_tf.Clone("%s_%sUp"%(self.tfname,syst_part))
-                dn = self.bkg_tf.Clone("%s_%sDown"%(self.tfname,syst_part))
+                up = self.bkg_tf_re.Clone("%s_%sUp"%(self.tfname,syst_part))
+                dn = self.bkg_tf_re.Clone("%s_%sDown"%(self.tfname,syst_part))
                 up.Multiply(scaleUp); dn.Multiply(scaleDn)
                 self.addSysShape(up,dn)
     def addSyst(self,syst,correlated=True):
