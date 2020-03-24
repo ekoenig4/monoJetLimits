@@ -17,7 +17,7 @@ class lnN:
 lnNlist = [
     lnN("QCD_NormEleR",{"we":{"QCD":1.75}}),
     lnN("QCD_NormMuonR",{"wm":{"QCD":1.75}}),
-    lnN("QCD_NormPurity",{"ga":{"QCD":1.25}}),
+    # lnN("QCD_NormPurity",{"ga":{"QCD":1.25}}),
     lnN("QCD_NormSignal",{"sr":{"QCD":1.75}}),
     lnN("lumi_13TeV_%s",{
         "2017":{
@@ -110,6 +110,7 @@ lnNlist = [
     lnN("gjet_Norm13TeV",{"we":{"GJets":1.2}}),
     lnN("top_Norm13TeV",{("ze","zm","sr","we","wm"):{"TTJets":1.1}}),
     lnN("top_Reweight13TeV",{("ze","zm","sr","we","wm"):{"TTJets":1.1}}),
+    lnN("vv_Norm13TeV",{("ze","zm","sr","we","wm"):{"DiBoson":1.2}}),
     lnN("zll_Norm13TeV",{("we","wm"):{"DYJets":1.2}})
 ]
 

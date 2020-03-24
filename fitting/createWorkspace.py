@@ -12,19 +12,51 @@ def irange(lo,hi): return range(lo,hi+1)
 def validHisto(hs,total=0,threshold=0.2): return hs.Integral() > threshold*total
 def validShape(up,dn): return any( up[ibin] != dn[ibin] for ibin in range(1,up.GetNbinsX()+1) ) and validHisto(up) and validHisto(dn)
 
-def getFractionalShift(norm,up,dn):
+def getReciprocal(value):
+    if value == 0: return 0
+    return 1/value
+
+def getFractionalShift(norm,up,dn,reciprocal=False):
     sh = up.Clone( up.GetName().replace('Up','') ); sh.Reset()
     for ibin in irange(1,sh.GetNbinsX()):
         if norm[ibin] != 0:
-            upshift = up[ibin]/norm[ibin] - 1.
-            dnshift = dn[ibin]/norm[ibin] - 1.
+            vup = up[ibin] if not reciprocal else getReciprocal(up[ibin])
+            vdn = dn[ibin] if not reciprocal else getReciprocal(dn[ibin])
+            upshift = vup/norm[ibin] - 1.
+            dnshift = vup/norm[ibin] - 1.
             shiftEnvelope = max( abs(upshift),abs(dnshift) )
         else: shiftEnvelope = 0
         sh[ibin] = shiftEnvelope
     return sh
 
+def getAverageShift(norm,up,dn,reciprocal=False):
+    sh = up.Clone( up.GetName().replace('Up','Avg') ); sh.Reset()
+    for ibin in irange(1,sh.GetNbinsX()):
+        if norm[ibin] != 0:
+            vup = up[ibin] if not reciprocal else getReciprocal(up[ibin])
+            vdn = dn[ibin] if not reciprocal else getReciprocal(dn[ibin])
+            upshift = vup - norm[ibin]
+            dnshift = vup - norm[ibin]
+            shiftEnvelope = 0.5 * (upshift + dnshift)
+        else: shiftEnvelope = 0
+        sh[ibin] = shiftEnvelope
+    return sh
+
+def getShift(norm,up,dn,reciprocal=False):
+    sh = up.Clone( up.GetName().replace('Up','Shift') ); sh.Reset()
+    for ibin in irange(1,sh.GetNbinsX()):
+        if norm[ibin] != 0:
+            vup = up[ibin] if not reciprocal else getReciprocal(up[ibin])
+            vdn = dn[ibin] if not reciprocal else getReciprocal(dn[ibin])
+            upshift = vup - norm[ibin]
+            dnshift = vdn - norm[ibin]
+            shiftEnvelope = 0.5 * (upshift - dnshift)
+        else: shiftEnvelope = 0
+        sh[ibin] = shiftEnvelope
+    return sh
+
 class BinList:
-    def __init__(self,template,sysdir,var,setConst=True):
+    def __init__(self,template,sysdir,var,setConst=False):
         self.template = template
         self.procname = template.procname + '_model'
         self.sysdir = sysdir
@@ -33,15 +65,16 @@ class BinList:
         # self.obs = self.sysdir.Get(self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
         self.obs = self.template.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
         self.nuisances = self.template.nuisances
-        self.max_yield = self.obs.GetMaximum() * 2
         self.binstore = []
         self.binlist = RooArgList()
         for i in irange(1,self.obs.GetNbinsX()):
-            bin_name = "%s_%s_bin%i" % (self.procname,self.sysdir.GetTitle(),i)
-            bin_label = "%s Yield in %s, bin %i" % (self.procname,self.sysdir.GetTitle(),i)
+            bin_name = "%s_%s_bin_%i" % (self.procname,self.sysdir.GetTitle(),i-1)
+            bin_label = "%s Yield in %s, bin %i" % (self.procname,self.sysdir.GetTitle(),i-1)
             bin_yield = self.obs.GetBinContent(i)
             if setConst: nbin = RooRealVar(bin_name,bin_label,bin_yield)
-            else:        nbin = RooRealVar(bin_name,bin_label,bin_yield,0.,self.max_yield)
+            else:
+                nbin = RooRealVar(bin_name,bin_label,bin_yield,0.,2*bin_yield)
+                nbin.removeMax()
             self.binstore.append(nbin)
             self.binlist.add(nbin)
         self.p_bkg = RooParametricHist(self.obs.GetName(),"%s PDF in %s"%(self.procname,self.sysdir.GetTitle()),self.var,self.binlist,self.obs)
@@ -63,8 +96,8 @@ class ConnectedBinList(BinList):
         "PDF":True
     }
     
-    def power_syst(syst,norm,i): return "(TMath::Power(1+%f/%f,@%i))" % (syst,norm,i)
-    def linear_syst(syst,norm,i): return "(1 + (%f * @%i) / %f)" % (syst,i,norm)
+    def power_syst(n,nominal,first,second=0): return "(TMath::Power(1+{first}/{nominal},@{n}))".format(**vars())
+    def linear_syst(n,nominal,first,second=0): return "(1 + ({second}*@{n}*@{n}+{first}*@{n})/{nominal}".format(**vars())
     def __init__(self,template,sysdir,var,tf_proc,tf_channel,syst_function=linear_syst):
         self.tf_proc = tf_channel.bkgmap[ tf_proc[template.procname] + '_model' ]
         self.tfname = tf_proc[id]
@@ -79,12 +112,12 @@ class ConnectedBinList(BinList):
         self.nuisances = self.template.nuisances
         
         # template / tf_proc
-        # self.bkg_tf = self.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
-        # self.bkg_tf.Divide(self.tf_proc.obs)
+        self.bkg_tf = self.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+        self.bkg_tf.Divide(self.tf_proc.obs)
 
         # tf_proc / template
-        self.bkg_tf = self.tf_proc.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
-        self.bkg_tf.Divide(self.obs)
+        # self.bkg_tf = self.tf_proc.obs.Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+        # self.bkg_tf.Divide(self.obs)
         
         self.addSystFromTemplate()
         self.binstore = []
@@ -110,13 +143,13 @@ class ConnectedBinList(BinList):
             j = -1
             for j,syst in enumerate(self.systs.values()):
                 formula_binlist.add( syst[RooRealVar] )
-                den += "*" + syst_function(syst[TH1F].GetBinContent(i),bin_ratio,j+2)
-            statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-10.,10.)
+                den += "*" + syst_function(j+2,bin_ratio,syst["first"][ibin],syst["second"][ibin])
+            statvar = RooRealVar("%s_bin%i_Runc" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-4.,4.)
             den += "*" + syst_function(self.bkg_tf.GetBinError(i),bin_ratio,j+3)
             self.statstore.append(statvar)
             formula_binlist.add(statvar)
             
-            formula = "%s/(%s)"%(num,den)
+            formula = "%s * (%s)"%(num,den)
             bin_formula = RooFormulaVar(bin_name,bin_label,formula,formula_binlist)
             self.formulastore.append(bin_formula)
             self.binlist.add(bin_formula)
@@ -132,7 +165,7 @@ class ConnectedBinList(BinList):
             dn = self.sysdir.Get("transfer/%s_%sDown"%(self.tfname,syst)).Clone("%s_%sDown"%(self.tfname,syst))
             if not validShape(up,dn): continue
             envelope = getFractionalShift(self.bkg_tf,up,dn)
-            systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-10.,10.)
+            systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-4.,4.)
             self.systs[syst] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
     def addSystFromTemplate(self,fromSys=True):
         self.systs = {}
@@ -141,11 +174,13 @@ class ConnectedBinList(BinList):
             if nuisance not in self.theory_correlation: continue
             if not fromSys: self.addSyst(nuisance,correlated=self.theory_correlation[nuisance])
             else: self.addFromSys(nuisance,correlated=self.theory_correlation[nuisance])
-    def addSysShape(self,up,dn):
+    def addSysShape(self,up,dn,reciprocal=True):
         if not validShape(up,dn): return
-        envelope = getFractionalShift(self.bkg_tf,up,dn)
-        systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-10.,10.)
-        self.systs[envelope.GetName()] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
+        fractional_envelope = getFractionalShift(self.bkg_tf,up,dn,reciprocal)
+        average_envelope = getAverageShift(self.bkg_tf,up,dn,reciprocal)
+        shift_envelope = getShift(self.bkg_tf,up,dn,reciprocal)
+        systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-4.,4.)
+        self.systs[envelope.GetName()] = {RooRealVar:systvar,"envelope":fractional_envelope,"first":shift_envelope,"second":average_envelope}
     def addFromSys(self,syst,correlated=True):
         # sys directory in the form -> tf_proc / template
         if correlated:
