@@ -171,18 +171,6 @@ class ConnectedBinList(BinList):
         formula = RooFormulaVar(name,"Function "+systvar.GetTitle(),equation,RooArgList(systvar))
         self.store.append(formula)
         return formula
-    def addSystFromFile(self,skip=["Stat","Total"]):
-        self.systs = { syst.GetName().replace(self.tfname+'_',"").replace("Up",""):None
-                       for syst in self.sysdir.GetDirectory("transfer").GetListOfKeys()
-                       if self.tfname in syst.GetName() and 'Up' in syst.GetName() and
-                       not any( ignore in syst.GetName() for ignore in skip ) }
-        for syst in self.systs.keys():
-            up = self.sysdir.Get("transfer/%s_%sUp"%(self.tfname,syst)).Clone("%s_%sUp"%(self.tfname,syst))
-            dn = self.sysdir.Get("transfer/%s_%sDown"%(self.tfname,syst)).Clone("%s_%sDown"%(self.tfname,syst))
-            if not validShape(up,dn): continue
-            envelope = getFractionalShift(self.bkg_tf,up,dn)
-            systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-4.,4.)
-            self.systs[syst] = {RooRealVar:systvar,TH1F:envelope,'store':[]}
     def addSystFromTemplate(self,fromSys=True):
         self.systs = {}
         if self.tfname not in self.apply_theory: return
@@ -277,27 +265,27 @@ class Channel:
     majormap = {
         "sr":"ZJets" # Need to generate binlist for sr zjets so that it can be used in other connected bin lists
     }
-    def __init__(self,sysfile,sysdir,signals=[],tf_proc={},tf_channel=None):
+    def __init__(self,syscat,sysdir,signals=[],tf_proc={},tf_channel=None):
         if any(tf_proc) and tf_channel is None: tf_channel = self
         self.bkglist = ["ZJets","DYJets","WJets","GJets","QCD","DiBoson","TTJets"]
-        self.sysfile = sysfile
-        self.sysdir = sysfile.GetDirectory(sysdir)
+        self.syscat = syscat
+        self.sysdir = syscat.GetRegion(sysdir)
         self.sysdir.keylist = [ key.GetName() for key in self.sysdir.GetListOfKeys() ]
         self.sysdir.cd()
 
-        self.data = Template('data_obs',self.sysdir,self.sysfile.varlist)
+        self.data = Template('data_obs',self.sysdir,self.syscat.varlist)
         self.bkgmap = {}
         for bkg in list(self.bkglist):
-            self.bkgmap[bkg] = Template(bkg,self.sysdir,self.sysfile.varlist)
+            self.bkgmap[bkg] = Template(bkg,self.sysdir,self.syscat.varlist)
             if bkg in tf_proc:
-                self.bkgmap[bkg+'_model'] = ConnectedBinList(self.bkgmap[bkg],self.sysdir,self.sysfile.var,tf_proc,tf_channel)
+                self.bkgmap[bkg+'_model'] = ConnectedBinList(self.bkgmap[bkg],self.sysdir,self.syscat.var,tf_proc,tf_channel)
                 self.bkglist.append(bkg+'_model')
             elif self.sysdir.GetName() in self.majormap and bkg == self.majormap[self.sysdir.GetName()]:
-                self.bkgmap[bkg+'_model'] = BinList(self.bkgmap[bkg],self.sysdir,self.sysfile.var)
+                self.bkgmap[bkg+'_model'] = BinList(self.bkgmap[bkg],self.sysdir,self.syscat.var)
                 self.bkglist.append(bkg+'_model')
         if not any(signals): return
         self.signals = list(signals)
-        self.signalmap = { signal:Template(signal,self.sysdir,self.sysfile.varlist) for signal in signals }
+        self.signalmap = { signal:Template(signal,self.sysdir,self.syscat.varlist) for signal in signals }
     def Export(self,ws):
         self.data.Export(ws)
         for bkg in self.bkglist: self.bkgmap[bkg].Export(ws)
@@ -308,62 +296,66 @@ class Workspace(RooWorkspace):
     def __init__(self,*args,**kwargs):
         RooWorkspace.__init__(self,*args,**kwargs)
         self.Import = getattr(self,'import')
-    def SignalRegion(self,sysfile,signals):
-        sysfile.sr = Channel(sysfile,'sr',signals,tf_proc={"WJets":"ZJets",id:"wsr_to_zsr"})
-        sysfile.sr.Export(self)
-    def SingleEleCR(self,sysfile):
-        sysfile.we = Channel(sysfile,'we',tf_proc={"WJets":"WJets",id:"we_to_sr"},tf_channel=sysfile.sr)
-        sysfile.we.Export(self)
-    def SingleMuCR(self,sysfile):
-        sysfile.wm = Channel(sysfile,'wm',tf_proc={"WJets":"WJets",id:"wm_to_sr"},tf_channel=sysfile.sr)
-        sysfile.wm.Export(self)
-    def DoubleEleCR(self,sysfile):
-        sysfile.ze = Channel(sysfile,'ze',tf_proc={"DYJets":"ZJets",id:"ze_to_sr"},tf_channel=sysfile.sr)
-        sysfile.ze.Export(self)
-    def DoubleMuCR(self,sysfile):
-        sysfile.zm = Channel(sysfile,'zm',tf_proc={"DYJets":"ZJets",id:"zm_to_sr"},tf_channel=sysfile.sr)
-        sysfile.zm.Export(self)
-    def GammaCR(self,sysfile):
-        sysfile.ga = Channel(sysfile,'ga',tf_proc={"GJets":"ZJets",id:"ga_to_sr"},tf_channel=sysfile.sr)
-        sysfile.ga.Export(self)
-    def MetaData(self,sysfile,metadata=['lumi','year','variable']):
-        for meta in metadata:
-            hs_meta = sysfile.Get(meta)
-            hs_meta.Write()
-def createWorkspace(sysfile,outfname='workspace.root',isScaled=True):
-    if type(sysfile) is str: sysfile = SysFile(sysfile)
+    def SignalRegion(self,syscat,signals):
+        syscat.sr = Channel(syscat,'sr',signals,tf_proc={"WJets":"ZJets",id:"wsr_to_zsr"})
+        syscat.sr.Export(self)
+    def SingleEleCR(self,syscat):
+        syscat.we = Channel(syscat,'we',tf_proc={"WJets":"WJets",id:"we_to_sr"},tf_channel=syscat.sr)
+        syscat.we.Export(self)
+    def SingleMuCR(self,syscat):
+        syscat.wm = Channel(syscat,'wm',tf_proc={"WJets":"WJets",id:"wm_to_sr"},tf_channel=syscat.sr)
+        syscat.wm.Export(self)
+    def DoubleEleCR(self,syscat):
+        syscat.ze = Channel(syscat,'ze',tf_proc={"DYJets":"ZJets",id:"ze_to_sr"},tf_channel=syscat.sr)
+        syscat.ze.Export(self)
+    def DoubleMuCR(self,syscat):
+        syscat.zm = Channel(syscat,'zm',tf_proc={"DYJets":"ZJets",id:"zm_to_sr"},tf_channel=syscat.sr)
+        syscat.zm.Export(self)
+    def GammaCR(self,syscat):
+        syscat.ga = Channel(syscat,'ga',tf_proc={"GJets":"ZJets",id:"ga_to_sr"},tf_channel=syscat.sr)
+        syscat.ga.Export(self)
+    def MetaData(self,syscat):
+        h_lumi = TH1F("lumi","lumi",1,0,1)
+        h_lumi.SetBinContent(1,float(syscat.lumi))
+        h_lumi.Write()
+        h_year = TH1F("year","year",1,0,1)
+        h_year.SetBinContent(1,float(syscat.year))
+        h_year.Write()
+        syscat.var.Write()
+def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
 
     output = TFile(outfname,"recreate")
     ws = Workspace("w","w")
 
-    signals = ['Axial_Mchi1_Mphi1000']
-    ws.SignalRegion(sysfile,signals)
-    ws.SingleEleCR(sysfile)
-    ws.SingleMuCR(sysfile)
-    ws.DoubleEleCR(sysfile)
-    ws.DoubleMuCR(sysfile)
-    ws.GammaCR(sysfile)
+    signals = ['axial']
+    ws.SignalRegion(syscat,signals)
+    ws.SingleEleCR(syscat)
+    ws.SingleMuCR(syscat)
+    ws.DoubleEleCR(syscat)
+    ws.DoubleMuCR(syscat)
+    ws.GammaCR(syscat)
 
     output.cd()
-    ws.MetaData(sysfile)
+    ws.MetaData(syscat)
     ws.Write()
-    sysfile.ws = ws
+    syscat.ws = ws
     return ws
     
 if __name__ == "__main__":
-    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Systematics/2017/recoil_2017.sys.root")
+    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Systematics/monojet_recoil.sys.root")
+    syscat = sysfile.categories["category_monojet_2017"]
     output = TFile("workspace.root","recreate")
     ws = Workspace("w","w")
 
-    signals = ['Axial_Mchi1_Mphi1000']
-    ws.SignalRegion(sysfile,signals)
-    ws.SingleEleCR(sysfile)
-    ws.SingleMuCR(sysfile)
-    ws.DoubleEleCR(sysfile)
-    ws.DoubleMuCR(sysfile)
-    ws.GammaCR(sysfile)
+    signals = ['axial']
+    ws.SignalRegion(syscat,signals)
+    ws.SingleEleCR(syscat)
+    ws.SingleMuCR(syscat)
+    ws.DoubleEleCR(syscat)
+    ws.DoubleMuCR(syscat)
+    ws.GammaCR(syscat)
 
     output.cd()
-    ws.MetaData(sysfile)
+    ws.MetaData(syscat)
     ws.Write()
     

@@ -78,17 +78,9 @@ def makeMchiDir(mx,mvlist,yearlist,options,procmap=None):
     os.chdir(cwd)
 #####
 def getargs():
-    def sysfile(arg):
-        tfile = TFile.Open(arg)
-        valid = True
-        if tfile.IsZombie(): raise ValueError()
-        validdir = ['sr','we','ze','wm','zm']
-        for dir in validdir:
-            if tfile.GetDirectory(dir) != None: return arg
-        raise ValueError()
     
     parser = ArgumentParser(description='Make workspace for generating limits based on input systematics file')
-    parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",nargs="+",type=sysfile,default=None,required=True)
+    parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",default=None,required=True)
     parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
     parser.add_argument('--combined',help='Create combined limit cards',action='store_true',default=False)
     try: args = parser.parse_args()
@@ -98,52 +90,53 @@ def getargs():
         exit()
     return args
 #####
-def yearWorkspace(sysfile,args):
+def yearWorkspace(syscat,args):
     isScaled = os.path.isfile('signal_scaling.json')
-    outfname = 'Limits/%s/workspace_%s.root' % (sysfile.variable.GetTitle(),sysfile.year)
-    if isScaled: copyfile('signal_scaling.json','Limits/%s/signal_scaling.json' % sysfile.variable.GetTitle())
+    outfname = 'Limits/%s/workspace_%s.root' % (syscat.var.GetTitle(),syscat.year)
+    if isScaled: copyfile('signal_scaling.json','Limits/%s/signal_scaling.json' % syscat.var.GetTitle())
     if not os.path.isfile(outfname) or args.reset:
-        return createWorkspace(sysfile,outfname=outfname,isScaled=isScaled)
+        return createWorkspace(syscat,outfname=outfname,isScaled=isScaled)
 ####################
-def makeWorkspace(input,args):
-    print "Making Workspace for",input
+def makeWorkspace(syscat,args):
+    print "Making Workspace for",syscat.GetName()
     cwd = os.getcwd()
-    sysfile = SysFile(os.path.abspath(input))
-    sysdir = 'Limits/%s' % sysfile.variable.GetTitle()
+    sysdir = 'Limits/%s' % syscat.var.GetTitle()
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
-    ws = yearWorkspace(sysfile,args)
-    sysfile.ws = ws
-    sysdir = '%s/%s' % (sysdir,sysfile.GetName().split('/')[-1].replace(".root",""))
-    sysfile.sysdir = sysdir
+    ws = yearWorkspace(syscat,args)
+    syscat.ws = ws
+    sysdir = '%s/%s' % (sysdir,syscat.GetName().split('/')[-1].replace(".root",""))
+    syscat.sysdir = sysdir
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
     os.chdir(sysdir)
-    createDatacards('../workspace_%s.root' % sysfile.year,sysfile.year)
-    for mx,mvlist in sysfile.getSignalList().items(): makeMchiDir(mx,mvlist,[sysfile.year],args)
+    createDatacards('../workspace_%s.root' % syscat.year,syscat.year)
+    # for mx,mvlist in syscat.getSignalList().items(): makeMchiDir(mx,mvlist,[syscat.year],args)
     os.chdir(cwd)
-    return sysfile
+    return syscat
 ####################
-def combineWorkspace(sysfiles,args):
+def combineWorkspace(syscats,args):
     print "Making Combined Workspace"
     cwd = os.getcwd()
-    sysdir = sysfiles[0].sysdir.replace("%s.sys"%sysfiles[0].year,"Run2.sys")
+    sysdir = syscats[0].sysdir.replace("%s.sys"%syscats[0].year,"Run2.sys")
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
-    for sysfile in sysfiles:
-        for datacard in os.listdir(sysfile.sysdir):
+    for syscat in syscats:
+        for datacard in os.listdir(syscat.sysdir):
             if "datacard" in datacard:
-                print "Copying %s/%s" %(sysfile.sysdir,datacard)
-                copyfile("%s/%s"%(sysfile.sysdir,datacard),"%s/%s"%(sysdir,datacard))
+                print "Copying %s/%s" %(syscat.sysdir,datacard)
+                copyfile("%s/%s"%(syscat.sysdir,datacard),"%s/%s"%(sysdir,datacard))
     os.chdir(sysdir)
-    signalist = sysfile.getSignalList()
-    for mx,mvlist in signalist.items(): makeMchiDir(mx,mvlist,[ sysfile.year for sysfile in sysfiles ],args)
+    # signalist = syscat.getSignalList()
+    # for mx,mvlist in signalist.items(): makeMchiDir(mx,mvlist,[ syscat.year for syscat in syscats ],args)
     os.chdir(cwd)
 ####################
 def main():
     if not os.path.isdir('Limits/'): os.mkdir('Limits/')
     args = getargs()
 
-    sysfiles = [ makeWorkspace(input,args) for input in args.input ]
-    if args.combined: combineWorkspace(sysfiles,args)
-    return sysfiles
+    sysfile = SysFile(args.input)
+    for category in sysfile.categories.values(): makeWorkspace(category,args)
+    if args.combined:
+        combineWorkspace(sysfile.categories.values(),args)
+    return sysfile
 ####################
 if __name__ == "__main__": a=main()
     
