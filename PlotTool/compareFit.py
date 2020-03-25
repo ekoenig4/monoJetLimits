@@ -86,7 +86,7 @@ def compareFit(cr,uw_fit,bu_fit,info):
   outdir = outdir_base % info.year
   outname = 'fit_compare_%s_%s.png' % (cr,info.sysdir)
   outvar = '%s/%s/' % (outdir,info.variable)
-  outsys = '%s/%s_OldSetup/BU_Comparison/' % (outvar,info.sysdir)
+  outsys = '%s/%s/BU_Comparison/' % (outvar,info.sysdir)
   if not os.path.isdir(outsys): os.makedirs(outsys)
   output = '%s/%s' % (outsys,outname)
   c.SaveAs(output)
