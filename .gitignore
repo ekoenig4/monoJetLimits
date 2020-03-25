@@ -5,5 +5,5 @@ cards
 *.pyc
 *.root
 nohup.out
-!workspace/*.root
+workspace/
 !fitting/theory_sys/*.root
