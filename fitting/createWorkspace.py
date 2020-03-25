@@ -271,7 +271,7 @@ class Channel:
         self.syscat = syscat
         self.sysdir = syscat.GetRegion(sysdir)
         self.sysdir.keylist = [ key.GetName() for key in self.sysdir.GetListOfKeys() ]
-        self.sysdir.cd()
+        # self.sysdir.cd()
 
         self.data = Template('data_obs',self.sysdir,self.syscat.varlist)
         self.bkgmap = {}
@@ -321,7 +321,7 @@ class Workspace(RooWorkspace):
         h_year = TH1F("year","year",1,0,1)
         h_year.SetBinContent(1,float(syscat.year))
         h_year.Write()
-        syscat.var.Write()
+        syscat.var.Write('variable')
 def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
 
     output = TFile(outfname,"recreate")
