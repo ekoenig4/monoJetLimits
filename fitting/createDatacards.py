@@ -7,8 +7,8 @@ import re
 import os
 
 datadriven=['ZJets','WJets','DYJets','GJets']
-signal = ['Axial_Mchi1_Mphi1000']
-signalmap = {re.compile(r"Axial_Mchi\d+_Mphi\d+"):"axial"}
+signal = ['axial']
+signalmap = {re.compile(r"axial"):"axial"}
 
 def loop_iterator(iterator):
   object = iterator.Next()
