@@ -4,6 +4,13 @@ from central_signal import central_signal
 import re
 from array import array
 
+def setiter(rooset):
+    iterator = rooset.createIterator()
+    object = iterator.Next()
+    while object:
+        yield object
+        object = iterator.Next()
+
 def checkdir(dir):
     if not os.path.isdir(dir):
         print 'Making %s' % dir
