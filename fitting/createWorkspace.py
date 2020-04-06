@@ -90,16 +90,58 @@ class BinList:
         ws.Import(self.p_bkg_norm,RooFit.RecycleConflictNodes())
 
 class ConnectedBinList(BinList):
-    apply_theory = ("wsr_to_zsr","ga_to_sr")
-    theory_correlation = {
-        "QCD_Scale":True,
-        "QCD_Shape":True,
-        "QCD_Proc":True,
-        "NNLO_Sud":False,
-        "NNLO_Miss":False,
-        "NNLO_EWK":True,
-        "QCD_EWK_Mix":True,
-        "PDF":True
+    theorymap = {
+            "QCD_Scale":True,
+            "QCD_Shape":True,
+            "QCD_Proc":True,
+            "NNLO_Sud":False,
+            "NNLO_Miss":False,
+            "NNLO_EWK":True,
+            "QCD_EWK_Mix":True,
+            "PDF":True
+        }
+    nuismap = {
+        "wsr_to_zsr":{
+            "QCD_Scale":True,
+            "QCD_Shape":True,
+            "QCD_Proc":True,
+            "NNLO_Sud":False,
+            "NNLO_Miss":False,
+            "NNLO_EWK":True,
+            "QCD_EWK_Mix":True,
+            "PDF":True
+        },
+        "ga_to_sr":{
+            "QCD_Scale":True,
+            "QCD_Shape":True,
+            "QCD_Proc":True,
+            "NNLO_Sud":False,
+            "NNLO_Miss":False,
+            "NNLO_EWK":True,
+            "QCD_EWK_Mix":True,
+            "PDF":True,
+            "mettrig":True
+        },
+        "ze_to_sr":{
+            "mettrig":True
+        },
+        "zm_to_sr":{
+            "mettrig":True
+        },
+        "we_to_sr":{
+            "mettrig":True,
+            "eleveto":True,
+            "muveto":True,
+            "tauveto":True,
+            "PDF":True
+        },
+        "wm_to_sr":{
+            "mettrig":True,
+            "eleveto":True,
+            "muveto":True,
+            "tauveto":True,
+            "PDF":True
+        }
     }
     store = []
     def power_syst(n,nominal,first,second=0): return "(TMath::Power(1+{first},@{n}))".format(**vars())
@@ -114,6 +156,7 @@ class ConnectedBinList(BinList):
         self.procname = self.template.procname + '_model'
         self.sysdir = sysdir
         self.sysdir.cd()
+        self.year = self.sysdir.GetTitle().split("_")[1]
         self.var = var
 
         # self.bkg_tf = self.sysdir.Get('transfer/%s'%self.tfname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
@@ -138,27 +181,30 @@ class ConnectedBinList(BinList):
             bin_ratio = self.bkg_tf.GetBinContent(i)
 
             formula_binlist = RooArgList()
+            formula_tf = RooArgList()
             tfbin = self.tf_proc.binlist[i-1]
             nbin = RooRealVar("r_"+bin_name,bin_label,bin_ratio)
             self.store.append(nbin)
             
             formula_binlist.add(tfbin)
-            formula_binlist.add(nbin)
-            num = "@0" # tf_proc yield
-            den = "@1" # template/tf_proc yield            
             
-            j = -1
+            formula_tf.add(nbin)
+            tf_form = [nbin] # template/tf_proc yield            
+            
             for j,syst in enumerate(self.systs.values()):
                 systform = self.getSystFormula(bin_ratio,syst["envelope"][i],syst[RooRealVar],nbin=ibin)
-                formula_binlist.add( systform )
-                den += "*@%i" % (j+2)
+                formula_tf.add( systform )
+                tf_form.append(systform)
             statvar = RooRealVar("%s_stat_bin%i" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-4.,4.)
             self.store.append(statvar)
             statform = self.getSystFormula(bin_ratio,self.bkg_tf.GetBinError(i)/bin_ratio,statvar)
-            formula_binlist.add(statform)
-            den += "*@%i" % (j+3)
-            
-            formula = "%s * (%s)"%(num,den)
+            formula_tf.add(statform)
+            tf_form.append(statform)
+            tf_form = "*".join( "@%i"%i for i in range(len(tf_form)) )
+            tf_formula = RooFormulaVar("func_"+nbin.GetName(),"Function "+nbin.GetTitle(),tf_form,formula_tf)
+            self.store.append(tf_formula)
+            formula_binlist.add(tf_formula)
+            formula = "@0*@1"
             bin_formula = RooFormulaVar(bin_name,bin_label,formula,formula_binlist)
             self.binlist.add(bin_formula)
             self.store.append(bin_formula)
@@ -173,11 +219,11 @@ class ConnectedBinList(BinList):
         return formula
     def addSystFromTemplate(self,fromSys=True):
         self.systs = {}
-        if self.tfname not in self.apply_theory: return
-        for nuisance in self.theory_correlation:
-            if nuisance not in self.theory_correlation: continue
-            if not fromSys: self.addSyst(nuisance,correlated=self.theory_correlation[nuisance])
-            else: self.addFromSys(nuisance,correlated=self.theory_correlation[nuisance])
+        if self.tfname not in self.nuismap: return
+        nuismap = self.nuismap[self.tfname]
+        for nuisance in nuismap:
+            if not fromSys: self.addSyst(nuisance,correlated=nuismap[nuisance])
+            else: self.addFromSys(nuisance,correlated=nuismap[nuisance])
     def addSysShape(self,up,dn,reciprocal=True):
         if not validShape(up,dn): return
         envelope = getFractionalShift(self.bkg_tf,up,dn,reciprocal)
@@ -187,18 +233,22 @@ class ConnectedBinList(BinList):
         self.systs[envelope.GetName()] = {RooRealVar:systvar,"envelope":envelope,"first":shift_envelope,"second":average_envelope}
     def addFromSys(self,syst,correlated=True):
         # sys directory in the form -> tf_proc / template
+        if syst in self.theorymap:
+            systname ="%s_%s"%(self.tfname,syst)
+        else:
+            systname ="%s_%s_%s"%(self.tfname,self.year,syst)
         if correlated:
             scaleUp,scaleDn = getTFShift(self.tfname,syst)
-            up = self.bkg_tf_re.Clone("%s_%sUp"%(self.tfname,syst))
-            dn = self.bkg_tf_re.Clone("%s_%sDown"%(self.tfname,syst))
+            up = self.bkg_tf_re.Clone("%sUp"%(systname))
+            dn = self.bkg_tf_re.Clone("%sDown"%(systname))
             up.Multiply(scaleUp); dn.Multiply(scaleDn)
             self.addSysShape(up,dn)
         else:
             for part in self.tfname.split("_to_"):
                 syst_part = syst+'_'+part
                 scaleUp,scaleDn = getTFShift(self.tfname,syst_part)
-                up = self.bkg_tf_re.Clone("%s_%sUp"%(self.tfname,syst_part))
-                dn = self.bkg_tf_re.Clone("%s_%sDown"%(self.tfname,syst_part))
+                up = self.bkg_tf_re.Clone("%s_%sUp"%(systname,part))
+                dn = self.bkg_tf_re.Clone("%s_%sDown"%(systname,part))
                 up.Multiply(scaleUp); dn.Multiply(scaleDn)
                 self.addSysShape(up,dn)
     def addSyst(self,syst,correlated=True):
@@ -207,22 +257,26 @@ class ConnectedBinList(BinList):
             
         num_syst = self.template.nuisances[syst]
         den_syst = self.tf_proc.nuisances[syst]
+        if syst in self.theorymap:
+            systname ="%s_%s"%(self.tfname,syst)
+        else:
+            systname ="%s_%s_%s"%(self.tfname,self.year,syst)
         if correlated:
-            up = num_syst['up'].obs.Clone("%s_%sUp"%(self.tfname,syst))
-            dn = num_syst['dn'].obs.Clone("%s_%sDown"%(self.tfname,syst))
+            up = num_syst['up'].obs.Clone("%sUp"%systname)
+            dn = num_syst['dn'].obs.Clone("%sDown"%systname)
             up.Divide(den_syst['up'].obs)
             dn.Divide(den_syst['dn'].obs)
             self.addSysShape(up,dn)
         else:
             numvar,denvar = self.tfname.split("_to_")
-            numup = num_syst['up'].obs.Clone("%s_%s_%sUp"%(self.tfname,syst,numvar))
-            numdn = num_syst['dn'].obs.Clone("%s_%s_%sDown"%(self.tfname,syst,numvar))
+            numup = num_syst['up'].obs.Clone("%s_%sUp"%(systname,numvar))
+            numdn = num_syst['dn'].obs.Clone("%s_%sDown"%(systname,numvar))
             numup.Divide(self.tf_proc.obs)
             numdn.Divide(self.tf_proc.obs)
             self.addSysShape(numup,numdn)
             
-            denup = self.obs.Clone("%s_%s_%sUp"%(self.tfname,syst,denvar))
-            dendn = self.obs.Clone("%s_%s_%sDown"%(self.tfname,syst,denvar))
+            denup = self.obs.Clone("%s_%sUp"%(systname,denvar))
+            dendn = self.obs.Clone("%s_%sDown"%(systname,denvar))
             denup.Divide(den_syst['up'].obs)
             dendn.Divide(den_syst['dn'].obs)
             self.addSysShape(denup,dendn)
