@@ -90,14 +90,11 @@ def plotCR(cr,fitfile,info):
   sigma_pull.GetXaxis().SetTitle( xname )
   
   ##############################
-  
-  outdir = outdir_base % info.year
+
   outname = 'fit_CRonly_%s_%s.png' % (cr,info.sysdir)
-  outvar = '%s/%s/' % (outdir,info.variable)
-  if not os.path.isdir(outvar): os.mkdir(outvar)
-  outsys = '%s/%s' % (outvar,info.sysdir)
-  if not os.path.isdir(outsys): os.mkdir(outsys)
-  output = '%s/%s' % (outsys,outname)
+  output = info.getOutputDir(outdir_base)
+  if not os.path.isdir(output): os.makedirs(output)
+  output = '%s/%s' % (output,outname)
   c.SaveAs(output)
 def plotCRFit(path):
   global regionmap

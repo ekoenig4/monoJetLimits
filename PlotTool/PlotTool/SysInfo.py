@@ -10,7 +10,9 @@ class SysInfo:
         year = re.findall('\d\d\d\d',inputdir)
         if not any(year): year = 'Run2'
         else: year = year[0]
-        sysdir = next( sub for sub in inputdir.split('/') if '.sys' in sub )
+        path = inputdir.split('/')
+        sysdir = next( sub for sub in path if '.sys' in sub )
+        label = next( path[i] for i in range(len(path)) if sysdir == path[i+1] )
         if year is not 'Run2': wsfiles = [TFile.Open('../workspace_%s.root' % year)]
         else: wsfiles = [ TFile.Open('../%s'%fname) for fname in os.listdir("../") if "workspace" in fname ]
         self.lumi = sum( wsfile.Get('lumi').Integral() for wsfile in wsfiles )
@@ -20,6 +22,7 @@ class SysInfo:
         self.cut = sysdir.split("_")[0].replace(self.variable,'')
         self.mods = sysdir.split("_")[-1].replace('.sys','')
         self.sysdir = sysdir.replace('.sys','').replace('_%s' % self.year,'')
+        self.label = label
         os.chdir(home)
     def __str__(self):
         string  = 'Directory: %s\n' % self.cwd
@@ -30,3 +33,7 @@ class SysInfo:
         string += 'cut:       %s\n' % self.cut
         string += 'mods:      %s\n' % self.mods
         return string
+    def getOutputDir(self,outdir_base):
+        outdir = outdir_base % self.year
+        output = '%s/%s/%s/' % (outdir,self.variable,self.label)
+        return output
