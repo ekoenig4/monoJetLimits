@@ -294,8 +294,15 @@ class Template:
         self.sysdir = sysdir
         self.sysdir.cd()
         self.varlist = varlist
-
-        self.obs = self.sysdir.Get(self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+        
+        if not self.sysdir.Get(self.procname):
+            # If process cant be found, assume zero yield
+            self.obs= self.sysdir.Get("data_obs").Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+            self.obs.Reset()
+            # Apparently combine doesnt like zero yield 
+            self.obs.SetBinContent(1,0.001)
+        else:
+            self.obs = self.sysdir.Get(self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
         self.hist = RooDataHist(self.obs.GetName(),"%s Observed"%self.obs.GetName(),self.varlist,self.obs)
 
         if 'Up' in self.procname or 'Down' in self.procname: return
@@ -382,6 +389,7 @@ def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
     ws = Workspace("w","w")
 
     signals = ['axial']
+    signals = ["ggh","vbf","wh","zh"]
     ws.SignalRegion(syscat,signals)
     ws.SingleEleCR(syscat)
     ws.SingleMuCR(syscat)

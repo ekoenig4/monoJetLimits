@@ -3,7 +3,7 @@ from ROOT import *
 gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
 dirmap = {"sr":"signal","ze":"Zee","zm":"Zmm","we":"Wen","wm":"Wmn","ga":"gjets"}
-procmap = {"data":"data_obs","zjets":"ZJets","wjets":"WJets","zll":"DYJets","gjets":"GJets","top":"TTJets","diboson":"DiBoson","qcd":"QCD","axial":"axial"}
+procmap = {"data":"data_obs","zjets":"ZJets","wjets":"WJets","zll":"DYJets","gjets":"GJets","top":"TTJets","diboson":"DiBoson","qcd":"QCD","axial":"axial","ggh":"ggh","vbf":"vbf","wh":"wh","zh":"zh"}
 
 yearlist = ["2016","2017","2018"]
 lumimap = {"2016":35900,"2017":41486,"2018":59699}

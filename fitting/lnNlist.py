@@ -17,13 +17,13 @@ class lnN:
 lnNlist = [
     lnN("QCD_NormEleR",{"we":{"QCD":1.75}}),
     lnN("QCD_NormMuonR",{"wm":{"QCD":1.75}}),
-    # lnN("QCD_NormPurity",{"ga":{"QCD":1.25}}),
+    lnN("QCD_NormPurity",{"ga":{"QCD":1.25}}),
     lnN("QCD_NormSignal",{"sr":{"QCD":1.75}}),
     lnN("lumi_13TeV_%s",{
         "2017":{
             "ze":{("TTJets","DiBoson"):1.025},
             "zm":{("TTJets","DiBoson"):1.025},
-            "sr":{("DiBoson","TTJets","QCD","axial"):1.025},
+            "sr":{("DiBoson","TTJets","QCD","axial","ggh","vbf","zh","wh"):1.025},
             "we":{("GJets","DiBoson","DYJets","TTJets","QCD"):1.025},
             "wm":{("DYJets","TTJets","DiBoson","QCD"):1.025}},
         "2018": {
@@ -97,16 +97,20 @@ lnNlist = [
         "2017":{
             "ze":{("TTJets","DiBoson"):1.04},
             "zm":{("TTJets","DiBoson"):1.04},
-            "sr":{("DiBoson","TTJets","QCD","axial"):1.04},
+            "sr":{("DiBoson","TTJets","QCD","axial","ggh","vbf","zh","wh"):1.04},
             "we":{("GJets","DiBoson","DYJets","TTJets","QCD"):1.04},
             "wm":{("DYJets","TTJets","DiBoson","QCD"):1.04}},
         "2018": {
             "ze":{("TTJets","DiBoson"):1.04},
             "zm":{("TTJets","DiBoson"):1.04},
-            "sr":{("DiBoson","TTJets","QCD","axial"):1.04},
+            "sr":{("DiBoson","TTJets","QCD","axial","ggh","vbf","zh","wh"):1.04},
             "we":{("GJets","DiBoson","DYJets","TTJets","QCD"):1.04},
             "wm":{("DYJets","TTJets","DiBoson","QCD"):1.04}}}),
     lnN("axial_Norm13TeV",{"sr":{"axial":1.05}}),
+    lnN("ggh_Norm13TeV",{"sr":{"ggh":1.05}}),
+    lnN("vbf_Norm13TeV",{"sr":{"vbf":1.05}}),
+    lnN("wh_Norm13TeV",{"sr":{"wh":1.05}}),
+    lnN("zh_Norm13TeV",{"sr":{"zh":1.05}}),
     lnN("gjet_Norm13TeV",{"we":{"GJets":1.2}}),
     lnN("top_Norm13TeV",{("ze","zm","sr","we","wm"):{"TTJets":1.1}}),
     lnN("top_Reweight13TeV",{("ze","zm","sr","we","wm"):{"TTJets":1.1}}),
