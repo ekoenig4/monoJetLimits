@@ -81,6 +81,7 @@ def getargs():
     
     parser = ArgumentParser(description='Make workspace for generating limits based on input systematics file')
     parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",default=None,required=True)
+    parser.add_argument("-o","--output",help="Specify output directory")
     parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
     parser.add_argument('--combined',help='Create combined limit cards',action='store_true',default=False)
     try: args = parser.parse_args()
@@ -92,15 +93,20 @@ def getargs():
 #####
 def yearWorkspace(syscat,args):
     isScaled = os.path.isfile('signal_scaling.json')
-    outfname = 'Limits/%s/workspace_%s.root' % (syscat.var.GetTitle(),syscat.year)
-    if isScaled: copyfile('signal_scaling.json','Limits/%s/signal_scaling.json' % syscat.var.GetTitle())
+    if not args.output:
+        sysdir = 'Limits/%s' % syscat.var.GetTitle()
+    else: sysdir = "Limits/%s" % args.output
+    outfname = '%s/workspace_%s.root' % (sysdir,syscat.year)
+    if isScaled: copyfile('signal_scaling.json','%s/signal_scaling.json' % sysdir)
     if not os.path.isfile(outfname) or args.reset:
         return createWorkspace(syscat,outfname=outfname,isScaled=isScaled)
 ####################
 def makeWorkspace(syscat,args):
     print "Making Workspace for",syscat.GetName()
     cwd = os.getcwd()
-    sysdir = 'Limits/%s' % syscat.var.GetTitle()
+    if not args.output:
+        sysdir = 'Limits/%s' % syscat.var.GetTitle()
+    else: sysdir = "Limits/%s" % args.output
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
     ws = yearWorkspace(syscat,args)
     syscat.ws = ws
