@@ -101,11 +101,11 @@ def runImpacts(path,mx,mv,procmap=None,strength=0.0,verbose=0):
     with open('run_impacts.sh','w') as f:
         f.write('set -e\n')
         f.write('set -o xtrace\n')
-        f.write(' '.join(com+combine_cards)+'\n')
-        f.write(' '.join(com+text2workspace)+'\n')
-        f.write(' '.join(com+combine_1)+'\n')
-        f.write(' '.join(com+combine_2)+'\n')
-        f.write(' '.join(com+combine_3)+'\n')
+        f.write(' '.join(combine_cards)+'\n')
+        f.write(' '.join(text2workspace)+'\n')
+        f.write(' '.join(combine_1)+'\n')
+        f.write(' '.join(combine_2)+'\n')
+        f.write(' '.join(combine_3)+'\n')
         f.write(' '.join(plot)+'\n')
     command = ['sh','run_impacts.sh']
     if procmap is None:
