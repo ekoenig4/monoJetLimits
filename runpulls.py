@@ -35,9 +35,9 @@ def getargs():
     known.diff = unknown
     return known
 def mvpulls(info):
-    outdir = outdir_base % info.year
+    output = info.getOutputDir(outdir_base)
     outname = 'pulls_%s.pdf' % info.sysdir
-    output = '%s/%s/%s/%s' % (outdir,info.variable,info.sysdir,outname)
+    output = '%s/%s' % (output,outname)
     if not os.path.isfile('pulls/pulls.pdf'): return
     print 'Moving pulls/pulls.pdf to %s' % output
     copyfile('pulls/pulls.pdf',output)

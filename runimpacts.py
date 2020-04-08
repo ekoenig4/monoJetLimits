@@ -58,12 +58,11 @@ def mvimpacts(path):
     cwd = os.getcwd()
     info = SysInfo(path)
     os.chdir(path)
-    outdir = outdir_base % info.year
-    outname = 'impacts_%s.pdf' % info.sysdir
-    output = '%s/%s/%s/' % (outdir,info.variable,info.sysdir)
+    output = info.getOutputDir(outdir_base)
     if not os.path.isfile('impacts/impacts.pdf'): return
-    print 'Moving impacts/impacts.pdf to %s/%s' % (output,outname)
     if not os.path.isdir(output): os.makedirs(output)
+    outname = 'impacts_%s.pdf' % info.sysdir
+    print 'Moving impacts/impacts.pdf to %s/%s' % (output,outname)
     copyfile('impacts/impacts.pdf',"%s/%s" % (output,outname))
     os.chdir(cwd)
 ##############################################################################
@@ -82,7 +81,7 @@ def runImpacts(path,mx,mv,procmap=None,strength=0.0,verbose=0):
     text2workspace = ['text2workspace.py','datacard','-m',mv,'-o','Mchi%s_Mphi%s.root' % (mx,mv)]
 
     workspace = ["-d",'Mchi%s_Mphi%s.root' % (mx,mv),"-m",mv]
-    common_opts = ["-t -1 --expectSignal=%.1f --parallel=24 --rMin=-1 --autoRange 5 --squareDistPoiStep --cminDefaultMinimizerStrategy 0"%strength]+verbose
+    common_opts = ["-t -1 --expectSignal=%.1f --parallel=24 --rMin=-1 --autoRange 5 --squareDistPoiStep"%strength]+verbose
     impacts = ["combineTool.py","-M","Impacts"]
     initial_fit = ["--doInitialFit","--robustFit 1"]
     do_fit = ["--robustFit 1","--doFits"]
@@ -93,6 +92,7 @@ def runImpacts(path,mx,mv,procmap=None,strength=0.0,verbose=0):
     tag = "task_Mchi%s_Mphi%s" % (mx,mv)
     condor = ["--job-mode","condor","--task-name",tag]
     condor_wait = ["condor_wait","%s*.log"%tag,"|","exit $?"]
+    com = ['#']
 
     combine_1 = impacts + workspace + initial_fit + common_opts + log
     combine_2 = impacts + workspace + do_fit + common_opts + log 
@@ -101,8 +101,12 @@ def runImpacts(path,mx,mv,procmap=None,strength=0.0,verbose=0):
     with open('run_impacts.sh','w') as f:
         f.write('set -e\n')
         f.write('set -o xtrace\n')
-        for command in (combine_cards,text2workspace,combine_1,combine_2,combine_3,plot):
-            f.write(' '.join(command)+'\n')
+        f.write(' '.join(com+combine_cards)+'\n')
+        f.write(' '.join(com+text2workspace)+'\n')
+        f.write(' '.join(com+combine_1)+'\n')
+        f.write(' '.join(com+combine_2)+'\n')
+        f.write(' '.join(com+combine_3)+'\n')
+        f.write(' '.join(plot)+'\n')
     command = ['sh','run_impacts.sh']
     if procmap is None:
         print os.getcwd()
@@ -127,7 +131,9 @@ def runSerial(args=None):
     args.dir = [ path for path in args.dir if not ('nSYS' in path and 'nSTAT' in path) ]
     print 'Running Impacts'
     mx,mv = "1","1000"
+    cwd = os.getcwd()
     for path in args.dir:
+        os.chdir(cwd)
         runImpacts(path,mx,mv,verbose=args.verbose)
         mvimpacts(path)
 ##############################################################################

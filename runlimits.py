@@ -1,176 +1,70 @@
 #!/usr/bin/env python
 import os
+from shutil import copyfile
 import sys
 from argparse import ArgumentParser
-import re
 from subprocess import Popen,PIPE,STDOUT
 from time import time
 import json
+import re
+from ROOT import *
 
-class cPopen(Popen):
-    def __init__(self,args,stdout=None,stderr=STDOUT):
-        self.start = time()
-        self.cwd = os.getcwd()
-        self.args = args
-        if stdout == None: super(cPopen,self).__init__(args)
-        else:              super(cPopen,self).__init__(args,stdout=stdout,stderr=STDOUT)
-    def duration(self): return time() - self.start
+ch_order = ('sr','we','wm','ze','zm','ga')
+
+def channel_order(ch1,ch2):
+    for i,ch in enumerate(ch_order):
+        if ch in ch1: i1 = i
+        if ch in ch2: i2 = i
+    if i1 < i2: return -1
+    elif i1 == i2:
+            y1 = re.findall('\d\d\d\d',ch1)
+            y2 = re.findall('\d\d\d\d',ch2)
+            if any(y1) and any(y2):
+                y1 = int(y1[0]); y2 = int(y2[0])
+                if y1 < y2: return -1
+    return 1
+
+def runFit(args):
+    verbose = ["-v",str(args.verbose)]
+    channels = [ card.replace('datacard_','') for card in os.listdir('../') if 'datacard' in card ]
+    channels.sort(channel_order)
+    sr_channel = [ channel for channel in channels if 'sr' in channel ]
+    combine_cards = ['combineCards.py'] + ['%s=../datacard_%s' % (channel,channel) for channel in channels] + ['>','datacard']
+    text2workspace = ['text2workspace.py','datacard','-m 1000']
+    limits = ["combine","-M","AsymptoticLimits","-t","-1","-d","datacard.root","-m","1000"]
+    collect = ["combineTool.py","-M","CollectLimits","higgsCombineTest.AsymptoticLimits.mH1000.root"]
+    with open('run_limits.sh','w') as f:
+        f.write("#!/bin/sh\n")
+        f.write("set -e\n")
+        f.write('set -o xtrace\n')
+        f.write(' '.join(combine_cards)+'\n')
+        f.write(' '.join(text2workspace)+'\n')
+        f.write(' '.join(limits)+'\n')
+        f.write(' '.join(collect)+'\n')
+    proc = Popen(['sh','run_limits.sh','|','tee log']); proc.wait()
 ##############################################################################
-def runMphidir(mx,mvdir,procmap=None):
-    mv = mvdir.replace('Mphi_','').replace('/','')
-    cwd = os.getcwd()
-    os.chdir(mvdir)
-    combine = ['combine','-M','AsymptoticLimits','-n','Mchi%sMphi%s' % (mx,mv),'-m',mv,'workspace_Mphi%s.root' % mv]
-    if procmap is None:
-        print os.getcwd()
-        proc = cPopen(combine); proc.wait()
-    else:
-        proc = cPopen(combine,stdout=open('log','w'))
-        procmap[os.getcwd()] = proc
-    os.chdir(cwd)
-##############################################################################
-def runMchidir(mxdir,procmap=None):
-    mx = mxdir.replace('Mchi_','').replace('/','')
-    cwd = os.getcwd()
-    os.chdir(mxdir)
-    mvdirs = [ dir for dir in os.listdir('.') if re.search(r'Mphi_\d+$',dir) ]
-    for mvdir in sorted(mvdirs): runMphidir(mx,mvdir,procmap)
-    os.chdir(cwd)
-##############################################################################
-def runLimits(path,procmap=None):
-    cwd = os.getcwd()
-    os.chdir(path)
-    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mchi_\d+$',dir) ]
-    for mxdir in sorted(mxdirs): runMchidir(mxdir,procmap)
-    os.chdir(cwd)
-##############################################################################
-def collectMchidir(mxdir,procmap=None):
-    mx = mxdir.replace('Mchi_','').replace('/','')
-    cwd = os.getcwd()
-    os.chdir(mxdir)
-    output = 'zprimeMchi%s.json' % mx
-    args = ['combineTool.py','-M','CollectLimits']
-    mvdirs = [ dir for dir in os.listdir('.') if re.search(r'Mphi_\d+$',dir) ]
-    combine_output = '%s/higgsCombineMchi%sMphi%s.AsymptoticLimits.mH%s.root'
-    for mvdir in mvdirs:
-        mv = mvdir.replace('Mphi_','').replace('/','')
-        args.append( combine_output % (mvdir,mx,mv,mv) )
-    args += ['-o',output]
-    if procmap is None:
-        print cwd
-        proc = cPopen(args); proc.wait()
-    else:
-        proc = cPopen(args,stdout=PIPE,stderr=STDOUT)
-        procmap[os.getcwd()] = proc
-    os.chdir(cwd)
-##############################################################################
-def collectLimits(path,procmap=None):
+def runDirectory(path,args):
+    print path
+    if 'nCR' in path: return
     cwd = os.getcwd()
     os.chdir(path)
-    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mchi_\d+$',dir) ]
-    for mxdir in sorted(mxdirs): collectMchidir(mxdir,procmap)
+    if not os.path.isdir('limits'): os.mkdir('limits')
+    os.chdir('limits')
+    runFit(args)
     os.chdir(cwd)
-##############################################################################
-def printProcs(procs,name):
-    if procs is None: return
-    cutoff = 300 # seconds
-    prompt = '{0:<22}'.format( '\rProcessing %i %s' % (len(procs),name) )
-    total = len(procs)
-    current = total
-    out = '%s : %i%%' % (prompt,0)
-    sys.stdout.write(out)
-    sys.stdout.flush()
-    while any(procs):
-        IDlist = procs.keys()
-        for ID in IDlist:
-            if procs[ID].poll() != None:
-                procs.pop(ID)
-            # elif procs[ID].duration() > cutoff:
-            #     procs[ID].terminate()
-            #     procs.pop(ID)
-        ##################################################
-        if current != len(procs):
-            current = len(procs)
-            percent = 100 * (total - current)/float(total)
-            out = '%s : %.3f%%' % (prompt,percent)
-            sys.stdout.write(out)
-            sys.stdout.flush()
-    out = '%s : %.3f%%\n' % (prompt,100.)
-    sys.stdout.write(out)
-    sys.stdout.flush()
-##############################################################################
-def collectWorkspace(mxdirs,year,show=False):
-    print os.getcwd()
-    scaling = {}
-    if os.path.isfile('../signal_scaling.json'):
-        with open('../signal_scaling.json') as f: scaling = json.load(f)
-    mxjsons = {}
-    cwd = os.getcwd()
-    for mxdir in mxdirs:
-        mx = mxdir.replace('Mchi_','').replace('/','')
-        with open('Mchi_%s/zprimeMchi%s.json' % (mx,mx)) as f: mxjsons[mx] = json.load(f)
-    #####
-    ws = {}
-    for mx,mxjson in mxjsons.iteritems():
-        mx_ws = {}
-        for mv in mxjson:
-            mv_ws = {}
-            lim = mxjson[mv]
-            mv = str(int(float(mv)))
-            key = 'Mchi%s_Mphi%s' % (mx,mv)
-            scale = scaling[key] if key in scaling else 1
-            mv_ws['scale'] = scale
-            mv_ws['limits'] = lim
-            mx_ws[mv] = mv_ws
-        ws[mx] = mx_ws
-    #####
-    with open('limits.json','w') as f: json.dump(ws,f,indent=4)
-##############################################################################
-def collectWorkspaces(path,show=False):
-    cwd = os.getcwd()
-    os.chdir(path)
-    year = re.findall('\d\d\d\d',path)
-    if not any(year): year = 'Run2'
-    else:             year = year[0]
-    mxdirs = [ dir for dir in os.listdir('.') if re.search(r'Mchi_\d+$',dir) ]
-    print 'Collecting %s' % path
-    collectWorkspace(mxdirs,year,show=show)
-    os.chdir(cwd)
-##############################################################################
-def runParallel(args=None):
-    if args is None: args = getargs()
-    print 'Running Limits'
-    if args.verbose: procmap=None
-    else:         procmap={}
-    for path in args.dir: runLimits(path,procmap)
-    printProcs(procmap,'Mchi Limits')
-    print 'Collecting Limits'
-    for path in args.dir: collectLimits(path,procmap)
-    printProcs(procmap,'Mchi Output')
-    for path in args.dir: collectWorkspaces(path,show=args.verbose)
-##############################################################################
-def runSerial(args=None):
-    if args is None: args = getargs()
-    for path in args.dir:
-        print 'Running Limits',path
-        if args.verbose: procmap=None
-        else:         procmap={}
-        runLimits(path,procmap)
-        printProcs(procmap,'Mchi Limits')
-        print 'Collecting Limits'
-        collectLimits(path,procmap)
-        printProcs(procmap,'Mchi Output')
-        collectWorkspaces(path,show=args.verbose)
 ##############################################################################
 def getargs():
     def directory(arg):
         if os.path.isdir(arg): return arg
-        else: raise ValueError()
+        raise ValueError()
+    def signal(arg):
+        regex = re.compile(r"Mchi\d*_Mphi\d*$")
+        if regex.match(arg): return arg
+        raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
-    parser.add_argument("-d","--dir",help='Specify the directory to run limits in',action='store',type=directory,default=None,nargs='+',required=True)
-    parser.add_argument("-v","--verbose",help='Show output from combine',action='store_true',default=False)
-    parser.add_argument("-p","--parallel",help="Run all directories in parallel",action='store_true',default=False)
-    # parser.add_argument("-r","--reset",help='Run limits event if they have already been done',action='store_true',default=False)
+    parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
+    parser.add_argument("-r","--reset",help='Rerun combine fit diagnositics',action='store_true',default=False)
+    parser.add_argument("-v","--verbose",help="Specify combine verbose level",type=int,default=0)
     try: args = parser.parse_args()
     except:
         parser.print_help()
@@ -179,6 +73,8 @@ def getargs():
 ##############################################################################
 if __name__ == "__main__":
     args = getargs()
-    if not args.parallel: runSerial(args)
-    else: runParallel(args)
-#################################################################################################
+    cwd = os.getcwd()
+    for path in args.dir:
+        os.chdir(cwd)
+        runDirectory(path,args)
+##############################################################################

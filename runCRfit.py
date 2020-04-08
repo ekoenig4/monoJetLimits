@@ -34,7 +34,7 @@ def runFit(args):
     text2workspace = ['text2workspace.py','datacard','--channel-masks','-m 1000']
     cr_only_fit = ["combine","-M","FitDiagnostics","-d","datacard.root","-m","1000","-n","_fit_CRonly_result","--saveShapes","--saveWithUncertainties","--robustFit 1"]
     cr_only_fit += ["--setParameters",','.join(['mask_%s=1' % channel for channel in sr_channel])]
-    cr_only_fit += ["--ignoreCovWarning","--cminDefaultMinimizerStrategy 0"] + verbose
+    cr_only_fit += ["--ignoreCovWarning"] + verbose
     with open('run_cr_only_fit.sh','w') as f:
         f.write("#!/bin/sh\n")
         f.write("set -e\n")
