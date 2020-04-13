@@ -11,7 +11,7 @@ from PlotTool import *
 
 gROOT.SetBatch(1)
 
-outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
+outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 
 bumap = {
   "sr":"monojet_%s_signal",

@@ -10,7 +10,7 @@ from time import time
 import json
 import re
 
-outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
+outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 
 ch_order = ('sr','we','wm','ze','zm','ga')
 def channel_order(ch1,ch2):

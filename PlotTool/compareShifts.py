@@ -13,7 +13,7 @@ from array import array
 gROOT.SetBatch(1)
 gStyle.SetOptStat(0)
 
-outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
+outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/Plots%s/ExpectedLimits/"
 
 procmap = {
   "ZJets_sr_%s":"zjets_monojet_%s_signal",
@@ -120,7 +120,7 @@ def compareNuisance(process,nuisance,uw,bu):
   legend.AddEntry(bu_up,"BU","l")
   legend.Draw()
   
-  outbase = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/test/BU_Fit/Nuisances/%s/" % process
+  outbase = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoZprimeJet/test/BU_Fit/Nuisances/%s/" % process
   if not os.path.isdir(outbase): os.makedirs(outbase)
   canvas.SaveAs(outbase+uw_nuis+".png")
 def compareProcess(process,uw,bu):
