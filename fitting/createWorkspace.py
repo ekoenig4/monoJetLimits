@@ -98,7 +98,9 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
-            "PDF":True
+            "PDF":True,
+            "PSW_isrCon":True,
+            "PSW_fsrCon":True,
         }
     nuismap = {
         "wsr_to_zsr":{
@@ -109,7 +111,9 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
-            "PDF":True
+            "PSW_isrCon":True,
+            "PSW_fsrCon":True,
+            # "PDF":True
         },
         "ga_to_sr":{
             "QCD_Scale":True,
@@ -119,29 +123,31 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
-            "PDF":True,
-            "mettrig":True
+            "PSW_isrCon":True,
+            "PSW_fsrCon":True,
+            # "PDF":True,
+            # "mettrig":True
         },
-        "ze_to_sr":{
-            "mettrig":True
-        },
-        "zm_to_sr":{
-            "mettrig":True
-        },
-        "we_to_sr":{
-            "mettrig":True,
-            "eleveto":True,
-            "muveto":True,
-            "tauveto":True,
-            "PDF":True
-        },
-        "wm_to_sr":{
-            "mettrig":True,
-            "eleveto":True,
-            "muveto":True,
-            "tauveto":True,
-            "PDF":True
-        }
+        # "ze_to_sr":{
+        #     "mettrig":True
+        # },
+        # "zm_to_sr":{
+        #     "mettrig":True
+        # },
+        # "we_to_sr":{
+        #     "mettrig":True,
+        #     "eleveto":True,
+        #     "muveto":True,
+        #     "tauveto":True,
+        #     "PDF":True
+        # },
+        # "wm_to_sr":{
+        #     "mettrig":True,
+        #     "eleveto":True,
+        #     "muveto":True,
+        #     "tauveto":True,
+        #     "PDF":True
+        # }
     }
     store = []
     def power_syst(n,nominal,first,second=0): return "(TMath::Power(1+{first},@{n}))".format(**vars())
@@ -390,6 +396,7 @@ def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
 
     signals = ['axial']
     signals = ["ggh","vbf","wh","zh"]
+    signals = ["zprime"]
     ws.SignalRegion(syscat,signals)
     ws.SingleEleCR(syscat)
     ws.SingleMuCR(syscat)
@@ -404,7 +411,7 @@ def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
     return ws
     
 if __name__ == "__main__":
-    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Systematics/monojet_recoil.sys.root")
+    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoZprimeJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Systematics/monojet_recoil.sys.root")
     syscat = sysfile.categories["category_monojet_2017"]
     output = TFile("workspace.root","recreate")
     ws = Workspace("w","w")

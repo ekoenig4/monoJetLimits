@@ -3,13 +3,14 @@ from ROOT import *
 gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
 dirmap = {"sr":"signal","ze":"Zee","zm":"Zmm","we":"Wen","wm":"Wmn","ga":"gjets"}
-procmap = {"data":"data_obs","zjets":"ZJets","wjets":"WJets","zll":"DYJets","gjets":"GJets","top":"TTJets","diboson":"DiBoson","qcd":"QCD","axial":"axial","ggh":"ggh","vbf":"vbf","wh":"wh","zh":"zh"}
+procmap = {"data":"data_obs","zjets":"ZJets","wjets":"WJets","zll":"DYJets","gjets":"GJets","top":"TTJets","diboson":"DiBoson","qcd":"QCD","axial":"axial","ggh":"ggh","vbf":"vbf","wh":"wh","zh":"zh","zprime":"zprime"}
 
 yearlist = ["2016","2017","2018"]
 lumimap = {"2016":35900,"2017":41486,"2018":59699}
-catypes = ["monojet","monov","monozprime"]
+catypes = ["monojet","monov","zprime"]
 varmap = {
-    "monojet":RooRealVar("recoil","recoil",250,1400)
+    "monojet":RooRealVar("recoil","recoil",250,1400),
+    "zprime":RooRealVar("ChNemPtFrac","ChNemPtFrac",0.5,1)
 }
 
 class SysRegion(TDirectoryFile):

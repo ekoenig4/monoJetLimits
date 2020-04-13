@@ -1,15 +1,16 @@
 from ROOT import TFile
 import os
+import re
 
 filedir = os.path.dirname( os.path.realpath(__file__) )
 
 theoryfnames = {
     "wsr_to_zsr":["wz_unc.root"],
-    "ga_to_sr":["gz_unc.root","all_trig_2017.root"],
-    "ze_to_sr":["all_trig_2017.root"],
-    "zm_to_sr":["all_trig_2017.root"],
-    "we_to_sr":["all_trig_2017.root","wtow_pdf_sys.root","veto_sys.root"],
-    "wm_to_sr":["all_trig_2017.root","wtow_pdf_sys.root","veto_sys.root"]
+    "ga_to_sr":["gz_unc.root"]#,"all_trig_2017.root"],
+    # "ze_to_sr":["all_trig_2017.root"],
+    # "zm_to_sr":["all_trig_2017.root"],
+    # "we_to_sr":["all_trig_2017.root","wtow_pdf_sys.root","veto_sys.root"],
+    # "wm_to_sr":["all_trig_2017.root","wtow_pdf_sys.root","veto_sys.root"]
 }
 
 theoryfiles = {}
@@ -33,7 +34,9 @@ filemap = {
         "NNLO_Sud":"Sudakov",
         "NNLO_Miss":"NNLOMiss",
         "QCD_EWK_Mix":"MIX",
-        "PDF":"PDF"
+        "PDF":"PDF",
+        "PSW_isrCon":"PSW_isrCon",
+        "PSW_fsrCon":"PSW_fsrCon"
     },
     ("all_trig_2017.root",): {
         "mettrig":"trig_sys"
@@ -59,10 +62,10 @@ suffixmap = {
 }
 
 uncorrelatedmap = {
-    "zsr":"1",
-    "wsr":"2",
-    "sr":"1",
-    "ga":"2"
+    "_zsr$":"1",
+    "_wsr$":"2",
+    "_sr$":"1",
+    "_ga$":"2"
 }
 
 def getHistoMap(tfname,nuisance,histomap):
@@ -75,6 +78,7 @@ def getUpShift(histomap,hstype,ch):
     prefix = next( (prefix for fname,prefix in prefixmap.items() if fname == histomap[file]),"")
     suffix = next( (suffix for fname,suffix in suffixmap.items() if fname == histomap[file]),"")
     hstype = prefix + hstype + suffix
+    print hstype
     for key,hs in histomap.iteritems():
         if key is file: continue
         if 'monov' in key: continue
@@ -95,8 +99,8 @@ def getTFShift(tfname,nuisance,histomap=theoryhistos,ch='monojet'):
     # print tfname,nuisance
     altTag = None
     for tag in uncorrelatedmap:
-        if tag in nuisance:
-            nuisance = nuisance.replace("_"+tag,"")
+        if re.search(tag,nuisance):
+            nuisance = nuisance.replace(tag.strip("$"),"")
             altTag = uncorrelatedmap[tag]
     histomap,altname = getHistoMap(tfname,nuisance,histomap)
     if altTag: altname += altTag

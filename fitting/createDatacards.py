@@ -8,6 +8,7 @@ import os
 
 datadriven=['ZJets','WJets','DYJets','GJets']
 signal = ["ggh","vbf","wh","zh"]
+signal = ["zprime"]
 signalmap = { re.compile(sig):sig for sig in signal }
 
 def loop_iterator(iterator):
@@ -27,6 +28,7 @@ def getHists(ws,ch):
   return [ hist.GetName() for hist in ws.allData() if ch in hist.GetName() ]
 def getVars(ws,ch,tf):
   if tf is None: return []
+  tf = (tf[0]+"_"+ch,tf[1])
   wsvars = ws.allVars()
   varlist = [ var.GetName() for var in iter_collection(wsvars) if any(re.match('^'+t,var.GetName()) for t in tf) ]
   return varlist
