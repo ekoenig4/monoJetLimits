@@ -17,7 +17,7 @@ theoryfiles = {}
 for filelist in theoryfnames.values():
     for fname in filelist:
         if fname in theoryfiles: continue
-        theoryfiles[fname] = TFile("%s/%s"%(filedir,fname))
+        theoryfiles[fname] = TFile("%s/bin10/%s"%(filedir,fname))
 theoryhistos = {}
 for key,tfile in theoryfiles.iteritems():
     fmap = {file:key}
