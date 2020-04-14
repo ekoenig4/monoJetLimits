@@ -1,9 +1,21 @@
 #!/bin/sh
-./runlimits.py -d $@ &
-./runimpacts.py -d $@ &
-./runCRfit.py -d $@ && \
-    (python PlotTool/plotCRfit.py -d $@ & \
-    ./runpulls.py -d $@) &
 
+runlimits() {
+    ./runlimits.py -d $@
+}
+runimpacts() {
+    ./runimpacts.py -d $@
+}
+runCRfit(){
+    set -e
+    ./runCRfit.py -d $@
+
+    python PlotTool/plotCRfit.py -d $@ &
+    ./runpulls.py -d $@ &
+}
+
+runlimits $@ &
+runimpacts $@ &
+runCRfit $@ &
 wait
 echo Done

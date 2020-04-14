@@ -38,9 +38,9 @@ def mvpulls(info):
     output = info.getOutputDir(outdir_base)
     outname = 'pulls_%s.pdf' % info.sysdir
     output = '%s/%s' % (output,outname)
-    if not os.path.isfile('pulls/pulls.pdf'): return
-    print 'Moving pulls/pulls.pdf to %s' % output
-    copyfile('pulls/pulls.pdf',output)
+    if not os.path.isfile('cr_fit/pulls.pdf'): return
+    print 'Moving cr_fit/pulls.pdf to %s' % output
+    copyfile('cr_fit/pulls.pdf',output)
 def export(info,args,npull=15):
     from ROOT import TFile,gROOT,gStyle,TPad,TCanvas
     from math import ceil
@@ -49,14 +49,15 @@ def export(info,args,npull=15):
     gStyle.SetOptStat(0)
     gROOT.SetBatch(1)
     
-    outdir = outdir_base % info.year
-    outvar = '%s/%s/' % (outdir,info.variable)
-    if not os.path.isdir(outvar): os.mkdir(outvar)
-    outsys = '%s/%s' % (outvar,info.sysdir)
-    if not os.path.isdir(outsys): os.mkdir(outsys)
+    # outdir = outdir_base % info.year
+    # outvar = '%s/%s/' % (outdir,info.variable)
+    # if not os.path.isdir(outvar): os.mkdir(outvar)
+    # outsys = '%s/%s' % (outvar,info.sysdir)
+    # if not os.path.isdir(outsys): os.mkdir(outsys)
     
-    outname = 'pulls_%s.pdf' % info.variable
-    output = '%s/%s' % (outsys,outname)
+    # outname = 'pulls_%s.pdf' % info.variable
+    # output = '%s/%s' % (outsys,outname)
+    output="pulls.pdf"
     pulls = TFile.Open(args.g)
     canvas = pulls.Get("nuisances")
     objlist = canvas.GetListOfPrimitives()
