@@ -5,7 +5,7 @@ import re
 gROOT.SetBatch(1)
 
 var = 'recoil'
-# var = 'met_monojet_2017'
+# var = 'met_monojet_2018'
 
 def iterset(rooset):
     iter = rooset.createIterator()
@@ -36,7 +36,7 @@ def plotVar(pdf,var,nuisance):
         wildcard = nuisance.GetName().replace(wildcard,'bin\d+')
         nuisances = [ nuisance for nuisance in iterset(pdf.getVariables())
                       if re.match(wildcard,nuisance.GetName())]
-        nuisances.sort(key=lambda r:r.GetName())
+        # nuisances.sort(key=lambda r:r.GetName())
     for nuisance in nuisances:
         nuisance.setVal(0)
         nuisance.Print()
@@ -47,12 +47,12 @@ def plotVar(pdf,var,nuisance):
     for nuisance in nuisances:
         nuisance.setVal(1)
     shiftUp = pdf.createHistogram(name+"shiftUp",var)
-    evalUp = pdf.getValV()/evalNo
+    evalUp = (pdf.getValV()-evalNo)/evalNo
     
     for nuisance in nuisances:
         nuisance.setVal(-1)
     shiftDn = pdf.createHistogram(name+"shiftDn",var)
-    evalDn = pdf.getValV()/evalNo
+    evalDn = (pdf.getValV()-evalNo)/evalNo
 
     print "--Integral: %f * (%f/%f)" % (evalNo,evalUp,evalDn)
     print
@@ -83,6 +83,7 @@ def plotPDF(pdf,var,output):
     output.cd()
     cwd = output.mkdir(pdf.GetName())
     cwd.cd()
+    pdf.createHistogram(pdf.GetName(),var).Write()
     nuisances = pdf.getVariables()
     for nuisance in iterset(nuisances): plotVar(pdf,var,nuisance)
 if __name__ == "__main__":
@@ -93,5 +94,7 @@ if __name__ == "__main__":
     
     bkg_pdfs = ws.allPdfs().selectByName("shapeBkg*")
     bkg_pdfs = selectRooParametricHist(bkg_pdfs)
-
     for pdf in iterset(bkg_pdfs): plotPDF(pdf,var,output)
+
+    sig_pdfs = ws.allPdfs().selectByName("shapeSig*")
+    for pdf in iterset(sig_pdfs): plotPDF(pdf,var,output)

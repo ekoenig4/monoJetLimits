@@ -18,6 +18,10 @@ outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/Expec
 procmap = {
   "ZJets_sr_%s":"zjets_monojet_%s_signal",
   "WJets_sr_%s":"wjets_monojet_%s_signal",
+  "ggh_sr_%s":"ggh_monojet_%s_signal",
+  "vbf_sr_%s":"vbf_monojet_%s_signal",
+  "wh_sr_%s":"wh_monojet_%s_signal",
+  "zh_sr_%s":"zh_monojet_%s_signal",
   "DYJets_zm_%s":"zll_monojet_%s_dimuon",
   "DYJets_ze_%s":"zll_monojet_%s_dielec",
   "WJets_we_%s":"wjets_monojet_%s_singleel",
@@ -52,6 +56,10 @@ nuisancemap = {
   "ga_to_sr_QCD_Shape":"qcdshape",
   "ga_to_sr_PDF":"pdf",
   "ga_to_sr_QCD_EWK_Mix":"cross",
+  "mettrig_%s":"mettrig_monojet_%s",
+  "eleveto_%s":"eveto_monojet_%s",
+  "muveto_%s":"muveto_monojet_%s",
+  "tauveto_%s":"tauveto_monojet_%s"
 }
 
 prefit_color = kOrange+8
@@ -67,13 +75,42 @@ def loop_iterator(iterator):
 def iter_collection(rooAbsCollection):
   iterator = rooAbsCollection.createIterator()
   return loop_iterator(iterator)
+def compareShapes(process,procs,uw,bu):
+  uw_proc,bu_proc = procs
+  h_uw = uw.Get(uw_proc)
+  h_bu = bu.Get(bu_proc)
+  
+  canvas = TCanvas(uw_proc)
+
+  h_bu.SetMarkerStyle(20)
+  h_bu.SetMarkerColor(kBlack)
+  h_bu.SetMarkerSize(1)
+
+  h_uw.SetLineColor(kRed)
+  h_uw.SetLineWidth(2)
+
+  ratio = TRatioPlot(h_bu,h_uw)
+  ratio.SetH1DrawOpt("pex0")
+  ratio.SetH2DrawOpt("hist")
+  ratio.Draw()
+
+  ratio.GetLowerRefYaxis().SetRangeUser(0.75,1.25)
+  
+  legend = TLegend(0.5,0.7,0.7,0.9)
+  legend.AddEntry(h_uw,"UW","l")
+  legend.AddEntry(h_bu,"BU","p")
+  legend.Draw()
+  
+  outbase = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/test/BU_Fit/Nuisances/%s/" % process
+  if not os.path.isdir(outbase): os.makedirs(outbase)
+  canvas.SaveAs(outbase+uw_proc+".png")
 def compareNuisance(process,nuisance,uw,bu):
   uw_nuis,bu_nuis = nuisance
   c_uw = uw.Get(uw_nuis)
   c_bu = bu.Get(bu_nuis)
 
   uw_up,uw_dn = c_uw.GetPrimitive(uw_nuis+"shiftUp__recoil"),c_uw.GetPrimitive(uw_nuis+"shiftDn__recoil")
-  bu_up,bu_dn = c_bu.GetPrimitive(bu_nuis+"shiftUp__met_monojet_2017"),c_bu.GetPrimitive(bu_nuis+"shiftDn__met_monojet_2017")
+  bu_up,bu_dn = c_bu.GetPrimitive(bu_nuis+"shiftUp__met_monojet_2018"),c_bu.GetPrimitive(bu_nuis+"shiftDn__met_monojet_2018")
   # def getTGraph(up,dn):
   #   npoints = up.GetNbinsX()
   #   x,exl,exh = [],[],[]
@@ -124,18 +161,23 @@ def compareNuisance(process,nuisance,uw,bu):
   if not os.path.isdir(outbase): os.makedirs(outbase)
   canvas.SaveAs(outbase+uw_nuis+".png")
 def compareProcess(process,uw,bu):
+  print process
   uw_proc,bu_proc = process
   uw_dir = uw.GetDirectory(uw_proc)
   bu_dir = bu.GetDirectory(bu_proc)
-  keylist = [ key.GetName() for key in uw_dir.GetListOfKeys() ]
+  canvaslist = [ key.GetName() for key in uw_dir.GetListOfKeys() if uw_dir.Get(key.GetName()).ClassName() == "TCanvas" ]
+  uw_shape = next( (key.GetName() for key in uw_dir.GetListOfKeys() if uw_dir.Get(key.GetName()).ClassName() == "TH1F"),None )
+  bu_shape = next( (key.GetName() for key in bu_dir.GetListOfKeys() if bu_dir.Get(key.GetName()).ClassName() == "TH1F"),None )
 
+  compareShapes(uw_proc,(uw_shape,bu_shape),uw_dir,bu_dir)
+  
   year = re.findall('\d\d\d\d',uw_proc)[0]
   for uw_key,bu_key in nuisancemap.iteritems():
       uwkey = uw_key
       if '%' in uwkey: uwkey = uw_key % year
       bukey = bu_key
       if '%' in bukey: bukey = bu_key % year
-      if uwkey in keylist:
+      if uwkey in canvaslist:
         compareNuisance(uw_proc,(uwkey,bukey),uw_dir,bu_dir)
 def compareFiles(uw,bu):
   uw = TFile(uw)
@@ -144,7 +186,9 @@ def compareFiles(uw,bu):
   for uwkey in keylist:
     print uwkey
     year = re.findall('\d\d\d\d',uwkey)[0]
-    bukey = next( 'shapeBkg_'+bukey%year for key,bukey in procmap.iteritems() if key%year in uwkey )
+    shape = 'Bkg'; suffix = ""
+    if 'Sig' in uwkey: shape='Sig'; suffix="Pdf"
+    bukey = next( 'shape%s_'%shape+bukey%year+suffix for key,bukey in procmap.iteritems() if key%year in uwkey )
     compareProcess((uwkey,bukey),uw,bu)
 ##############################################################################
 def getargs():
