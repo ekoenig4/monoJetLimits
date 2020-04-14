@@ -2,6 +2,7 @@
 from ROOT import *
 from SysFile import *
 from theory_sys import getTFShift
+from collections import OrderedDict
 import os
 import re
 import json
@@ -80,6 +81,7 @@ class BinList:
             if setConst: nbin = RooRealVar(bin_name,bin_label,bin_yield)
             else:
                 nbin = RooRealVar(bin_name,bin_label,bin_yield,0.,2*bin_yield)
+                nbin.setAttribute("nuisance",False)
                 nbin.removeMax()
             self.binlist.add(nbin)
             self.store.append(nbin)
@@ -90,16 +92,40 @@ class BinList:
         ws.Import(self.p_bkg_norm,RooFit.RecycleConflictNodes())
 
 class ConnectedBinList(BinList):
-    theorymap = {
-            "QCD_Scale":True,
-            "QCD_Shape":True,
-            "QCD_Proc":True,
-            "NNLO_Sud":False,
-            "NNLO_Miss":False,
-            "NNLO_EWK":True,
-            "QCD_EWK_Mix":True,
-            "PDF":True
-        }
+    class corr:
+        def __init__(self,ratio=0,process=1,year=0,category=1):
+            self.process = process # correlation across processes in ratio
+            self.ratio = ratio # correlation across ratios
+            self.year = year # correlation across years
+            self.category = category # correlation across categories
+    correlations = {
+        "QCD_Scale":  corr(0,1,1),
+        "QCD_Shape":  corr(0,1,1),
+        "QCD_Proc":   corr(0,1,1),
+        "NNLO_Sud":   corr(1,0,1),
+        "NNLO_Miss":  corr(1,0,1),
+        "NNLO_EWK":   corr(0,1,1),
+        "QCD_EWK_Mix":corr(0,1,1),
+        "PDF":        corr(0,1,1),
+        "PSW_isrCon": corr(1,1,1),
+        "PSW_fsrCon": corr(1,1,1),
+        "mettrig":    corr(1,1,0),
+        "eleveto":    corr(1,1,0),
+        "muveto":     corr(1,1,0),
+        "tauveto":    corr(1,1,0),
+    }
+    procmap = {
+        "wsr_to_zsr":("w","z"),
+        "ga_to_sr":("g","z"),
+        "we_to_sr":("w","w"),
+        "wm_to_sr":("w","w"),
+        "ze_to_sr":("z","z"),
+        "zm_to_sr":("z","z")
+    }
+    ratiomap = {
+        "we_to_sr":"w_to_w",
+        "wm_to_sr":"w_to_w"
+    }
     nuismap = {
         "wsr_to_zsr":{
             "QCD_Scale":True,
@@ -109,6 +135,8 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
+            # "PSW_isrCon":True,
+            # "PSW_fsrCon":True,
             "PDF":True
         },
         "ga_to_sr":{
@@ -119,6 +147,8 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
+            # "PSW_isrCon":True,
+            # "PSW_fsrCon":True,
             "PDF":True,
             "mettrig":True
         },
@@ -184,6 +214,7 @@ class ConnectedBinList(BinList):
             formula_tf = RooArgList()
             tfbin = self.tf_proc.binlist[i-1]
             nbin = RooRealVar("r_"+bin_name,bin_label,bin_ratio)
+            nbin.setAttribute("nuisance",False)
             self.store.append(nbin)
             
             formula_binlist.add(tfbin)
@@ -196,6 +227,7 @@ class ConnectedBinList(BinList):
                 formula_tf.add( systform )
                 tf_form.append(systform)
             statvar = RooRealVar("%s_stat_bin%i" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-4.,4.)
+            statvar.setAttribute("nuisance",True)
             self.store.append(statvar)
             statform = self.getSystFormula(bin_ratio,self.bkg_tf.GetBinError(i)/bin_ratio,statvar)
             formula_tf.add(statform)
@@ -222,33 +254,35 @@ class ConnectedBinList(BinList):
         if self.tfname not in self.nuismap: return
         nuismap = self.nuismap[self.tfname]
         for nuisance in nuismap:
-            if not fromSys: self.addSyst(nuisance,correlated=nuismap[nuisance])
-            else: self.addFromSys(nuisance,correlated=nuismap[nuisance])
+            if not fromSys: self.addSyst(nuisance,correlation=self.correlations[nuisance])
+            else: self.addFromSys(nuisance,correlation=self.correlations[nuisance])
     def addSysShape(self,up,dn,reciprocal=True):
         if not validShape(up,dn): return
         envelope = getFractionalShift(self.bkg_tf,up,dn,reciprocal)
         average_envelope = getAverageShift(self.bkg_tf,up,dn,reciprocal)
         shift_envelope = getShift(self.bkg_tf,up,dn,reciprocal)
         systvar = RooRealVar(envelope.GetName(),"%s TF Ratio"%envelope.GetName(),0.,-4.,4.)
+        systvar.setAttribute("nuisance",True)
         self.systs[envelope.GetName()] = {RooRealVar:systvar,"envelope":envelope,"first":shift_envelope,"second":average_envelope}
-    def addFromSys(self,syst,correlated=True):
+    def addFromSys(self,syst,correlation=corr()):
         # sys directory in the form -> tf_proc / template
-        if syst in self.theorymap:
-            systname ="%s_%s"%(self.tfname,syst)
-        else:
-            systname ="%s_%s_%s"%(self.tfname,self.year,syst)
-        if correlated:
+        namemap = OrderedDict([("ratio",self.tfname if self.tfname not in self.ratiomap else self.ratiomap[self.tfname]),("year",self.year)])
+        systname = [ str(name) for ntype,name in namemap.items() if not getattr(correlation,ntype) ] + [syst]
+        systname = '_'.join(systname)
+        if correlation.process:
             scaleUp,scaleDn = getTFShift(self.tfname,syst)
             up = self.bkg_tf_re.Clone("%sUp"%(systname))
             dn = self.bkg_tf_re.Clone("%sDown"%(systname))
             up.Multiply(scaleUp); dn.Multiply(scaleDn)
             self.addSysShape(up,dn)
         else:
-            for part in self.tfname.split("_to_"):
+            parts = self.tfname.split("_to_")
+            procs = self.procmap[self.tfname]
+            for part,proc in zip(parts,procs):
                 syst_part = syst+'_'+part
                 scaleUp,scaleDn = getTFShift(self.tfname,syst_part)
-                up = self.bkg_tf_re.Clone("%s_%sUp"%(systname,part))
-                dn = self.bkg_tf_re.Clone("%s_%sDown"%(systname,part))
+                up = self.bkg_tf_re.Clone("%s_%sUp"%(systname,proc))
+                dn = self.bkg_tf_re.Clone("%s_%sDown"%(systname,proc))
                 up.Multiply(scaleUp); dn.Multiply(scaleDn)
                 self.addSysShape(up,dn)
     def addSyst(self,syst,correlated=True):
@@ -390,6 +424,7 @@ def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
 
     signals = ['axial']
     signals = ["ggh","vbf","wh","zh"]
+    # signals = ["zprime"]
     ws.SignalRegion(syscat,signals)
     ws.SingleEleCR(syscat)
     ws.SingleMuCR(syscat)
@@ -404,7 +439,7 @@ def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
     return ws
     
 if __name__ == "__main__":
-    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Systematics/monojet_recoil.sys.root")
+    sysfile = SysFile("/nfs_scratch/ekoenig4/MonoZprimeJet/2018/CMSSW_10_2_13/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Systematics/monojet_recoil.sys.root")
     syscat = sysfile.categories["category_monojet_2017"]
     output = TFile("workspace.root","recreate")
     ws = Workspace("w","w")
