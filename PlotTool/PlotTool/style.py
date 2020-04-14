@@ -53,7 +53,7 @@ def set_bounds(hs):
     ymax = max( hs[ibin] for ibin in range(1,hs.GetNbinsX()+1) if hs[ibin] != 0)
 
     hs.SetMinimum(0.005)
-    hs.SetMaximum(ymax*(10**2.5))
+    hs.SetMaximum(ymax*(10**7))
 def ratio_style(ratio,color,rymin=0.5,rymax=1.5,name='#frac{Data}{Bkg}'):
     gPad.SetGridy();
     ratio.SetMarkerSize(1);
