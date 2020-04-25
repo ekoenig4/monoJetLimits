@@ -158,20 +158,20 @@ class ConnectedBinList(BinList):
         # "zm_to_sr":{
         #     "mettrig":True
         # },
-        # "we_to_sr":{
-        #     "mettrig":True,
-        #     "eleveto":True,
-        #     "muveto":True,
-        #     "tauveto":True,
-        #     "PDF":True
-        # },
-        # "wm_to_sr":{
-        #     "mettrig":True,
-        #     "eleveto":True,
-        #     "muveto":True,
-        #     "tauveto":True,
-        #     "PDF":True
-        # }
+        "we_to_sr":{
+            # "mettrig":True,
+            "eleveto":True,
+            "muveto":True,
+            "tauveto":True,
+            # "PDF":True
+        },
+        "wm_to_sr":{
+            # "mettrig":True,
+            "eleveto":True,
+            "muveto":True,
+            "tauveto":True,
+            # "PDF":True
+        }
     }
     store = []
     def power_syst(n,nominal,first,second=0): return "(TMath::Power(1+{first},@{n}))".format(**vars())

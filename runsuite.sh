@@ -16,6 +16,6 @@ runCRfit(){
 
 runlimits $@ &
 runimpacts $@ &
-# runCRfit $@ &
+runCRfit $@ &
 wait
 echo Done
