@@ -66,11 +66,12 @@ def mvimpacts(path):
     copyfile('impacts/impacts.pdf',"%s/%s" % (output,outname))
     os.chdir(cwd)
 ##############################################################################
-def runImpacts(path,mx,mv,procmap=None,strength=0.0,verbose=0):
+def runImpacts(path,mx,mv,procmap=None,strength=0.0,verbose=0,reset=False):
     cwd = os.getcwd()
     os.chdir(path)
     if not os.path.isdir('impacts'): os.mkdir('impacts')
     os.chdir('impacts')
+    if reset: os.system("rm *")
 
     #--- Combine Cards and Mask SR ---#
     verbose = ["-v",str(verbose)]
@@ -122,7 +123,7 @@ def runParallel(args=None):
     print 'Running Impacts'
     mx,mv = "1","1000"
     procmap = {}
-    for path in args.dir: runImpacts(path,mx,mv,procmap,verbose=args.verbose)
+    for path in args.dir: runImpacts(path,mx,mv,procmap,verbose=args.verbose,reset=args.reset)
     printProcs(procmap,'Impacts')
     for path in args.dir: mvimpacts(path)
 ##############################################################################
@@ -134,7 +135,7 @@ def runSerial(args=None):
     cwd = os.getcwd()
     for path in args.dir:
         os.chdir(cwd)
-        runImpacts(path,mx,mv,verbose=args.verbose)
+        runImpacts(path,mx,mv,verbose=args.verbose,reset=args.reset)
         mvimpacts(path)
 ##############################################################################
 def getargs():
@@ -143,6 +144,7 @@ def getargs():
         raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
+    parser.add_argument("-r","--reset",help="Rerun impacts",action="store_true")
     parser.add_argument("-s","--signal",help='Specify the signal strength',action='store',type=float,default=0.0)
     parser.add_argument("-p","--parallel",help="Run all directories in parallel",action='store_true',default=False)
     parser.add_argument("-v","--verbose",help="Specify combine verbose level",type=int,default=0)

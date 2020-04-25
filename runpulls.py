@@ -27,6 +27,7 @@ def channel_order(ch1,ch2):
 def getargs():
     parser = ArgumentParser()
     parser.add_argument("-d","--dir",help="specify directory to run pulls in",nargs='+',action="store",type=str,required=True)
+    parser.add_argument("-r","--reset",help="Rerun impacts",action="store_true")
     parser.add_argument("-s","--signal",help="specify signal sample to run pulls on",action="store",type=str,default="Mchi1_Mphi1000")
     parser.add_argument("-g",help="specify output root file name",type=str,default="diffNuisances_result.root")
 

@@ -50,6 +50,7 @@ def runDirectory(path,args):
     os.chdir(path)
     if not os.path.isdir('limits'): os.mkdir('limits')
     os.chdir('limits')
+    if args.reset: os.system("rm *")
     runFit(args)
     os.chdir(cwd)
 ##############################################################################
