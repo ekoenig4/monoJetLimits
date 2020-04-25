@@ -115,6 +115,7 @@ def getargs():
         raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
+    parser.add_argument("-r","--reset")
     try: args = parser.parse_args()
     except:
         parser.print_help()

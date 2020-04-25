@@ -29,6 +29,7 @@ class FitFile(TFile):
     def getOtherBkg(self,region,mclist = ['ZJets','WJets','DYJets','GJets','TTJets','QCD','EWK']):
         bkg = None
         tdir = self.Get('shapes_prefit/%s' % region)
+        print [key.GetName() for key in tdir.GetListOfKeys() ]
         for mc in mclist:
             if regionmap[region]['mc'] in mc: continue
             tmp = tdir.Get('%s' % mc)
