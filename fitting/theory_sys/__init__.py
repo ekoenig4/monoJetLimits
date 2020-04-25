@@ -6,11 +6,11 @@ filedir = os.path.dirname( os.path.realpath(__file__) )
 
 theoryfnames = {
     "wsr_to_zsr":["wz_unc.root"],
-    "ga_to_sr":["gz_unc.root"]#,"all_trig_2017.root"],
+    "ga_to_sr":["gz_unc.root"],#,"all_trig_2017.root"],
     # "ze_to_sr":["all_trig_2017.root"],
     # "zm_to_sr":["all_trig_2017.root"],
-    # "we_to_sr":["all_trig_2017.root","wtow_pdf_sys.root","veto_sys.root"],
-    # "wm_to_sr":["all_trig_2017.root","wtow_pdf_sys.root","veto_sys.root"]
+    "we_to_sr":["veto_sys.root"],
+    "wm_to_sr":["veto_sys.root"]
 }
 
 theoryfiles = {}
