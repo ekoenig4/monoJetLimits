@@ -45,7 +45,6 @@ filemap = {
         "PDF":"ratio"
     },
     ("veto_sys.root",):{
-        "mettrig":"trig_sys",
         "eleveto":"eleveto",
         "muveto":"muveto",
         "tauveto":"tauveto",
@@ -68,12 +67,19 @@ uncorrelatedmap = {
     "_ga$":"2"
 }
 
+def getAltName(nuisance,altmap):
+    if nuisance in altmap: return altmap[nuisance]
+    if any( alt in nuisance for alt in altmap ): return nuisance
+def hasYearShape(nuisance):
+    return nuisance in ("eleveto","muveto","tauveto")
 def getHistoMap(tfname,nuisance,histomap):
     filelist = theoryfnames[tfname]
+    print tfname,nuisance
     for fname in filelist:
         for filetuple,altmap in filemap.iteritems():
-            if fname in filetuple and nuisance in altmap:
-                return theoryhistos[fname],altmap[nuisance]
+            altname = getAltName(nuisance,altmap)
+            if fname in filetuple and altname:
+                return theoryhistos[fname],altname
 def getUpShift(histomap,hstype,ch):
     prefix = next( (prefix for fname,prefix in prefixmap.items() if fname == histomap[file]),"")
     suffix = next( (suffix for fname,suffix in suffixmap.items() if fname == histomap[file]),"")
@@ -93,9 +99,10 @@ def getDnShift(histomap,hstype,ch):
         if 'monov' in key: continue
         if key == hstype+'_Down' or key == hstype+'_down':
             return hs
-def getTFShift(tfname,nuisance,histomap=theoryhistos,ch='monojet'):
+def getTFShift(tfname,nuisance,histomap=theoryhistos,ch='monojet',year=None):
     if ch is 'monojet': ch = lambda string:"monov" not in string
     else: ch = lambda string:"monov" in string
+    if year and hasYearShape(nuisance): nuisance += "_"+str(year)
     # print tfname,nuisance
     altTag = None
     for tag in uncorrelatedmap:
@@ -108,9 +115,10 @@ def getTFShift(tfname,nuisance,histomap=theoryhistos,ch='monojet'):
     shiftDn = getDnShift(histomap,altname,ch)
     return shiftUp,shiftDn
 if __name__ == "__main__":
-    print getTFShift("wsr_to_zsr","NNLO_Sud_zsr")
-    print getTFShift("wsr_to_zsr","NNLO_Sud_wsr")
-    print getTFShift("ga_to_sr","QCD_EWK_Mix")
-    print getTFShift("ga_to_sr","PDF")
-    print getTFShift("we_to_sr","PDF")
-    print getTFShift("ga_to_sr","mettrig")
+    print getTFShift("we_to_sr","eleveto",year=2017)
+    # print getTFShift("wsr_to_zsr","NNLO_Sud_zsr")
+    # print getTFShift("wsr_to_zsr","NNLO_Sud_wsr")
+    # print getTFShift("ga_to_sr","QCD_EWK_Mix")
+    # print getTFShift("ga_to_sr","PDF")
+    # print getTFShift("we_to_sr","PDF")
+    # print getTFShift("ga_to_sr","mettrig")

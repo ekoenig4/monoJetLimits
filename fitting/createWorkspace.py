@@ -270,7 +270,7 @@ class ConnectedBinList(BinList):
         systname = [ str(name) for ntype,name in namemap.items() if not getattr(correlation,ntype) ] + [syst]
         systname = '_'.join(systname)
         if correlation.process:
-            scaleUp,scaleDn = getTFShift(self.tfname,syst)
+            scaleUp,scaleDn = getTFShift(self.tfname,syst,year=self.year)
             up = self.bkg_tf_re.Clone("%sUp"%(systname))
             dn = self.bkg_tf_re.Clone("%sDown"%(systname))
             up.Multiply(scaleUp); dn.Multiply(scaleDn)
