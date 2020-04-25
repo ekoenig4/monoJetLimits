@@ -87,7 +87,7 @@ class BinList:
             self.store.append(nbin)
         self.p_bkg = RooParametricHist(self.obs.GetName(),"%s PDF in %s"%(self.procname,self.sysdir.GetTitle()),self.var,self.binlist,self.obs)
         self.p_bkg_norm = RooAddition("%s_norm"%self.obs.GetName(),"%s total events in %s"%(self.procname,self.sysdir.GetTitle()),self.binlist)
-    def Export(self,ws):
+    def Export(self,ws,total=0):
         ws.Import(self.p_bkg,RooFit.RecycleConflictNodes())
         ws.Import(self.p_bkg_norm,RooFit.RecycleConflictNodes())
 
@@ -333,10 +333,12 @@ class Template:
             # If process cant be found, assume zero yield
             self.obs= self.sysdir.Get("data_obs").Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
             self.obs.Reset()
-            # Apparently combine doesnt like zero yield 
-            self.obs.SetBinContent(1,0.001)
         else:
             self.obs = self.sysdir.Get(self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+        if self.obs.Integral() == 0:
+            # Apparently combine doesnt like zero yield 
+            self.obs.SetBinContent(1,0.001)
+            
         self.hist = RooDataHist(self.obs.GetName(),"%s Observed"%self.obs.GetName(),self.varlist,self.obs)
 
         if 'Up' in self.procname or 'Down' in self.procname: return
@@ -350,8 +352,8 @@ class Template:
             dn = self.sysdir.Get("%s_%sDown"%(self.procname,nuisance)).Clone("%s_%s_%sDown"%(self.procname,self.sysdir.GetTitle(),nuisance))
             if not validShape(up,dn): continue
             self.nuisances[nuisance] = {'up':Nuisance(up.GetName(),up,self.varlist),'dn':Nuisance(dn.GetName(),dn,self.varlist)}
-    def Export(self,ws):
-        if not validHisto(self.obs): return
+    def Export(self,ws,total=0):
+        if not validHisto(self.obs,total): return
         ws.Import(self.hist)
         for nuisance in self.nuisances.values():
             if not nuisance: continue
@@ -383,6 +385,7 @@ class Channel:
         self.signalmap = { signal:Template(signal,self.sysdir,self.syscat.varlist) for signal in signals }
     def Export(self,ws):
         self.data.Export(ws)
+        # total_bkg = sum( self.bkgmap[bkg].obs.Integral() for bkg in self.bkglist if 'model' not in bkg )
         for bkg in self.bkglist: self.bkgmap[bkg].Export(ws)
         if not hasattr(self,'signals'): return
         for signal in self.signals: self.signalmap[signal].Export(ws)
