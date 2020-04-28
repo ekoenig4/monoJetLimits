@@ -58,10 +58,10 @@ suffixmap = {
 }
 
 uncorrelatedmap = {
-    "zsr":"1",
-    "wsr":"2",
-    "sr":"1",
-    "ga":"2"
+    "_zsr$":"1",
+    "_wsr$":"2",
+    "_sr$":"1",
+    "_ga$":"2"
 }
 
 def getAltName(nuisance,altmap):
@@ -81,6 +81,7 @@ def getUpShift(histomap,hstype,ch):
     prefix = next( (prefix for fname,prefix in prefixmap.items() if fname == histomap[file]),"")
     suffix = next( (suffix for fname,suffix in suffixmap.items() if fname == histomap[file]),"")
     hstype = prefix + hstype + suffix
+    print hstype
     for key,hs in histomap.iteritems():
         if key is file: continue
         if 'monov' in key: continue
@@ -102,8 +103,8 @@ def getTFShift(tfname,nuisance,histomap=theoryhistos,ch='monojet',year=None):
     # print tfname,nuisance
     altTag = None
     for tag in uncorrelatedmap:
-        if tag in nuisance:
-            nuisance = nuisance.replace("_"+tag,"")
+        if re.search(tag,nuisance):
+            nuisance = nuisance.replace(tag.strip("$"),"")
             altTag = uncorrelatedmap[tag]
     histomap,altname = getHistoMap(tfname,nuisance,histomap)
     if altTag: altname += altTag

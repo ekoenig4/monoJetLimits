@@ -3,9 +3,13 @@ from sys import argv
 import re
 
 gROOT.SetBatch(1)
+gStyle.SetOptStat(0)
 
 var = 'recoil'
+var = 'ChNemPtFrac'
 # var = 'met_monojet_2018'
+
+store = []
 
 def iterset(rooset):
     iter = rooset.createIterator()
@@ -71,11 +75,18 @@ def plotVar(pdf,var,nuisance):
     ymax = max(binlist)
     diff = abs(ymax - ymin)
 
-    canvas = TCanvas(name,name)
+
+    canvas = TCanvas(pdf.GetName()+"_"+name,"%s %s"%(pdf.GetName(),name))
+    canvas.SetLeftMargin(0.15)
     nominal.Draw("hist")
     shiftUp.Draw("histsame")
     shiftDn.Draw("histsame")
-    nominal.GetYaxis().SetRangeUser(ymin - diff,ymax + diff)
+    nominal.GetYaxis().SetTitle(name)
+    nominal.SetTitle(canvas.GetTitle())
+    shiftUp.SetTitle(canvas.GetTitle())
+    shiftDn.SetTitle(canvas.GetTitle())
+    nominal.GetYaxis().SetRangeUser(ymin - 0.1*diff,ymax + 0.1*diff)
+    store.append(canvas)
     canvas.Write()
     for nuisance in nuisances: nuisance.setVal(0.)
 def plotPDF(pdf,var,output):

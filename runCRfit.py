@@ -25,7 +25,7 @@ def channel_order(ch1,ch2):
     return 1
 
 def runFit(args):
-    if os.path.isfile('fitDiagnostics_fit_CRonly_result.root') and not args.reset: return
+    if os.path.isfile('fitDiagnostics_fit_CRonly_result.root'): return
     verbose = ["-v",str(args.verbose)]
     channels = [ card.replace('datacard_','') for card in os.listdir('../') if 'datacard' in card ]
     channels.sort(channel_order)
@@ -51,6 +51,7 @@ def runDirectory(path,args):
     os.chdir(path)
     if not os.path.isdir('cr_fit'): os.mkdir('cr_fit')
     os.chdir('cr_fit')
+    if args.reset: os.system("rm *")
     runFit(args)
     os.chdir(cwd)
 ##############################################################################

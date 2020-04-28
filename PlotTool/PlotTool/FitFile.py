@@ -22,6 +22,9 @@ class FitFile(TFile):
     def getFitRatio(self):
         self.prefit_ratio = self.data_hs.Clone('prefit_ratio')
         self.prefit_ratio.Divide(self.prefit_hs)
+        if not self.postfit_hs:
+            self.postfit_ratio = None
+            return
         self.postfit_ratio = self.data_hs.Clone('postfit_ratio')
         self.postfit_ratio.Divide(self.postfit_hs)
     def getSigmaPull(self,show=True):
@@ -29,6 +32,7 @@ class FitFile(TFile):
     def getOtherBkg(self,region,mclist = ['ZJets','WJets','DYJets','GJets','TTJets','QCD','EWK']):
         bkg = None
         tdir = self.Get('shapes_prefit/%s' % region)
+        print [key.GetName() for key in tdir.GetListOfKeys() ]
         for mc in mclist:
             if regionmap[region]['mc'] in mc: continue
             tmp = tdir.Get('%s' % mc)

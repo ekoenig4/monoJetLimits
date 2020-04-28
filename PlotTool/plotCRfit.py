@@ -45,10 +45,11 @@ def plotCR(cr,fitfile,info):
   
   prefit_hs.Draw("hist"); fit_style(prefit_hs,prefit_color);
   set_bounds(prefit_hs)
-  postfit_hs.Draw("hist same"); fit_style(postfit_hs,postfit_color)
+  if postfit_hs: postfit_hs.Draw("hist same"); fit_style(postfit_hs,postfit_color)
   other_bkg.Draw("hist same"); other_style(other_bkg,other_color)
   data_graph.Draw("pex0 same"); data_style(data_graph)
-  prefit_hs.Draw("Axis same")
+  # prefit_hs.Draw("Axis same")
+  pad1.RedrawAxis()
   
   leg = getLegend()
   leg.AddEntry(data_graph,"Data","lp")
@@ -74,7 +75,7 @@ def plotCR(cr,fitfile,info):
   postfit_ratio = fitfile.postfit_ratio
   
   prefit_ratio.Draw('pe'); ratio_style(prefit_ratio,prefit_color)
-  postfit_ratio.Draw('pesame'); ratio_style(postfit_ratio,postfit_color)
+  if postfit_ratio: postfit_ratio.Draw('pesame'); ratio_style(postfit_ratio,postfit_color)
   
   ###############################
   pad2.cd()
@@ -83,11 +84,12 @@ def plotCR(cr,fitfile,info):
   pad4.SetTopMargin(0);
   pad4.SetBottomMargin(0.5)
 
-  fitfile.getSigmaPull()
-  sigma_pull = fitfile.sigma_pull
-  sigma_pull.Draw('hist'); pull_style(sigma_pull,postfit_color)
-  xname = sigma_pull.GetXaxis().GetTitle().replace("(","[").replace(")","]")
-  sigma_pull.GetXaxis().SetTitle( xname )
+  if postfit_hs:
+    fitfile.getSigmaPull()
+    sigma_pull = fitfile.sigma_pull
+    sigma_pull.Draw('hist'); pull_style(sigma_pull,postfit_color)
+    xname = sigma_pull.GetXaxis().GetTitle().replace("(","[").replace(")","]")
+    sigma_pull.GetXaxis().SetTitle( xname )
   
   ##############################
 
@@ -115,6 +117,7 @@ def getargs():
         raise ValueError()
     parser = ArgumentParser(description='Run all avaiable limits in specified directory')
     parser.add_argument("-d","--dir",help='Specify the directory to run limits in',nargs='+',action='store',type=directory,required=True)
+    parser.add_argument("-r","--reset")
     try: args = parser.parse_args()
     except:
         parser.print_help()
