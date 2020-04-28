@@ -22,6 +22,9 @@ class FitFile(TFile):
     def getFitRatio(self):
         self.prefit_ratio = self.data_hs.Clone('prefit_ratio')
         self.prefit_ratio.Divide(self.prefit_hs)
+        if not self.postfit_hs:
+            self.postfit_ratio = None
+            return
         self.postfit_ratio = self.data_hs.Clone('postfit_ratio')
         self.postfit_ratio.Divide(self.postfit_hs)
     def getSigmaPull(self,show=True):
