@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from ROOT import *
 from SysFile import *
+from Parser import parser
+import SignalInfo
 from theory_sys import getTFShift
 from collections import OrderedDict
 import os
@@ -421,14 +423,12 @@ class Workspace(RooWorkspace):
         h_year.Write()
         syscat.var.Write('variable')
 def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
+    parser.parse_args()
 
     output = TFile(outfname,"recreate")
     ws = Workspace("w","w")
 
-    signals = ['axial']
-    signals = ["ggh","vbf","wh","zh"]
-    signals = ["zprime"]
-    ws.SignalRegion(syscat,signals)
+    ws.SignalRegion(syscat,parser.args.signal)
     ws.SingleEleCR(syscat)
     ws.SingleMuCR(syscat)
     ws.DoubleEleCR(syscat)

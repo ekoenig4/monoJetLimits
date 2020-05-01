@@ -3,13 +3,34 @@
 from ROOT import *
 from Datacard import Datacard
 from lnNlist import lnNlist
+from Parser import parser
+import SignalInfo
 import re
 import os
 
+cat_list = ["sr","we","wm","ze","zm","ga"]
+
+parser.add_argument("--include",help="List of categories to include in datacard",nargs="+",choices=cat_list,default=cat_list)
+parser.add_argument("--remove",help="Remove categories from datacards",nargs="+",choices=cat_list,default=[])
+parser.add_argument("--freeze",help="Freeze nuisance parameters from begin included in datacards",nargs="+",default=[],type=lambda arg:re.compile("^"+arg+"$"))
+
+def channel_order(ch1,ch2,ch_order=list(cat_list)):
+    for i,ch in enumerate(ch_order):
+        if ch in ch1: i1 = i
+        if ch in ch2: i2 = i
+    if i1 < i2: return -1
+    elif i1 == i2:
+            y1 = re.findall('\d\d\d\d',ch1)
+            y2 = re.findall('\d\d\d\d',ch2)
+            if any(y1) and any(y2):
+                y1 = int(y1[0]); y2 = int(y2[0])
+                if y1 < y2: return -1
+    return 1
+  
 datadriven=['ZJets','WJets','DYJets','GJets']
-signal = ["ggh","vbf","wh","zh"]
-signal = ["zprime"]
-signalmap = { re.compile(sig):sig for sig in signal }
+signalmap = { }
+
+frozen_params = set()
 
 def loop_iterator(iterator):
   object = iterator.Next()
@@ -36,12 +57,18 @@ def getVariations(ch,proc): return [ hist.replace("%s_%s_"%(proc,ch.channel),"")
 def Add_lnN(card,proc,isSignal):
   region,year = card.channel.split("_")
   for lnN in lnNlist:
+    if any( pattern.match(lnN.name) for pattern in parser.args.freeze ):
+      frozen_params.add(lnN.name)
+      continue
     name,value = lnN.get(proc.replace("_model",""),region,year)
     if name is None: continue
     card.addNuisance(proc.replace("_model",""),name,'lnN',value)
 def Add_Shape(card,proc,nuisances):
   variations = getVariations(card,proc)
   for nuisance in nuisances:
+    if any( pattern.match(nuisance) for pattern in parser.args.freeze ): 
+      frozen_params.add(nuisance)
+      continue
     if nuisance in variations:
       card.addNuisance(proc,nuisance,'shape',1)
 def AddProc(card,proc,isSignal,nuisances=[],useModel=True):
@@ -64,6 +91,9 @@ def AddProc(card,proc,isSignal,nuisances=[],useModel=True):
 def AddTF(card,tf,useModel):
   if not useModel: return
   for tf in card.vars:
+    if any( pattern.match(tf) for pattern in parser.args.freeze ):
+      frozen_params.add(tf)
+      continue
     card.addTransfer(tf)
 def MakeCard(ws,ch,tf="",signal=[],useModel=True):
   print "Writing datacard_%s" % ch
@@ -79,19 +109,45 @@ def MakeCard(ws,ch,tf="",signal=[],useModel=True):
   for proc in proclist: AddProc(ch_card,proc,proc in signal,useModel=useModel)
   AddTF(ch_card,tf,useModel)
   ch_card.write()
+  return
 
-def createDatacards(wsfname,year,signal=signal):
+cardmap = {
+  "sr":"WJets_model",
+  "we":"WJets_model",
+  "wm":"WJets_model",
+  "ze":"DYJets_model",
+  "zm":"DYJets_model",
+  "ga":"GJets_model"
+}
+def createDatacards(wsfname,year):
+  parser.parse_args()
+  frozen_params.clear()
+  
   input = TFile(wsfname)
   ws = input.Get("w")
   ws.fname = input.GetName()
 
-  MakeCard(ws,"sr_%s"%year,"WJets_model",signal)
-  MakeCard(ws,"we_%s"%year,"WJets_model")
-  MakeCard(ws,"wm_%s"%year,"WJets_model")
-  MakeCard(ws,"ze_%s"%year,"DYJets_model")
-  MakeCard(ws,"zm_%s"%year,"DYJets_model")
-  MakeCard(ws,"ga_%s"%year,"GJets_model")
-  return [ "datacard_%s_%s" % (ch,year) for ch in ("sr","we","wm","ze","zm","ga")]
+  for datacard in os.listdir("."):
+    if "datacard" in datacard:
+      os.remove(datacard)
+
+  chlist = list(parser.args.include)
+  for ch in parser.args.remove:
+    if ch in chlist: chlist.remove(ch)
+  chlist.sort(channel_order)
+
+  signalmap.update( {re.compile(signal):signal for signal in parser.args.signal} )
+
+  for ch in chlist:
+    siglist = [] if ch != "sr" else parser.args.signal
+    MakeCard(ws,"%s_%s"%(ch,year),cardmap[ch],signal=siglist)
+
+  if any(frozen_params):
+    print "Frozen Parameters:"
+    for param in frozen_params:
+      print "\t",param
+    print
+  return [ "datacard_%s_%s" % (ch,year) for ch in chlist ]
 if __name__ == "__main__":
   input = TFile("workspace.root")
   ws = input.Get("w")

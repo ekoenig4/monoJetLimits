@@ -77,9 +77,8 @@ def makeMchiDir(mx,mvlist,yearlist,options,procmap=None):
     printProcs(procmap,"Mphi Directories")
     os.chdir(cwd)
 #####
-def getargs():
-    
-    parser = ArgumentParser(description='Make workspace for generating limits based on input systematics file')
+def getargs():    
+    # parser = ArgumentParser(description='Make workspace for generating limits based on input systematics file')
     parser.add_argument("-i","--input",help="Specify input systematics file to generate limits from",default=None,required=True)
     parser.add_argument("-o","--output",help="Specify output directory")
     parser.add_argument('-r','--reset',help="Remove directory before creating workspace if it is already there",action='store_true',default=False)
@@ -124,6 +123,8 @@ def combineWorkspace(syscats,args):
     cwd = os.getcwd()
     sysdir = syscats[0].sysdir.replace("%s.sys"%syscats[0].year,"Run2.sys")
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
+    for datacard in os.listdir("."):
+        if "datacard" in datacard: os.remove(datacard)
     for syscat in syscats:
         for datacard in os.listdir(syscat.sysdir):
             if "datacard" in datacard:
