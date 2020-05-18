@@ -17,7 +17,7 @@ class lnN:
 lnNlist = [
     lnN("QCD_NormEleR",{"we":{"QCD":1.75}}),
     lnN("QCD_NormMuonR",{"wm":{"QCD":1.75}}),
-    lnN("QCD_NormPurity",{"ga":{"QCD":1.25}}),
+    # lnN("QCD_NormPurity",{"ga":{"QCD":1.25}}),
     lnN("QCD_NormSignal",{"sr":{"QCD":1.75}}),
     lnN("lumi_13TeV_%s",{
         "2017":{
