@@ -22,6 +22,7 @@ class SysRegion(TDirectoryFile):
         for key in syscat.tdir.GetListOfKeys():
             r,p = key.GetName().split("_")
             if dirmap[region] != r: continue
+            if p == "sumofbkg": continue
             procname = procmap[p]
             process = syscat.tdir.Get(key.GetName()).Clone(procname)
             self.Add(process)
