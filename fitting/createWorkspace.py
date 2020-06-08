@@ -271,6 +271,9 @@ class ConnectedBinList(BinList):
         namemap = OrderedDict([("ratio",self.tfname if self.tfname not in self.ratiomap else self.ratiomap[self.tfname]),("year",self.year)])
         systname = [ str(name) for ntype,name in namemap.items() if not getattr(correlation,ntype) ] + [syst]
         systname = '_'.join(systname)
+
+        if any( pattern.match(systname) for pattern in parser.args.freeze ): return
+        
         if correlation.process:
             scaleUp,scaleDn = getTFShift(self.tfname,syst,year=self.year)
             up = self.bkg_tf_re.Clone("%sUp"%(systname))
