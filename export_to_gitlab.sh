@@ -1,6 +1,6 @@
-gitlab="${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/cards/uw/monojet/"
+gitlab="${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/monoJetLimits/cards/uw/monojet/"
 
-wsall="${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Limits/recoil/"
+wsall="${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/monoJetLimits/Limits/hinv_recoil/"
 ws2017="${wsall}/recoil_2017.sys/"
 ws2018="${wsall}/recoil_2018.sys/"
 wscomb="${wsall}/recoil_Run2.sys/"
@@ -28,15 +28,15 @@ export_diagnostics() {
     export_path=${gitlab}/diagnostics
     mkdir -p ${export_path}
     
-    cp -v ${ws2017}/cr_fit/fitDiagnostics_fit_CR_only_result.root ${export_path}/fitDiagnostics_monojet_2017.root
+    cp -v ${ws2017}/cr_fit/fitDiagnostics_fit_CRonly_result.root ${export_path}/fitDiagnostics_monojet_2017.root
     cp -v ${ws2017}/cr_fit/higgsCombine_fit_CRonly_result.FitDiagnostics.mH1000.root ${export_path}/higgsCombine_monojet_2017.FitDiagnostics.mH1000.root
     cp -v ${ws2017}/cr_fit/diffNuisances_result.root ${export_path}/diffnuisances_monojet_2017.root
 
-    cp -v ${ws2018}/cr_fit/fitDiagnostics_fit_CR_only_result.root ${export_path}/fitDiagnostics_monojet_2018.root
+    cp -v ${ws2018}/cr_fit/fitDiagnostics_fit_CRonly_result.root ${export_path}/fitDiagnostics_monojet_2018.root
     cp -v ${ws2018}/cr_fit/higgsCombine_fit_CRonly_result.FitDiagnostics.mH1000.root ${export_path}/higgsCombine_monojet_2018.FitDiagnostics.mH1000.root
     cp -v ${ws2018}/cr_fit/diffNuisances_result.root ${export_path}/diffnuisances_monojet_2018.root
     
-    cp -v ${wscomb}/cr_fit/fitDiagnostics_fit_CR_only_result.root ${export_path}/fitDiagnostics_monojet_combined.root
+    cp -v ${wscomb}/cr_fit/fitDiagnostics_fit_CRonly_result.root ${export_path}/fitDiagnostics_monojet_combined.root
     cp -v ${wscomb}/cr_fit/higgsCombine_fit_CRonly_result.FitDiagnostics.mH1000.root ${export_path}/higgsCombine_monojet_combined.FitDiagnostics.mH1000.root
     cp -v ${wscomb}/cr_fit/diffNuisances_result.root ${export_path}/diffnuisances_monojet_combined.root
 }
@@ -64,4 +64,4 @@ export_input() {
 export_cards
 export_diagnostics
 export_input
-# export_impacts
+export_impacts
