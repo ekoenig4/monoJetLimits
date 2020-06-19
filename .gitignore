@@ -2,6 +2,7 @@
 test
 Limits/*
 cards
+uw_mono-x_cards
 *.pyc
 *.root
 nohup.out
