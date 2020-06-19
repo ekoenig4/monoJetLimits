@@ -57,8 +57,11 @@ def plotCR(cr,fitfile,info):
   leg.AddEntry(prefit_hs,"Pre-fit (%s)" % regionmap[cr]['leg'],'f')
   leg.AddEntry(other_bkg,"Other Backgrounds",'f')
   leg.Draw()
-  
-  texCMS,texLumi = getCMSText(info.lumi_label,info.year)
+
+  year = re.findall("\d\d\d\d",cr)[0]
+  if year == "2017": lumi_label = "41.5 fb^{-1}"
+  if year == "2018": lumi_label = "59.7 fb^{-1}"
+  texCMS,texLumi = getCMSText(lumi_label,year)
   
   ##############################
   c.cd()

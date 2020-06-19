@@ -33,6 +33,7 @@ def getCMSText(lumi_label,year):
 def data_style(graph,color=kBlack):
     graph.SetTitle("")
     graph.SetMarkerStyle(20)
+    graph.SetMarkerSize(1.35)
     graph.SetMarkerColor(kBlack)
     graph.SetLineColor(kBlack)
 def fit_style(hs,color):
@@ -56,7 +57,7 @@ def set_bounds(hs):
     hs.SetMaximum(ymax*(10**7))
 def ratio_style(ratio,color,rymin=0.5,rymax=1.5,name='#frac{Data}{Bkg}'):
     gPad.SetGridy();
-    ratio.SetMarkerSize(1);
+    ratio.SetMarkerSize(1.35);
     ratio.SetMarkerStyle(20)
     ratio.SetMarkerColor(color)
     ratio.SetLineColor(color)
