@@ -12,6 +12,7 @@ runCRfit(){
 
     python PlotTool/plotCRfit.py -d $@ &
     ./runpulls.py -d $@ &
+    wait
 }
 
 runlimits $@ &
