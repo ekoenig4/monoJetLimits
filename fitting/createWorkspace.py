@@ -8,6 +8,7 @@ from collections import OrderedDict
 import os
 import re
 import json
+from array import array
 
 gSystem.Load("libHiggsAnalysisCombinedLimit.so")
 
@@ -64,6 +65,22 @@ def getShift(norm,up,dn,reciprocal=False):
         sh[ibin] = shiftEnvelope
     return sh
 
+fix_range = None
+def FixRange(histo,varlist=None):
+    return histo
+    global fix_range
+    if histo is None: return histo
+    if fix_range is None:
+        xaxis = histo.GetXaxis()
+        imin = next( (i for i in irange(1,histo.GetNbinsX()) if histo[i] != 0),1 )
+        xmin = xaxis.GetBinLowEdge(imin)
+        imax = next( (i for i in range(histo.GetNbinsX(),0,-1) if histo[i] != 0),histo.GetNbinsX() )
+        xmax = xaxis.GetBinUpEdge(imax)
+        
+        varlist[0].setRange(xmin,xmax)
+        xbins = array('d',list(xaxis.GetXbins())[imin-1:imax+1])
+        fix_range = xbins
+    return histo.Rebin(len(fix_range)-1,histo.GetName(),fix_range)
 class BinList:
     store = []
     def __init__(self,template,sysdir,var,setConst=False):
@@ -228,12 +245,15 @@ class ConnectedBinList(BinList):
                 systform = self.getSystFormula(bin_ratio,syst["envelope"][i],syst[RooRealVar],nbin=ibin)
                 formula_tf.add( systform )
                 tf_form.append(systform)
-            statvar = RooRealVar("%s_stat_bin%i" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-4.,4.)
-            statvar.setAttribute("nuisance",True)
-            self.store.append(statvar)
-            statform = self.getSystFormula(bin_ratio,self.bkg_tf.GetBinError(i)/bin_ratio,statvar)
-            formula_tf.add(statform)
-            tf_form.append(statform)
+                
+            if bin_ratio != 0:
+                statvar = RooRealVar("%s_stat_bin%i" % (self.bkg_tf.GetName(),ibin),"%s TF Stats, bin %i" % (self.bkg_tf.GetName(),ibin),0.,-4.,4.)
+                statvar.setAttribute("nuisance",True)
+                self.store.append(statvar)
+                statform = self.getSystFormula(bin_ratio,self.bkg_tf.GetBinError(i)/bin_ratio,statvar)
+                formula_tf.add(statform)
+                tf_form.append(statform)
+                
             tf_form = "*".join( "@%i"%i for i in range(len(tf_form)) )
             tf_formula = RooFormulaVar("func_"+nbin.GetName(),"Function "+nbin.GetTitle(),tf_form,formula_tf)
             self.store.append(tf_formula)
@@ -273,9 +293,12 @@ class ConnectedBinList(BinList):
         systname = '_'.join(systname)
 
         if any( pattern.match(systname) for pattern in parser.args.freeze ): return
-        
+
         if correlation.process:
             scaleUp,scaleDn = getTFShift(self.tfname,syst,year=self.year)
+            scaleUp = FixRange(scaleUp)
+            scaleDn = FixRange(scaleDn)
+            
             up = self.bkg_tf_re.Clone("%sUp"%(systname))
             dn = self.bkg_tf_re.Clone("%sDown"%(systname))
             up.Multiply(scaleUp); dn.Multiply(scaleDn)
@@ -286,6 +309,9 @@ class ConnectedBinList(BinList):
             for part,proc in zip(parts,procs):
                 syst_part = syst+'_'+part
                 scaleUp,scaleDn = getTFShift(self.tfname,syst_part)
+                scaleUp = FixRange(scaleUp)
+                scaleDn = FixRange(scaleDn)
+            
                 up = self.bkg_tf_re.Clone("%s_%sUp"%(systname,proc))
                 dn = self.bkg_tf_re.Clone("%s_%sDown"%(systname,proc))
                 up.Multiply(scaleUp); dn.Multiply(scaleDn)
@@ -340,10 +366,13 @@ class Template:
             self.obs.Reset()
         else:
             self.obs = self.sysdir.Get(self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
-        if self.obs.Integral() == 0:
-            # Apparently combine doesnt like zero yield 
-            self.obs.SetBinContent(1,0.001)
             
+        self.obs = FixRange(self.obs,self.varlist)
+        
+        if self.obs.Integral() == 0:
+            # Apparently combine doesnt like zero yield
+            for ibin in irange(1,self.obs.GetNbinsX()):
+                self.obs.SetBinContent(ibin,0.001)
         self.hist = RooDataHist(self.obs.GetName(),"%s Observed"%self.obs.GetName(),self.varlist,self.obs)
 
         if 'Up' in self.procname or 'Down' in self.procname: return

@@ -10,7 +10,8 @@ lumimap = {"2016":35900,"2017":41486,"2018":59699}
 catypes = ["monojet","monov","zprime"]
 varmap = {
     "monojet":RooRealVar("recoil","recoil",250,1400),
-    "zprime":RooRealVar("ChNemPtFrac","ChNemPtFrac",0.,1.0)
+    # "zprime":RooRealVar("ChNemPtFrac","ChNemPtFrac",0.,1.0),
+    "zprime":RooRealVar("recoil","recoil",250,1400),
 }
 
 class SysRegion(TDirectoryFile):
