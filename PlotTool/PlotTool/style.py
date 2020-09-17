@@ -3,11 +3,14 @@ from ROOT import *
 colormap = {
     '1':kRed,
     '10':kAzure+10,
-    '50':kViolet,
+    '40':kViolet,
     '100':kBlack,
     '150':kOrange-2,
+    '200':kGray,
+    '300':kSpring,
+    '400':kYellow,
     '500':kGreen,
-    '1000':kBlue
+    '600':kBlue
 }
 def getLegend(xmin=0.55,ymin=0.5,xmax=0.9,ymax=0.887173):
     leg = TLegend(xmin,ymin,xmax,ymax,"")

@@ -9,7 +9,7 @@ import re
 
 gROOT.SetBatch(1)
 
-outdir_base = "/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
+outdir_base = "/afs/hep.wisc.edu/home/mallampalli/private/Analysis/MonoJet/test/%s/"#"/afs/hep.wisc.edu/home/ekoenig4/public_html/MonoJet/Plots%s/ExpectedLimits/"
 home = os.getcwd()
 #####################################################################
 def drawPlot2D(data):
@@ -20,7 +20,8 @@ def drawPlot2D(data):
     cut = data.cut
     mods = data.mods
     sysdir = data.sysdir
-    limit,mxlist,mvlist = Plot2D(data,include_central)
+    #limit,mxlist,mvlist = Plot2D(data,include_central)
+    limit,mxlist,mvlist = Plot2D(data)
     xbins = len(mvlist)
     ybins = len(mxlist)
     ######################################################################
@@ -73,7 +74,11 @@ def drawPlot1D(data):
     cut = data.cut
     mods = data.mods
     sysdir = data.sysdir
-    plots,mxlist = Plot1D(data,include_central)
+    #plots,mxlist = Plot1D(data,include_central)
+    plots,mxlist = Plot1D(data)
+    print(mxlist)
+    print(plots) 
+ 
 
     class Bounds:
         def __init__(self):

@@ -332,6 +332,7 @@ class Template:
         if not self.sysdir.Get(self.procname):
             # If process cant be found, assume zero yield
             self.obs= self.sysdir.Get("data_obs").Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
+            #self.obs= self.sysdir.Get("signal_data").Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
             self.obs.Reset()
         else:
             self.obs = self.sysdir.Get(self.procname).Clone("%s_%s"%(self.procname,self.sysdir.GetTitle()))
@@ -371,6 +372,7 @@ class Channel:
         # self.sysdir.cd()
 
         self.data = Template('data_obs',self.sysdir,self.syscat.varlist)
+        #self.data = Template('%s_data'%self.sysdir,self.sysdir,self.syscat.varlist)
         self.bkgmap = {}
         for bkg in list(self.bkglist):
             self.bkgmap[bkg] = Template(bkg,self.sysdir,self.syscat.varlist)
@@ -424,9 +426,26 @@ def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
 
     output = TFile(outfname,"recreate")
     ws = Workspace("w","w")
-
-    signals = ['axial']
-    signals = ["ggh","vbf","wh","zh"]
+    my_mass_map = {
+	"1":["100","300","500","750","1000","1500","1750","2000","2250"],
+	"10":["1750","2000"],
+	"40":["100"],
+	"100":["300","1750","2000"],
+	"150":["500","1750","2000","2250"],
+	"200":["100","500","1750","2000"],
+	"300":["300","500","750","1000","1500","1750","2000","2250"],
+	"400":["300","2000","2250"],
+	"500":["500","1750"],
+	"600":["750","1000","1500"]
+    }
+    signals = []
+    for my_Mchi,my_Mphi in my_mass_map.iteritems():
+        for Mphi_point in range(len(my_Mphi)):
+              name_string = 'axial_Mchi%s_Mphi%s'%(my_Mchi,my_Mphi[Mphi_point])
+              signals.append(name_string)
+    #signals = ['axial']
+    #signals = ['axial_Mchi1_Mphi100']
+    #signals = ["ggh","vbf","wh","zh"]
     # signals = ["zprime"]
     ws.SignalRegion(syscat,signals)
     ws.SingleEleCR(syscat)

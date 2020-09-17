@@ -20,10 +20,15 @@ class SysRegion(TDirectoryFile):
         self.year = syscat.year
         self.lumi = lumimap[self.year]
         for key in syscat.tdir.GetListOfKeys():
-            r,p = key.GetName().split("_")
+            if "axial" in key.GetName():
+               #r,p = "signal","axial"
+               r,p = "signal",key.GetName().replace("signal_","")
+            else :
+               r,p = key.GetName().split("_")
             if dirmap[region] != r: continue
             if p == "sumofbkg": continue
-            procname = procmap[p]
+            if "axial" in p :  procname = p
+            else :             procname = procmap[p]
             process = syscat.tdir.Get(key.GetName()).Clone(procname)
             self.Add(process)
 class SysCat:
@@ -38,6 +43,22 @@ class SysCat:
         self.sysregion = SysRegion(region,self)
         return self.sysregion
     def GetName(self): return "%s_%s.sys.root" % (self.var.GetTitle(),self.year)
+    def getSignalList(self): 
+            signal_mass_map =  {
+                               #"Mchi":"Mphi"
+                               "1":["100","300","500","750","1000","1500","1750","2000","2250"],
+                               "10":["1750","2000"],
+                               "40":["100"],
+                               "100":["300","1750","2000"],
+                               "150":["500","1750","2000","2250"],
+                               "200":["100","500","1750","2000"],
+                               "300":["300","500","750","1000","1500","1750","2000","2250"],
+                               "400":["300","2000","2250"],
+                               "500":["500","1750"],
+                               "600":["750","1000","1500"]
+                               }
+            return signal_mass_map
+
 
 class SysFile(TFile):
     def __init__(self,*args,**kwargs):
