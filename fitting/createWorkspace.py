@@ -154,9 +154,9 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
-            "PSW_isrCon":True,
-            "PSW_fsrCon":True,
-            # "PDF":True
+            # "PSW_isrCon":True,
+            # "PSW_fsrCon":True,
+            "PDF":True
         },
         "ga_to_sr":{
             "QCD_Scale":True,
@@ -166,30 +166,30 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
-            "PSW_isrCon":True,
-            "PSW_fsrCon":True,
-            # "PDF":True,
-            # "mettrig":True
+            # "PSW_isrCon":True,
+            # "PSW_fsrCon":True,
+            "PDF":True,
+            "mettrig":True
         },
-        # "ze_to_sr":{
-        #     "mettrig":True
-        # },
-        # "zm_to_sr":{
-        #     "mettrig":True
-        # },
+        "ze_to_sr":{
+            "mettrig":True
+        },
+        "zm_to_sr":{
+            "mettrig":True
+        },
         "we_to_sr":{
-            # "mettrig":True,
+            "mettrig":True,
             "eleveto":True,
             "muveto":True,
             "tauveto":True,
-            # "PDF":True
+            "PDF":True
         },
         "wm_to_sr":{
-            # "mettrig":True,
+            "mettrig":True,
             "eleveto":True,
             "muveto":True,
             "tauveto":True,
-            # "PDF":True
+            "PDF":True
         }
     }
     store = []
