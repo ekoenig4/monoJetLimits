@@ -65,7 +65,7 @@ def makeMchiDir(mx,mvlist,yearlist,options,procmap=None):
     for region in regions: combine_cards.append('%s=../datacard_%s' % (region,region))
     combine_cards += ['>','datacard']
     replace_mx = ['sed','-i',"'s/Mchi1/Mchi%s/g'" % mx,'datacard']
-    replace_mv = ['sed','-i',"'s/Mphi1000/Mphi$MASS/g'",'datacard']
+    replace_mv = ['sed','-i',"'s/Mphi100/Mphi$MASS/g'",'datacard']
     with open('make_datacard.sh','w') as f:
         f.write('#!/bin/sh\n')
         f.write(' '.join(combine_cards)+'\n')
@@ -114,7 +114,7 @@ def makeWorkspace(syscat,args):
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
     os.chdir(sysdir)
     createDatacards('../workspace_%s.root' % syscat.year,syscat.year)
-    # for mx,mvlist in syscat.getSignalList().items(): makeMchiDir(mx,mvlist,[syscat.year],args)
+    for mx,mvlist in syscat.getSignalList().items(): makeMchiDir(mx,mvlist,[syscat.year],args)
     os.chdir(cwd)
     return syscat
 ####################
@@ -131,8 +131,8 @@ def combineWorkspace(syscats,args):
                 print "Copying %s/%s" %(syscat.sysdir,datacard)
                 copyfile("%s/%s"%(syscat.sysdir,datacard),"%s/%s"%(sysdir,datacard))
     os.chdir(sysdir)
-    # signalist = syscat.getSignalList()
-    # for mx,mvlist in signalist.items(): makeMchiDir(mx,mvlist,[ syscat.year for syscat in syscats ],args)
+    signalist = syscat.getSignalList()
+    for mx,mvlist in signalist.items(): makeMchiDir(mx,mvlist,[ syscat.year for syscat in syscats ],args)
     os.chdir(cwd)
 ####################
 def main():

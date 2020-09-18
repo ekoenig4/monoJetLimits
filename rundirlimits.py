@@ -85,9 +85,10 @@ def printProcs(procs,name):
         for ID in IDlist:
             if procs[ID].poll() != None:
                 procs.pop(ID)
-            # elif procs[ID].duration() > cutoff:
+            #elif procs[ID].duration() > cutoff:
             #     procs[ID].terminate()
             #     procs.pop(ID)
+            #     print("terminating_%s"%ID)
         ##################################################
         if current != len(procs):
             current = len(procs)

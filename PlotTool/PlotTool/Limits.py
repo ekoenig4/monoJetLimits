@@ -22,6 +22,11 @@ class Limits(SysInfo):
         datalist = {}
         for mx,mvinfo in self.data.iteritems():
             datalist[mx] = mvinfo.keys()
+            #print("hi")
+            #print(mvinfo.keys())
+            #print(type(mvinfo.keys()[0]))
+            #print(mvinfo.keys()[0])
+            #print("bye")
         if exclude is not None: exclude(datalist)
         return datalist
     def __str__(self): return SysInfo.__str__(self)
