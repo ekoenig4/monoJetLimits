@@ -10,8 +10,8 @@ lumimap = {"2016":35900,"2017":41486,"2018":59699}
 catypes = ["monojet","monov","zprime"]
 varmap = {
     "monojet":RooRealVar("recoil","recoil",250,1400),
-    # "zprime":RooRealVar("ChNemPtFrac","ChNemPtFrac",0.,1.0),
-    "zprime":RooRealVar("recoil","recoil",250,1400),
+    "zprime":RooRealVar("ChNemPtFrac","ChNemPtFrac",0.,1.0),
+    # "zprime":RooRealVar("recoil","recoil",250,1400),
 }
 
 class SysRegion(TDirectoryFile):
@@ -21,14 +21,14 @@ class SysRegion(TDirectoryFile):
         self.year = syscat.year
         self.lumi = lumimap[self.year]
         for key in syscat.tdir.GetListOfKeys():
-            if "axial" in key.GetName():
+            if "zprime" in key.GetName():
                #r,p = "signal","axial"
                r,p = "signal",key.GetName().replace("signal_","")
             else :
                r,p = key.GetName().split("_")
             if dirmap[region] != r: continue
             if p == "sumofbkg": continue
-            if "axial" in p :  procname = p
+            if "zprime" in p :  procname = p
             else :             procname = procmap[p]
             process = syscat.tdir.Get(key.GetName()).Clone(procname)
             self.Add(process)

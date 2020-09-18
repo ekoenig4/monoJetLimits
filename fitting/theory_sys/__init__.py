@@ -21,7 +21,7 @@ for filelist in theoryfnames.values():
         if fname in theoryfiles: continue
         filename = fname
         if "gz_unc" in fname or "wz_unc" in fname: fname = prefix+fname
-        theoryfiles[filename] = TFile("%s/recoil/%s"%(filedir,fname))
+        theoryfiles[filename] = TFile("%s/chnemptfrac/%s"%(filedir,fname))
 theoryhistos = {}
 for key,tfile in theoryfiles.iteritems():
     fmap = {file:key}

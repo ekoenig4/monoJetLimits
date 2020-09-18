@@ -154,9 +154,9 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
-            # "PSW_isrCon":True,
-            # "PSW_fsrCon":True,
-            "PDF":True
+            "PSW_isrCon":True,
+            "PSW_fsrCon":True,
+            # "PDF":True
         },
         "ga_to_sr":{
             "QCD_Scale":True,
@@ -166,30 +166,30 @@ class ConnectedBinList(BinList):
             "NNLO_Miss":False,
             "NNLO_EWK":True,
             "QCD_EWK_Mix":True,
-            # "PSW_isrCon":True,
-            # "PSW_fsrCon":True,
-            "PDF":True,
-            "mettrig":True
+            "PSW_isrCon":True,
+            "PSW_fsrCon":True,
+            # "PDF":True,
+            # "mettrig":True
         },
-        "ze_to_sr":{
-            "mettrig":True
-        },
-        "zm_to_sr":{
-            "mettrig":True
-        },
+        # "ze_to_sr":{
+        #     "mettrig":True
+        # },
+        # "zm_to_sr":{
+        #     "mettrig":True
+        # },
         "we_to_sr":{
-            "mettrig":True,
+            # "mettrig":True,
             "eleveto":True,
             "muveto":True,
             "tauveto":True,
-            "PDF":True
+            # "PDF":True
         },
         "wm_to_sr":{
-            "mettrig":True,
+            # "mettrig":True,
             "eleveto":True,
             "muveto":True,
             "tauveto":True,
-            "PDF":True
+            # "PDF":True
         }
     }
     store = []
@@ -276,6 +276,7 @@ class ConnectedBinList(BinList):
         if self.tfname not in self.nuismap: return
         nuismap = self.nuismap[self.tfname]
         for nuisance in nuismap:
+            if self.year == "2016" and "PSW" in nuisance: continue
             if not fromSys: self.addSyst(nuisance,correlation=self.correlations[nuisance])
             else: self.addFromSys(nuisance,correlation=self.correlations[nuisance])
     def addSysShape(self,up,dn,reciprocal=True):
@@ -446,6 +447,7 @@ class Workspace(RooWorkspace):
         syscat.zm = Channel(syscat,'zm',tf_proc={"DYJets":"ZJets",id:"zm_to_sr"},tf_channel=syscat.sr)
         syscat.zm.Export(self)
     def GammaCR(self,syscat):
+        if syscat.year == "2016": return
         syscat.ga = Channel(syscat,'ga',tf_proc={"GJets":"ZJets",id:"ga_to_sr"},tf_channel=syscat.sr)
         syscat.ga.Export(self)
     def MetaData(self,syscat):
@@ -463,18 +465,13 @@ def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
     ws = Workspace("w","w")
 
     # ws.SignalRegion(syscat,parser.args.signal)
-    my_mass_map = {
-	"1":["100","300","500","750","1000","1500","1750","2000","2250"],
-	"10":["1750","2000"],
-	"40":["100"],
-	"100":["300","1750","2000"],
-	"150":["500","1750","2000","2250"],
-	"200":["100","500","1750","2000"],
-	"300":["300","500","750","1000","1500","1750","2000","2250"],
-	"400":["300","2000","2250"],
-	"500":["500","1750"],
-	"600":["750","1000","1500"]
-    }
+
+    my_mass_map = {'10': ['10000', '15', '100', '10', '50'],
+                   '500': ['10000', '10', '995', '500'],
+                   '1000': ['10', '1000', '10000'],
+                   '50': ['95', '200', '10', '50', '300', '10000'],
+                   '150': ['10', '500', '295', '1000', '200', '10000'],
+                   '1': ['50', '10000', '100', '200', '20', '300', '500', '1000', '10']} 
     signals = []
     for my_Mchi,my_Mphi in my_mass_map.iteritems():
         for Mphi_point in range(len(my_Mphi)):
