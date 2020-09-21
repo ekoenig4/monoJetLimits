@@ -56,6 +56,7 @@ def makeMchiDir(mx,mvlist,yearlist,options,procmap=None):
     regions = []
     for ch in ('sr','we','wm','ze','zm','ga'):
         for year in yearlist:
+            if year == "2016" and ch == "ga": continue
             regions.append('%s_%s' % (ch,year))
     mxdir = 'Mchi_%s' % mx
     print 'Creating %s Directory' % mxdir
@@ -114,7 +115,7 @@ def makeWorkspace(syscat,args):
     if not os.path.isdir(sysdir): os.mkdir(sysdir)
     os.chdir(sysdir)
     createDatacards('../workspace_%s.root' % syscat.year,syscat.year)
-    for mx,mvlist in syscat.getSignalList().items(): makeMchiDir(mx,mvlist,[syscat.year],args)
+    # for mx,mvlist in syscat.getSignalList().items(): makeMchiDir(mx,mvlist,[syscat.year],args)
     os.chdir(cwd)
     return syscat
 ####################

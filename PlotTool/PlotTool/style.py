@@ -4,13 +4,15 @@ colormap = {
     '1':kRed,
     '10':kAzure+10,
     '40':kViolet,
+    '50':kBlue+3,
     '100':kBlack,
     '150':kOrange-2,
     '200':kGray,
     '300':kSpring,
     '400':kYellow,
     '500':kGreen,
-    '600':kBlue
+    '600':kBlue,
+    '1000':kGreen+4
 }
 def getLegend(xmin=0.55,ymin=0.5,xmax=0.9,ymax=0.887173):
     leg = TLegend(xmin,ymin,xmax,ymax,"")

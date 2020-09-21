@@ -15,8 +15,8 @@ runCRfit(){
     wait
 }
 
-runlimits $@ &
-#runimpacts $@ &
-#runCRfit $@ &
+# runlimits $@ &
+runimpacts $@ &
+runCRfit $@ &
 wait
 echo Done

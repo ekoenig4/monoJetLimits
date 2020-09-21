@@ -59,6 +59,7 @@ def plotCR(cr,fitfile,info):
   leg.Draw()
 
   year = re.findall("\d\d\d\d",cr)[0]
+  if year == "2016": lumi_label = "35.9 fb^{-1}"
   if year == "2017": lumi_label = "41.5 fb^{-1}"
   if year == "2018": lumi_label = "59.7 fb^{-1}"
   texCMS,texLumi = getCMSText(lumi_label,year)

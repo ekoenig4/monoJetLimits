@@ -151,7 +151,7 @@ def createDatacards(wsfname,year):
   signalmap.update( {re.compile(signal):signal for signal in parser.args.signal} )
 
   for ch in chlist:
-    siglist = [] if ch != "sr" else parser.args.signal
+    siglist = [] if ch != "sr" else ["zprime_Mchi1_Mphi100"]#parser.args.signal
     MakeCard(ws,"%s_%s"%(ch,year),cardmap[ch],signal=siglist)
 
   if any(frozen_params):

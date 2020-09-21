@@ -406,8 +406,8 @@ class Channel:
         self.sysdir.keylist = [ key.GetName() for key in self.sysdir.GetListOfKeys() ]
         # self.sysdir.cd()
 
-        self.data = Template('data_obs',self.sysdir,self.syscat.varlist)
-        #self.data = Template('%s_data'%self.sysdir,self.sysdir,self.syscat.varlist)
+        # self.data = Template('data_obs',self.sysdir,self.syscat.varlist)
+        self.data = Template('%s_data'%self.sysdir,self.sysdir,self.syscat.varlist)
         self.bkgmap = {}
         for bkg in list(self.bkglist):
             self.bkgmap[bkg] = Template(bkg,self.sysdir,self.syscat.varlist)
@@ -466,12 +466,14 @@ def createWorkspace(syscat,outfname='workspace.root',isScaled=True):
 
     # ws.SignalRegion(syscat,parser.args.signal)
 
-    my_mass_map = {'10': ['10000', '15', '100', '10', '50'],
-                   '500': ['10000', '10', '995', '500'],
-                   '1000': ['10', '1000', '10000'],
-                   '50': ['95', '200', '10', '50', '300', '10000'],
-                   '150': ['10', '500', '295', '1000', '200', '10000'],
-                   '1': ['50', '10000', '100', '200', '20', '300', '500', '1000', '10']} 
+    my_mass_map = {
+                               #"Mchi":"Mphi"
+                '10': ['10000', '100', '50', '15', '10'],
+                '500': ['10000', '10', '995', '500'],
+                '1000': ['10', '1000'],
+                '50': ['10', '50', '10000', '300', '200', '95'],
+                '150': ['1000', '200', '295', '500', '10000', '10'],
+                '1': ['10', '50', '20', '200', '100', '10000', '1000']}
     signals = []
     for my_Mchi,my_Mphi in my_mass_map.iteritems():
         for Mphi_point in range(len(my_Mphi)):
